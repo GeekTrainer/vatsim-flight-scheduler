@@ -1,0 +1,148 @@
+@import 'tailwindcss';
+
+/* Custom dark mode styles */
+@layer base {
+	* {
+		@apply border-gray-800;
+	}
+	
+	body {
+		@apply bg-gray-950 text-gray-100;
+	}
+}
+
+/* Reusable component classes */
+@layer components {
+	/* Card patterns */
+	.card {
+		@apply bg-gray-800 rounded-lg border border-gray-700;
+	}
+	
+	.card-themed {
+		@apply border-2 border-blue-800/60 rounded-lg bg-gradient-to-br from-gray-900 via-blue-950/20 to-gray-900 shadow-xl shadow-blue-900/30 ring-1 ring-blue-700/20;
+	}
+	
+	.card-subtle {
+		@apply bg-gray-800/30 rounded-lg border border-gray-800;
+	}
+	
+	/* Interactive states */
+	.interactive-row {
+		@apply hover:bg-gray-800/50 transition-colors cursor-pointer;
+	}
+	
+	.interactive-subtle {
+		@apply hover:bg-gray-800/20 transition-colors cursor-pointer;
+	}
+	
+	.btn-hover {
+		@apply transition-all hover:scale-105;
+	}
+	
+	.focus-ring-blue {
+		@apply focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+	}
+	
+	/* Form inputs */
+	.form-input {
+		@apply w-full px-3 py-2 bg-gray-700 border-2 border-blue-800/50 rounded-lg text-white shadow-md shadow-blue-900/20 focus:ring-2 focus:ring-blue-500 focus:border-blue-600 hover:border-blue-700/60 transition-all;
+	}
+	
+	.form-checkbox {
+		@apply w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500;
+	}
+	
+	/* Typography */
+	.label-sm {
+		@apply text-xs text-gray-400 uppercase tracking-wide;
+	}
+	
+	.label-md {
+		@apply text-xl font-bold text-gray-100 text-center;
+	}
+	
+	.text-secondary {
+		@apply text-xs text-gray-400;
+	}
+	
+	.airport-code {
+		@apply text-lg font-semibold text-white;
+	}
+	
+	.airport-code-mono {
+		@apply text-lg font-mono font-semibold text-white;
+	}
+	
+	.city-label {
+		@apply text-xs text-gray-300;
+	}
+	
+	.section-header {
+		@apply text-xs text-gray-400 uppercase tracking-wide mb-1;
+	}
+	
+	/* Badge/Pill patterns */
+	.badge {
+		@apply px-2 py-1 rounded text-xs font-semibold border;
+	}
+	
+	.badge-sm {
+		@apply py-2 rounded-md text-sm font-semibold border text-center;
+	}
+	
+	.badge-interactive {
+		@apply flex-1 p-2 rounded border transition-colors;
+	}
+	
+	/* Status indicators */
+	.status-dot {
+		@apply w-1.5 h-1.5 bg-current rounded-full;
+	}
+	
+	.status-dot-pulse {
+		@apply w-1.5 h-1.5 bg-current rounded-full animate-pulse;
+	}
+	
+	/* Loading states */
+	.spinner {
+		@apply w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin;
+	}
+	
+	/* ATC Color scheme utilities */
+	.atc-ctr-active {
+		@apply bg-green-900/70 text-green-300 border-green-700 shadow-lg shadow-green-900/50;
+	}
+	
+	.atc-app-active {
+		@apply bg-blue-900/70 text-blue-300 border-blue-700 shadow-lg shadow-blue-900/50;
+	}
+	
+	.atc-twr-active {
+		@apply bg-red-900/70 text-red-300 border-red-700 shadow-lg shadow-red-900/50;
+	}
+	
+	.atc-gnd-active {
+		@apply bg-yellow-900/70 text-yellow-300 border-yellow-700 shadow-lg shadow-yellow-900/50;
+	}
+	
+	.atc-del-active {
+		@apply bg-purple-900/70 text-purple-300 border-purple-700 shadow-lg shadow-purple-900/50;
+	}
+	
+	.atc-inactive {
+		@apply bg-gray-700 text-gray-400 border-gray-600;
+	}
+	
+	/* Spacing utilities - standardized vertical spacing */
+	.stack-sm {
+		@apply space-y-2;
+	}
+	
+	.stack-md {
+		@apply space-y-3;
+	}
+	
+	.stack-lg {
+		@apply space-y-4;
+	}
+}

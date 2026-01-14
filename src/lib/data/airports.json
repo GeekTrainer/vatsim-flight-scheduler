@@ -1,0 +1,765 @@
+[
+  {
+    "icao": "KABQ",
+    "city": "Albuquerque",
+    "name": "Albuquerque International Sunport",
+    "artcc": "ZAB",
+    "vatsim_code": "ABQ"
+  },
+  {
+    "icao": "KALB",
+    "city": "Albany",
+    "name": "Albany International",
+    "artcc": "ZBW",
+    "vatsim_code": "ALB"
+  },
+  {
+    "icao": "KAMA",
+    "city": "Amarillo",
+    "name": "Rick Husband Amarillo International",
+    "artcc": "ZAB",
+    "vatsim_code": "AMA"
+  },
+  {
+    "icao": "KATL",
+    "city": "Atlanta",
+    "name": "Hartsfield/Jackson Atlanta International",
+    "artcc": "ZTL",
+    "vatsim_code": "ATL"
+  },
+  {
+    "icao": "KAUS",
+    "city": "Austin",
+    "name": "Austin-Bergstrom International",
+    "artcc": "ZHU",
+    "vatsim_code": "AUS"
+  },
+  {
+    "icao": "KBDL",
+    "city": "Hartford/Springfield",
+    "name": "Bradley International",
+    "artcc": "ZBW",
+    "vatsim_code": "BDL"
+  },
+  {
+    "icao": "KBHM",
+    "city": "Birmingham",
+    "name": "Birmingham-Shuttlesworth International",
+    "artcc": "ZTL",
+    "vatsim_code": "BHM"
+  },
+  {
+    "icao": "KBKG",
+    "city": "Branson",
+    "name": "Branson Airport",
+    "artcc": "ZKC",
+    "vatsim_code": "BKG"
+  },
+  {
+    "icao": "KBNA",
+    "city": "Nashville",
+    "name": "Nashville International",
+    "artcc": "ZME",
+    "vatsim_code": "BNA"
+  },
+  {
+    "icao": "KBOI",
+    "city": "Boise",
+    "name": "Boise Air TRML/Gowen FLD",
+    "artcc": "ZLC",
+    "vatsim_code": "BOI"
+  },
+  {
+    "icao": "KBOS",
+    "city": "Boston",
+    "name": "Boston Logan International",
+    "artcc": "ZBW",
+    "vatsim_code": "BOS"
+  },
+  {
+    "icao": "KBUF",
+    "city": "Buffalo",
+    "name": "Buffalo Niagara International",
+    "artcc": "ZOB",
+    "vatsim_code": "BUF"
+  },
+  {
+    "icao": "KBUR",
+    "city": "Burbank",
+    "name": "Bob Hope",
+    "artcc": "ZLA",
+    "vatsim_code": "BUR"
+  },
+  {
+    "icao": "KBWI",
+    "city": "Baltimore/Washington",
+    "name": "Baltimore/Washington International Thurgood Marshall",
+    "artcc": "ZDC",
+    "vatsim_code": "BWI"
+  },
+  {
+    "icao": "KBZN",
+    "city": "Bozeman",
+    "name": "Bozeman Yellowstone International",
+    "artcc": "ZLC",
+    "vatsim_code": "BZN"
+  },
+  {
+    "icao": "KCAK",
+    "city": "Akron",
+    "name": "Akron-Canton Regional",
+    "artcc": "ZOB",
+    "vatsim_code": "CAK"
+  },
+  {
+    "icao": "KCHS",
+    "city": "Charleston",
+    "name": "Charleston International/AFB",
+    "artcc": "ZJX",
+    "vatsim_code": "CHS"
+  },
+  {
+    "icao": "KCLE",
+    "city": "Cleveland",
+    "name": "Cleveland Hopkins International",
+    "artcc": "ZOB",
+    "vatsim_code": "CLE"
+  },
+  {
+    "icao": "KCLT",
+    "city": "Charlotte",
+    "name": "Charlotte Douglas International",
+    "artcc": "ZDC",
+    "vatsim_code": "CLT"
+  },
+  {
+    "icao": "KCMH",
+    "city": "Columbus",
+    "name": "John Glenn Columbus International",
+    "artcc": "ZID",
+    "vatsim_code": "CMH"
+  },
+  {
+    "icao": "KCRP",
+    "city": "Corpus Christi",
+    "name": "Corpus Christi International",
+    "artcc": "ZHU",
+    "vatsim_code": "CRP"
+  },
+  {
+    "icao": "KDAL",
+    "city": "Dallas (Love Field)",
+    "name": "Dallas Love FLD",
+    "artcc": "ZFW",
+    "vatsim_code": "DAL"
+  },
+  {
+    "icao": "KDAY",
+    "city": "Dayton",
+    "name": "James M Cox Dayton International",
+    "artcc": "ZID",
+    "vatsim_code": "DAY"
+  },
+  {
+    "icao": "KDCA",
+    "city": "Washington",
+    "name": "Ronald Reagan Washington NTL",
+    "artcc": "ZDC",
+    "vatsim_code": "DCA"
+  },
+  {
+    "icao": "KDEN",
+    "city": "Denver",
+    "name": "Denver International",
+    "artcc": "ZDV",
+    "vatsim_code": "DEN"
+  },
+  {
+    "icao": "KDFW",
+    "city": "Dallas/Fort Worth",
+    "name": "Dallas/Fort Worth International",
+    "artcc": "ZFW",
+    "vatsim_code": "DFW"
+  },
+  {
+    "icao": "KDSM",
+    "city": "Des Moines",
+    "name": "Des Moines International",
+    "artcc": "ZMP",
+    "vatsim_code": "DSM"
+  },
+  {
+    "icao": "KDTW",
+    "city": "Detroit",
+    "name": "Detroit Metropolitan Wayne County",
+    "artcc": "ZOB",
+    "vatsim_code": "DTW"
+  },
+  {
+    "icao": "KECP",
+    "city": "Panama City Beach",
+    "name": "Northwest Florida Beaches International",
+    "artcc": "ZJX",
+    "vatsim_code": "ECP"
+  },
+  {
+    "icao": "KELP",
+    "city": "El Paso",
+    "name": "El Paso International",
+    "artcc": "ZAB",
+    "vatsim_code": "ELP"
+  },
+  {
+    "icao": "KEWR",
+    "city": "Newark",
+    "name": "Newark Liberty International",
+    "artcc": "ZNY",
+    "vatsim_code": "EWR"
+  },
+  {
+    "icao": "KEYW",
+    "city": "Key West",
+    "name": "Key West International",
+    "artcc": "ZMA",
+    "vatsim_code": "EYW"
+  },
+  {
+    "icao": "KFLL",
+    "city": "Fort Lauderdale",
+    "name": "Fort Lauderdale/Hollywood International",
+    "artcc": "ZMA",
+    "vatsim_code": "FLL"
+  },
+  {
+    "icao": "KFNT",
+    "city": "Flint",
+    "name": "Bishop International",
+    "artcc": "ZOB",
+    "vatsim_code": "FNT"
+  },
+  {
+    "icao": "KGEG",
+    "city": "Spokane",
+    "name": "Spokane International",
+    "artcc": "ZSE",
+    "vatsim_code": "GEG"
+  },
+  {
+    "icao": "KGRR",
+    "city": "Grand Rapids",
+    "name": "Gerald R Ford International",
+    "artcc": "ZAU",
+    "vatsim_code": "GRR"
+  },
+  {
+    "icao": "KGSP",
+    "city": "Greenville/Spartanburg",
+    "name": "Greenville Spartanburg International",
+    "artcc": "ZTL",
+    "vatsim_code": "GSP"
+  },
+  {
+    "icao": "KHNL",
+    "city": "Honolulu",
+    "name": "Daniel K Inouye International",
+    "artcc": "ZHN",
+    "vatsim_code": "HNL"
+  },
+  {
+    "icao": "KHOU",
+    "city": "Houston",
+    "name": "William P Hobby",
+    "artcc": "ZHU",
+    "vatsim_code": "HOU"
+  },
+  {
+    "icao": "KHRL",
+    "city": "Harlingen",
+    "name": "Valley International",
+    "artcc": "ZHU",
+    "vatsim_code": "HRL"
+  },
+  {
+    "icao": "KIAD",
+    "city": "Washington",
+    "name": "Washington Dulles International",
+    "artcc": "ZDC",
+    "vatsim_code": "IAD"
+  },
+  {
+    "icao": "KICT",
+    "city": "Wichita",
+    "name": "Wichita Dwight D Eisenhower National",
+    "artcc": "ZKC",
+    "vatsim_code": "ICT"
+  },
+  {
+    "icao": "KIND",
+    "city": "Indianapolis",
+    "name": "Indianapolis International",
+    "artcc": "ZID",
+    "vatsim_code": "IND"
+  },
+  {
+    "icao": "KISP",
+    "city": "Islip",
+    "name": "Long Island MAC Arthur",
+    "artcc": "ZNY",
+    "vatsim_code": "ISP"
+  },
+  {
+    "icao": "KITO",
+    "city": "Hilo",
+    "name": "Hilo International",
+    "artcc": "ZHN",
+    "vatsim_code": "ITO"
+  },
+  {
+    "icao": "KJAN",
+    "city": "Jackson",
+    "name": "Jackson-Medgar Wiley Evers International",
+    "artcc": "ZME",
+    "vatsim_code": "JAN"
+  },
+  {
+    "icao": "KJAX",
+    "city": "Jacksonville",
+    "name": "Jacksonville International",
+    "artcc": "ZJX",
+    "vatsim_code": "JAX"
+  },
+  {
+    "icao": "KKOA",
+    "city": "Kona",
+    "name": "Ellison Onizuka Kona International at Keahole",
+    "artcc": "ZHN",
+    "vatsim_code": "KOA"
+  },
+  {
+    "icao": "KLAS",
+    "city": "Las Vegas",
+    "name": "Harry Reid International",
+    "artcc": "ZLA",
+    "vatsim_code": "LAS"
+  },
+  {
+    "icao": "KLAX",
+    "city": "Los Angeles",
+    "name": "Los Angeles International",
+    "artcc": "ZLA",
+    "vatsim_code": "LAX"
+  },
+  {
+    "icao": "KLBB",
+    "city": "Lubbock",
+    "name": "Lubbock Preston Smith International",
+    "artcc": "ZFW",
+    "vatsim_code": "LBB"
+  },
+  {
+    "icao": "KLGA",
+    "city": "New York",
+    "name": "LaGuardia",
+    "artcc": "ZNY",
+    "vatsim_code": "LGA"
+  },
+  {
+    "icao": "KLGB",
+    "city": "Long Beach",
+    "name": "Long Beach Airport",
+    "artcc": "ZLA",
+    "vatsim_code": "LGB"
+  },
+  {
+    "icao": "KLIH",
+    "city": "Lihue",
+    "name": "Lihue Airport",
+    "artcc": "ZHN",
+    "vatsim_code": "LIH"
+  },
+  {
+    "icao": "KLIT",
+    "city": "Little Rock",
+    "name": "Bill and Hillary Clinton National/Adams Field",
+    "artcc": "ZME",
+    "vatsim_code": "LIT"
+  },
+  {
+    "icao": "KMAF",
+    "city": "Midland/Odessa",
+    "name": "Midland International Air and Space Port",
+    "artcc": "ZFW",
+    "vatsim_code": "MAF"
+  },
+  {
+    "icao": "KMCI",
+    "city": "Kansas City",
+    "name": "Kansas City International",
+    "artcc": "ZKC",
+    "vatsim_code": "MCI"
+  },
+  {
+    "icao": "KMCO",
+    "city": "Orlando",
+    "name": "Orlando International",
+    "artcc": "ZJX",
+    "vatsim_code": "MCO"
+  },
+  {
+    "icao": "KMDW",
+    "city": "Chicago",
+    "name": "Chicago Midway International",
+    "artcc": "ZAU",
+    "vatsim_code": "MDW"
+  },
+  {
+    "icao": "KMEM",
+    "city": "Memphis",
+    "name": "Memphis International",
+    "artcc": "ZME",
+    "vatsim_code": "MEM"
+  },
+  {
+    "icao": "KMHT",
+    "city": "Manchester",
+    "name": "Manchester Boston RGNL",
+    "artcc": "ZBW",
+    "vatsim_code": "MHT"
+  },
+  {
+    "icao": "KMKE",
+    "city": "Milwaukee",
+    "name": "General Mitchell International",
+    "artcc": "ZAU",
+    "vatsim_code": "MKE"
+  },
+  {
+    "icao": "KMSP",
+    "city": "Minneapolis/St. Paul",
+    "name": "Minneapolis-St Paul International/wold-Chamberlain",
+    "artcc": "ZMP",
+    "vatsim_code": "MSP"
+  },
+  {
+    "icao": "KMSY",
+    "city": "New Orleans",
+    "name": "Louis Armstrong New Orleans International",
+    "artcc": "ZHU",
+    "vatsim_code": "MSY"
+  },
+  {
+    "icao": "KOAK",
+    "city": "Oakland",
+    "name": "Oakland San Francisco Bay",
+    "artcc": "ZOA",
+    "vatsim_code": "OAK"
+  },
+  {
+    "icao": "KOGG",
+    "city": "Maui",
+    "name": "Kahului Airport",
+    "artcc": "ZHN",
+    "vatsim_code": "OGG"
+  },
+  {
+    "icao": "KOKC",
+    "city": "Oklahoma City",
+    "name": "Will Rogers World",
+    "artcc": "ZKC",
+    "vatsim_code": "OKC"
+  },
+  {
+    "icao": "KOMA",
+    "city": "Omaha",
+    "name": "Eppley Airfield",
+    "artcc": "ZKC",
+    "vatsim_code": "OMA"
+  },
+  {
+    "icao": "KONT",
+    "city": "Ontario",
+    "name": "Ontario International",
+    "artcc": "ZLA",
+    "vatsim_code": "ONT"
+  },
+  {
+    "icao": "KORD",
+    "city": "Chicago",
+    "name": "Chicago O'hare International",
+    "artcc": "ZAU",
+    "vatsim_code": "ORD"
+  },
+  {
+    "icao": "KORF",
+    "city": "Norfolk",
+    "name": "Norfolk International",
+    "artcc": "ZDC",
+    "vatsim_code": "ORF"
+  },
+  {
+    "icao": "KPBI",
+    "city": "West Palm Beach",
+    "name": "Palm Beach International",
+    "artcc": "ZMA",
+    "vatsim_code": "PBI"
+  },
+  {
+    "icao": "KPDX",
+    "city": "Portland",
+    "name": "Portland International",
+    "artcc": "ZSE",
+    "vatsim_code": "PDX"
+  },
+  {
+    "icao": "KPHL",
+    "city": "Philadelphia",
+    "name": "Philadelphia International",
+    "artcc": "ZNY",
+    "vatsim_code": "PHL"
+  },
+  {
+    "icao": "KPHX",
+    "city": "Phoenix",
+    "name": "Phoenix Sky Harbor International",
+    "artcc": "ZAB",
+    "vatsim_code": "PHX"
+  },
+  {
+    "icao": "KPIT",
+    "city": "Pittsburgh",
+    "name": "Pittsburgh International",
+    "artcc": "ZOB",
+    "vatsim_code": "PIT"
+  },
+  {
+    "icao": "KPNS",
+    "city": "Pensacola",
+    "name": "Pensacola International",
+    "artcc": "ZJX",
+    "vatsim_code": "PNS"
+  },
+  {
+    "icao": "KPVD",
+    "city": "Providence",
+    "name": "Rhode Island TF Green International",
+    "artcc": "ZBW",
+    "vatsim_code": "PVD"
+  },
+  {
+    "icao": "KPWM",
+    "city": "Portland",
+    "name": "Portland International Jetport",
+    "artcc": "ZBW",
+    "vatsim_code": "PWM"
+  },
+  {
+    "icao": "KRDU",
+    "city": "Raleigh–Durham",
+    "name": "Raleigh-Durham International",
+    "artcc": "ZDC",
+    "vatsim_code": "RDU"
+  },
+  {
+    "icao": "KRIC",
+    "city": "Richmond",
+    "name": "Richmond International",
+    "artcc": "ZDC",
+    "vatsim_code": "RIC"
+  },
+  {
+    "icao": "KRNO",
+    "city": "Reno",
+    "name": "Reno/Tahoe International",
+    "artcc": "ZOA",
+    "vatsim_code": "RNO"
+  },
+  {
+    "icao": "KROC",
+    "city": "Rochester",
+    "name": "Greater Rochester International",
+    "artcc": "ZOB",
+    "vatsim_code": "ROC"
+  },
+  {
+    "icao": "KRSW",
+    "city": "Fort Myers",
+    "name": "Southwest Florida International",
+    "artcc": "ZMA",
+    "vatsim_code": "RSW"
+  },
+  {
+    "icao": "KSAN",
+    "city": "San Diego",
+    "name": "San Diego International",
+    "artcc": "ZLA",
+    "vatsim_code": "SAN"
+  },
+  {
+    "icao": "KSAT",
+    "city": "San Antonio",
+    "name": "San Antonio International",
+    "artcc": "ZHU",
+    "vatsim_code": "SAT"
+  },
+  {
+    "icao": "KSDF",
+    "city": "Louisville",
+    "name": "Louisville Muhammad Ali International",
+    "artcc": "ZID",
+    "vatsim_code": "SDF"
+  },
+  {
+    "icao": "KSEA",
+    "city": "Seattle/Tacoma",
+    "name": "Seattle-Tacoma International",
+    "artcc": "ZSE",
+    "vatsim_code": "SEA"
+  },
+  {
+    "icao": "KSFO",
+    "city": "San Francisco",
+    "name": "San Francisco International",
+    "artcc": "ZOA",
+    "vatsim_code": "SFO"
+  },
+  {
+    "icao": "KSJC",
+    "city": "San Jose",
+    "name": "Norman Y Mineta San Jose International",
+    "artcc": "ZOA",
+    "vatsim_code": "SJC"
+  },
+  {
+    "icao": "KSLC",
+    "city": "Salt Lake City",
+    "name": "Salt Lake City International",
+    "artcc": "ZLC",
+    "vatsim_code": "SLC"
+  },
+  {
+    "icao": "KSMF",
+    "city": "Sacramento",
+    "name": "Sacramento International",
+    "artcc": "ZOA",
+    "vatsim_code": "SMF"
+  },
+  {
+    "icao": "KSNA",
+    "city": "Santa Ana/Orange County",
+    "name": "John Wayne/Orange County",
+    "artcc": "ZLA",
+    "vatsim_code": "SNA"
+  },
+  {
+    "icao": "KSTL",
+    "city": "St. Louis",
+    "name": "St Louis Lambert International",
+    "artcc": "ZKC",
+    "vatsim_code": "STL"
+  },
+  {
+    "icao": "KTPA",
+    "city": "Tampa",
+    "name": "Tampa International",
+    "artcc": "ZJX",
+    "vatsim_code": "TPA"
+  },
+  {
+    "icao": "KTUL",
+    "city": "Tulsa",
+    "name": "Tulsa International",
+    "artcc": "ZKC",
+    "vatsim_code": "TUL"
+  },
+  {
+    "icao": "KTUS",
+    "city": "Tucson",
+    "name": "Tucson International",
+    "artcc": "ZAB",
+    "vatsim_code": "TUS"
+  },
+  {
+    "icao": "MDPC",
+    "city": "Punta Cana",
+    "name": "Punta Cana International",
+    "artcc": "MDCS",
+    "vatsim_code": "PUJ"
+  },
+  {
+    "icao": "MDPP",
+    "city": "Puerto Plata",
+    "name": "Gregorio Luperon International",
+    "artcc": "MDCS",
+    "vatsim_code": "PLS"
+  },
+  {
+    "icao": "MKJP",
+    "city": "Montego Bay",
+    "name": "Sangster International",
+    "artcc": "MHTG",
+    "vatsim_code": "MBJ"
+  },
+  {
+    "icao": "MMPR",
+    "city": "Puerto Vallarta",
+    "name": "Licenciado Gustavo Diaz Ordaz International",
+    "artcc": "MMFR",
+    "vatsim_code": "PVR"
+  },
+  {
+    "icao": "MMSD",
+    "city": "Los Cabos",
+    "name": "Los Cabos International",
+    "artcc": "MMFR",
+    "vatsim_code": "SJD"
+  },
+  {
+    "icao": "MMUN",
+    "city": "Cancun",
+    "name": "Cancun International",
+    "artcc": "MMFR",
+    "vatsim_code": "CUN"
+  },
+  {
+    "icao": "MROC",
+    "city": "San Jose",
+    "name": "Juan Santamaria International",
+    "artcc": "MHTG",
+    "vatsim_code": "SJO"
+  },
+  {
+    "icao": "MYGF",
+    "city": "Grand Cayman",
+    "name": "Owen Roberts International",
+    "artcc": "MHTG",
+    "vatsim_code": "GCM"
+  },
+  {
+    "icao": "MYNN",
+    "city": "Nassau",
+    "name": "Lynden Pindling International",
+    "artcc": "MHTG",
+    "vatsim_code": "NAS"
+  },
+  {
+    "icao": "MZBZ",
+    "city": "Belize City",
+    "name": "Philip S W Goldson International",
+    "artcc": "MHTG",
+    "vatsim_code": "BZE"
+  },
+  {
+    "icao": "TJSJ",
+    "city": "San Juan",
+    "name": "Luis Munoz Marin International",
+    "artcc": "TJZS",
+    "vatsim_code": "SJU"
+  },
+  {
+    "icao": "TNCA",
+    "city": "Oranjestad",
+    "name": "Queen Beatrix International",
+    "artcc": "TJZS",
+    "vatsim_code": "AUA"
+  }
+]
