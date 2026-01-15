@@ -10,8 +10,8 @@ test.describe('Route Expansion and Collapse', () => {
 		
 		await page.goto('/');
 		
-		// Wait for VATSIM data to finish loading (observable result)
-		await expect(page.getByTestId('loading-state')).not.toBeVisible();
+		// Wait for user guide to be visible (observable result that loading is complete)
+		await expect(page.getByTestId('user-guide')).toBeVisible();
 		
 		// Select "Any ATC online" to show multiple departure groups
 		const anyATCCheckbox = page.getByTestId('any-atc-departure-atc-filtering');

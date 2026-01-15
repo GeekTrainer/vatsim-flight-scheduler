@@ -64,7 +64,7 @@
 				<span class="status-dot-pulse"></span>
 			</div>
 			<!-- Controllers (stacked vertically if multiple) -->
-			{#each controllers as controller, index}
+			{#each controllers as controller, index (controller.callsign)}
 				{#if index > 0}
 					<div class="border-t border-current/20 my-1"></div>
 				{/if}

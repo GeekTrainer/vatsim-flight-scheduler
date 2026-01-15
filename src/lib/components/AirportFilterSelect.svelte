@@ -50,7 +50,7 @@
 		class="form-input"
 	>
 		<option value="">Any airport</option>
-		{#each availableAirports as airport}
+		{#each availableAirports as airport (airport.vatsim_code)}
 			<option value={airport.vatsim_code}>
 				{airport.city} ({airport.vatsim_code})
 			</option>

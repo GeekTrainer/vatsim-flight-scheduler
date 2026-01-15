@@ -86,7 +86,10 @@ Instructions for building high-quality Svelte 5 and SvelteKit applications with 
 - Use `:global()` sparingly for truly global styles
 
 ### Performance Optimization
-- Use keyed `{#each}` blocks for efficient list rendering
+- **CRITICAL**: Always use keyed `{#each}` blocks for list rendering - syntax: `{#each items as item (item.id)}`
+  - Keys must be unique identifiers (IDs, codes, or unique properties)
+  - Enables Svelte to efficiently update DOM when lists change
+  - Example: `{#each airports as airport (airport.vatsim_code)}`
 - Implement lazy loading with dynamic imports and `svelte:component`
 - Use `$derived()` for expensive computations to avoid unnecessary recalculations
 - Leverage SvelteKit's automatic code splitting and preloading

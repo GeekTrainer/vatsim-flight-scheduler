@@ -11,8 +11,8 @@ test.describe('ATC Level Filtering', () => {
 		
 		await page.goto('/');
 		
-		// Wait for VATSIM data to finish loading (observable result)
-		await expect(page.getByTestId('loading-state')).not.toBeVisible();
+		// Wait for user guide to be visible (observable result that loading is complete)
+		await expect(page.getByTestId('user-guide')).toBeVisible();
 	});
 
 	test('should filter departures by Tower level only', async ({ page }) => {
@@ -248,8 +248,8 @@ test.describe('ATC Level Filtering', () => {
 		});
 		await page.reload();
 		
-		// Wait for VATSIM data to finish loading after reload (observable result)
-		await expect(page.getByTestId('loading-state')).not.toBeVisible();
+		// Wait for user guide to be visible after reload (observable result that loading is complete)
+		await expect(page.getByTestId('user-guide')).toBeVisible();
 
 		// Check Tower level
 		const towerCheckbox = page.getByTestId('departure-atc-level-twr');

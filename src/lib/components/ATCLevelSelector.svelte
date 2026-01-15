@@ -105,7 +105,7 @@
 	<div class="space-y-1">
 		<div class="text-secondary px-2">Or select specific levels:</div>
 		<div class="grid grid-cols-5 gap-2" data-testid="{label.toLowerCase().replace(/\s+/g, '-')}-atc-levels">
-			{#each atcLevels as level}
+			{#each atcLevels as level (level.position)}
 				<button
 					type="button"
 					data-testid="{testIdPrefix}-atc-level-{level.position.toLowerCase()}"

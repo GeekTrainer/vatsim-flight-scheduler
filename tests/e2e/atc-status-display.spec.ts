@@ -12,8 +12,8 @@ test.describe('ATC Status Display', () => {
 			await route.fulfill({ status: 200, body: JSON.stringify(mockVatsimDataEmpty) });
 		});
 		
-		// Wait for VATSIM data to finish loading (observable result)
-		await expect(page.getByTestId('loading-state')).not.toBeVisible();
+		// Wait for user guide to be visible (observable result that loading is complete)
+		await expect(page.getByTestId('user-guide')).toBeVisible();
 
 		// Select any departure to show a route
 		const departureSelect = page.getByTestId('departure-airport-select');
@@ -37,8 +37,8 @@ test.describe('ATC Status Display', () => {
 			await route.fulfill({ status: 200, body: JSON.stringify(mockVatsimDataWithControllers) });
 		});
 		
-		// Wait for VATSIM data to finish loading (observable result)
-		await expect(page.getByTestId('loading-state')).not.toBeVisible();
+		// Wait for user guide to be visible (observable result that loading is complete)
+		await expect(page.getByTestId('user-guide')).toBeVisible();
 
 		// Select PHX departure (has TWR and GND online)
 		const departureSelect = page.getByTestId('departure-airport-select');
@@ -62,8 +62,8 @@ test.describe('ATC Status Display', () => {
 			await route.fulfill({ status: 200, body: JSON.stringify(mockVatsimDataWithControllers) });
 		});
 		
-		// Wait for VATSIM data to finish loading (observable result)
-		await expect(page.getByTestId('loading-state')).not.toBeVisible();
+		// Wait for user guide to be visible (observable result that loading is complete)
+		await expect(page.getByTestId('user-guide')).toBeVisible();
 
 		// Select PHX departure
 		const departureSelect = page.getByTestId('departure-airport-select');
@@ -92,8 +92,8 @@ test.describe('ATC Status Display', () => {
 			await route.fulfill({ status: 200, body: JSON.stringify(mockVatsimDataWithControllers) });
 		});
 		
-		// Wait for VATSIM data to finish loading (observable result)
-		await expect(page.getByTestId('loading-state')).not.toBeVisible();
+		// Wait for user guide to be visible (observable result that loading is complete)
+		await expect(page.getByTestId('user-guide')).toBeVisible();
 
 		// Select BWI departure (has only DEL online)
 		const departureSelect = page.getByTestId('departure-airport-select');
@@ -119,8 +119,8 @@ test.describe('ATC Status Display', () => {
 			await route.fulfill({ status: 200, body: JSON.stringify(mockVatsimDataWithControllers) });
 		});
 		
-		// Wait for VATSIM data to finish loading (observable result)
-		await expect(page.getByTestId('loading-state')).not.toBeVisible();
+		// Wait for user guide to be visible (observable result that loading is complete)
+		await expect(page.getByTestId('user-guide')).toBeVisible();
 
 		// Select any departure
 		const departureSelect = page.getByTestId('departure-airport-select');
@@ -142,8 +142,8 @@ test.describe('ATC Status Display', () => {
 			await route.fulfill({ status: 200, body: JSON.stringify(mockVatsimDataEmpty) });
 		});
 		
-		// Wait for VATSIM data to finish loading (observable result)
-		await expect(page.getByTestId('loading-state')).not.toBeVisible();
+		// Wait for user guide to be visible (observable result that loading is complete)
+		await expect(page.getByTestId('user-guide')).toBeVisible();
 
 		// Select PHX
 		const departureSelect = page.getByTestId('departure-airport-select');
@@ -164,8 +164,8 @@ test.describe('ATC Status Display', () => {
 		// Force a page reload to simulate data refresh
 		await page.reload();
 		
-		// Wait for VATSIM data to finish loading after reload (observable result)
-		await expect(page.getByTestId('loading-state')).not.toBeVisible();
+		// Wait for user guide to be visible after reload (observable result that loading is complete)
+		await expect(page.getByTestId('user-guide')).toBeVisible();
 
 		// Select PHX again
 		await departureSelect.selectOption('PHX');

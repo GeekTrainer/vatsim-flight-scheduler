@@ -10,8 +10,9 @@ export async function setupWithEmptyVatsimData(page: Page) {
 	});
 	await page.goto('/');
 	
-	// Wait for VATSIM data to finish loading (observable result)
-	await expect(page.getByTestId('loading-state')).not.toBeVisible();
+	// Wait for user guide to be visible (observable result that loading is complete)
+	// User guide appears when isLoading=false AND hasActiveFilters=false
+	await expect(page.getByTestId('user-guide')).toBeVisible();
 }
 
 /**
@@ -23,6 +24,7 @@ export async function setupWithControllers(page: Page) {
 	});
 	await page.goto('/');
 	
-	// Wait for VATSIM data to finish loading (observable result)
-	await expect(page.getByTestId('loading-state')).not.toBeVisible();
+	// Wait for user guide to be visible (observable result that loading is complete)
+	// User guide appears when isLoading=false AND hasActiveFilters=false
+	await expect(page.getByTestId('user-guide')).toBeVisible();
 }

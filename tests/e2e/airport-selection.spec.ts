@@ -10,8 +10,8 @@ test.describe('Airport Selection', () => {
 		
 		await page.goto('/');
 		
-		// Wait for VATSIM data to finish loading (observable result)
-		await expect(page.getByTestId('loading-state')).not.toBeVisible();
+		// Wait for user guide to be visible (observable result that loading is complete)
+		await expect(page.getByTestId('user-guide')).toBeVisible();
 	});
 
 	test('should show departure group when selecting a departure airport', async ({ page }) => {
