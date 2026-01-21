@@ -1,7 +1,7 @@
 # VATSIM Flight Scheduler - Copilot Instructions
 
 ## Project Overview
-A SvelteKit app that helps VATSIM virtual pilots find Southwest Airlines routes with real-time ATC (Air Traffic Control) coverage. Displays 1,219 routes between 109 Southwest airports with live controller data across all positions (Delivery, Ground, Tower, Approach, Center).
+A SvelteKit app that helps VATSIM virtual pilots find Southwest Airlines routes with real-time ATC (Air Traffic Control) coverage. Displays 20 routes with live controller data across all positions (Delivery, Ground, Tower, Approach, Center).
 
 ## AI Notes
 
@@ -12,8 +12,8 @@ A SvelteKit app that helps VATSIM virtual pilots find Southwest Airlines routes 
 ## Testing Requirements
 
 ### Before Merging to Main
-- ✅ All unit tests must pass: `npm test` (currently 43/43)
-- ✅ All E2E tests must pass: `npm run test:e2e` (currently 72/72)
+- ✅ All unit tests must pass: `npm test` (currently 59/59)
+- ✅ All E2E tests must pass: `npm run test:e2e` (target: 12/12)
 - ✅ TypeScript must be clean: `npm run check` (0 errors)
 
 ### Test Data Attributes
@@ -123,7 +123,7 @@ Legacy Python scripts in [archive/](archive/):
 **Core Logic:**
 - [src/lib/routes.ts](src/lib/routes.ts) - Route loading from real Southwest Airlines route data
 - [src/lib/vatsim.ts](src/lib/vatsim.ts) - VATSIM API client, controller matching, TRACON mappings
-- [src/lib/types.ts](src/lib/types.ts) - TypeScript interfaces for Airport/Route/LocationControllers
+- [src/lib/types.ts](src/lib/types.ts) - TypeScript interfaces for Airport/Route
 
 **Components:**
 - [src/lib/components/ATCStatusDisplay.svelte](src/lib/components/ATCStatusDisplay.svelte) - Reusable ATC badge/accordion
@@ -131,36 +131,10 @@ Legacy Python scripts in [archive/](archive/):
 - [src/lib/components/RouteCard.svelte](src/lib/components/RouteCard.svelte) - Mobile card layout
 
 **Data:**
-- [src/lib/data/airports.json](src/lib/data/airports.json) - 109 Southwest airports with ICAO/VATSIM/ARTCC codes
-- [src/lib/data/routes.json](src/lib/data/routes.json) - 1,219 Southwest route pairs
-
-**Test Helpers:**
-- [tests/e2e/helpers/assertions.ts](tests/e2e/helpers/assertions.ts) - Shared test assertion helpers
-- [tests/e2e/helpers/setup.ts](tests/e2e/helpers/setup.ts) - Test setup utilities
+- [src/lib/data/airports.json](src/lib/data/airports.json) - 70 Southwest airports with ICAO/VATSIM/ARTCC codes
 
 **Pages:**
 - [src/routes/+page.svelte](src/routes/+page.svelte) - Main landing page with filtering and stats
-
-## Code Quality & DRY Principles
-
-### Type Safety
-- **Use `LocationControllers` type alias**: Import from `$lib/types` instead of verbose `Map<string, Map<ControllerPosition, ATCController[]>>`
-- **Strict TypeScript**: All components use explicit types, no `any` types allowed
-
-### CSS Utilities (src/routes/layout.css)
-Centralized utility classes to avoid inline duplication:
-- `.airport-code` - Airport code styling (lg, semibold, white)
-- `.airport-code-mono` - Monospace variant for ICAO codes
-- `.city-label` - City name styling (xs, gray-300)
-- `.section-header` - Section header styling (xs, gray-400, uppercase)
-- `.label-md` - Main filter section headers (xl, bold, centered)
-- ATC color classes: `.atc-ctr-active`, `.atc-app-active`, `.atc-twr-active`, `.atc-gnd-active`, `.atc-del-active`
-
-### Test Helpers
-- **Use shared helpers**: Import from `tests/e2e/helpers/assertions.ts` for common test patterns
-- `expectATCLevelButtonActive()` - Check ATC level button state
-- `expectATCBadgeStatus()` - Verify ATC badge online/offline status
-- **Don't duplicate helpers**: Extract to shared module if used in 2+ test files
 
 ## Common Pitfalls
 
@@ -170,5 +144,3 @@ Centralized utility classes to avoid inline duplication:
 4. **Don't use Svelte 4 syntax**: This is Svelte 5 - use runes (`$state`, `$derived`, `$effect`)
 5. **Don't create unnecessary API calls**: Leverage the 30s cache and shared state in +page.svelte
 6. **Don't bloat existing components**: Extract new components instead of making RouteTable/RouteRow/RouteCard larger
-7. **Don't use verbose types**: Use `LocationControllers` instead of the full Map type
-8. **Don't inline repeated CSS**: Use centralized utility classes from layout.css

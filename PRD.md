@@ -28,10 +28,11 @@ VATSIM is a volunteer-run virtual air traffic control network where ATC position
 ### 5. Goals & Success Metrics
 
 **MVP Goals:**
-- Display 20+ Southwest Airlines routes with real-time ATC position information
+- Display 1,219 Southwest Airlines routes from 109 airports with real-time ATC position information
 - Show live controller data across all positions: Delivery (DEL), Ground (GND), Tower (TWR), Approach (APP), Center (CTR)
 - Provide a clean, modern interface for route browsing with expandable controller details
 - Auto-refresh controller data every 30 seconds for real-time accuracy
+- Group routes by departure airport for easy browsing
 
 **Success Metrics:**
 - User engagement with route listings
@@ -44,10 +45,11 @@ VATSIM is a volunteer-run virtual air traffic control network where ATC position
 
 **Core Features:**
 1. **Route Display**
-   - Show list of 20 pre-generated Southwest Airlines routes
+   - Show all 1,219 real Southwest Airlines routes from 109 airports
    - Display departure and arrival cities with ICAO codes
    - Real-time ATC position status for each airport (DEL, GND, TWR, APP, CTR)
    - Visual indicators showing online/offline status for each ATC position
+   - Routes grouped by departure airport for easy navigation
 
 2. **Live Controller Information**
    - Integration with VATSIM live data API
@@ -66,22 +68,21 @@ VATSIM is a volunteer-run virtual air traffic control network where ATC position
    - Clickable accordion controls for detailed controller information
 
 4. **Data Management**
-   - JSON-based airport database (70 Southwest airports)
-   - Route generation algorithm ensuring variety in cities and ARTCC coverage
+   - JSON-based airport database (109 Southwest airports)
+   - JSON-based route database (1,219 real Southwest route pairs)
    - ARTCC (Air Route Traffic Control Center) mapping for center controllers
    - Support for consolidated approach facilities covering multiple airports
 
 **Technical Stack:**
-- **Framework:** SvelteKit
+- **Framework:** SvelteKit 5
 - **Language:** TypeScript
-- **Styling:** Tailwind CSS
-- **Data Format:** CSV (or JSON if migrated)
+- **Styling:** Tailwind CSS v4
+- **Data Format:** JSON
+- **Testing:** Vitest (43 unit tests) + Playwright (60 E2E tests)
 
 #### 6.2 Out of Scope (Future Versions)
 
-- Route filtering by city or ICAO code
-- Route filtering by active controllers or ATC coverage level
-- Sorting routes by ATC coverage
+- Route sorting by ATC coverage level or distance
 - User accounts and saved preferences
 - Flight planning tools (route calculation, fuel planning)
 - Weather integration (METAR/TAF display)
@@ -97,15 +98,15 @@ VATSIM is a volunteer-run virtual air traffic control network where ATC position
 #### FR-1: Route Display
 **Priority:** P0 (Critical)
 
-- The application SHALL display a list of 20 Southwest Airlines routes on the landing page
+- The application SHALL display all 1,219 Southwest Airlines routes on the landing page
+- Routes SHALL be grouped by departure airport for easy navigation
 - Each route SHALL include:
   - Departure city name and ICAO code
   - Arrival city name and ICAO code
   - Real-time ATC position status indicators (DEL, GND, TWR, APP, CTR) for both departure and arrival
   - Expandable controller details showing callsign, frequency, and online time
-- Routes SHALL be generated from the Southwest airports JSON data
-- Routes SHALL feature variety in cities and ARTCC coverage
-- Routes SHALL display in both desktop (table) and mobile (card) responsive formats
+- Routes SHALL be loaded from JSON data files (airports.json, routes.json)
+- Routes SHALL display in both desktop (table row) and mobile (card) responsive formats
 
 #### FR-2: Real-Time ATC Data Integration
 **Priority:** P0 (Critical)
@@ -127,20 +128,31 @@ VATSIM is a volunteer-run virtual air traffic control network where ATC position
 #### FR-3: Data Management
 **Priority:** P0 (Critical)
 
-- Airport data SHALL be stored in JSON format
+- Airport data SHALL be stored in JSON format (src/lib/data/airports.json)
+- Route data SHALL be stored in JSON format (src/lib/data/routes.json)
 - Data SHALL include: ICAO code, VATSIM code, city name, airport name, ARTCC code
-- The application SHALL read and parse airport data at build time
-- Data file SHALL be located in `src/lib/data/airports.json`
+- The application SHALL load airport and route data at runtime
 
-#### FR-4: User Interface
+#### FR-4: Filtering
 **Priority:** P0 (Critical)
 
-- The landing page SHALL display routes in a clear, scannable format
+- The application SHALL provide filters for departure and arrival airports
+- The application SHALL provide "Any ATC" filters for departure and arrival
+- The application SHALL provide granular ATC level filtering (CTR, APP, TWR, GND, DEL)
+- Airport filter dropdowns SHALL dynamically update based on selected filters
+- The application SHALL provide "Clear All" functionality to reset filters
+- The application SHALL display filter-first UX (empty state until filters applied)
+
+#### FR-5: User Interface
+**Priority:** P0 (Critical)
+
+- The landing page SHALL display routes grouped by departure airport
+- Routes SHALL be hidden until at least one filter is applied (filter-first UX)
 - The UI SHALL use dark mode theme by default
 - The design SHALL follow modern web design principles using Tailwind CSS v4
 - The layout SHALL be responsive with distinct views:
-  - Desktop: Table layout with columns for Departure, ATC Status, Arrival, ATC Status
-  - Mobile: Card layout with departure and arrival stacked vertically
+  - Desktop: Row-based layout with inline route information
+  - Mobile: Card-based layout with stacked departure/arrival information
 - ATC position badges SHALL use color coding:
   - CTR (Center): Green
   - APP (Approach): Blue
@@ -202,19 +214,34 @@ src/lib/data/
 src/
   ├── routes/
   │   ├── +layout.svelte (Root layout with favicon)
-  │   └── +page.svelte (Landing page with data fetching)
+  │   └── +page.svelte (Landing page with filtering and data fetching)
   ├── lib/
   │   ├── data/
-  │   │   └── airports.json (Airport database)
+  │   │   ├── airports.json (109 airports database)
+  │   │   └── routes.json (1,219 real Southwest routes)
   │   ├── components/
-  │   │   ├── RouteTable.svelte (Main container - mobile/desktop views)
+  │   │   ├── DepartureGroupedList.svelte (Route grouping container)
+  │   │   ├── DepartureAirportGroup.svelte (Single departure group)
   │   │   ├── RouteCard.svelte (Mobile card view for single route)
   │   │   ├── RouteRow.svelte (Desktop table row for single route)
-  │   │   └── ATCStatusDisplay.svelte (ATC position badges & accordion)
+  │   │   ├── RouteFilterPanel.svelte (Filter controls)
+  │   │   ├── AirportFilterSelect.svelte (Airport dropdown)
+  │   │   ├── ATCLevelSelector.svelte (ATC level checkboxes)
+  │   │   ├── ATCStatusDisplay.svelte (ATC position badges & accordion)
+  │   │   ├── ATCBadge.svelte (Individual ATC position badge)
+  │   │   ├── NetworkStatus.svelte (VATSIM stats header)
+  │   │   ├── LoadingState.svelte (Loading indicator)
+  │   │   └── EmptyState.svelte (No filters selected state)
+  │   ├── utils/
+  │   │   ├── route-filter.ts (Centralized route filtering)
+  │   │   ├── filter-utils.ts (Filter state utilities)
+  │   │   ├── filter-airports.ts (Airport filtering)
+  │   │   └── controller-parser.ts (VATSIM controller parsing)
   │   ├── types/
   │   │   └── vatsim.ts (VATSIM API types and enums)
   │   ├── types.ts (Airport and Route interfaces)
-  │   ├── routes.ts (Airport data import & route generation)
+  │   ├── routes.ts (Route loading from JSON)
+  │   ├── atc-utils.ts (ATC coverage checking)
   │   └── vatsim.ts (VATSIM API integration & controller processing)
   └── app.html (Root HTML template)
 ```
@@ -293,22 +320,25 @@ Map<string, Map<ControllerPosition, Controller[]>>
 - ✅ Show controller callsigns, frequencies, and online times
 - ✅ Support for consolidated TRACON facilities
 
-**Phase 3 - Filtering & Search:**
-- Filter routes by departure/arrival city
-- Filter by minimum ATC coverage level (e.g., only show routes with tower+)
-- Search by ICAO code
-- Sort routes by ATC coverage quality
-- Distance/duration information for routes
-- Filter by specific ARTCC coverage
+**Phase 3 - Filtering & Search:** ✅ COMPLETED
+- ✅ Filter routes by departure/arrival airport
+- ✅ Filter by ATC coverage level ("Any ATC" toggles)
+- ✅ Granular ATC level filtering (CTR, APP, TWR, GND, DEL)
+- ✅ Dynamic airport availability based on selected filters
+- ✅ Clear all filters functionality
+- ✅ Departure-grouped route display
 
-**Phase 4 - Enhanced ATC Information:**
+**Phase 4 - Enhanced Features (Future):**
+- Sort routes by ATC coverage quality or distance
+- Search by ICAO code
+- Distance/duration information for routes
 - Display controller ATIS text
 - Show controller rating/certification level
 - Visual range indicators for controllers
 - Historical ATC coverage statistics
 - Predictive staffing patterns
 
-**Phase 5 - Advanced Features:**
+**Phase 5 - Advanced Features (Future):**
 - User preferences and saved routes
 - Flight planning tools (fuel, alternate airports)
 - Weather overlays (METAR/TAF)
@@ -320,7 +350,9 @@ Map<string, Map<ControllerPosition, Controller[]>>
 ### 13. Launch Criteria
 
 The MVP is ready to launch when:
-- [x] 20 routes are displayed correctly
+- [x] All 1,219 routes are loaded and displayed correctly
+- [x] Route filtering by departure/arrival airports works
+- [x] Granular ATC level filtering (CTR/APP/TWR/GND/DEL) works
 - [x] All ARTCC information is accurate
 - [x] Dark mode theme is fully implemented
 - [x] Application is responsive on mobile and desktop
@@ -331,9 +363,11 @@ The MVP is ready to launch when:
 - [x] Auto-refresh updates controller data every 30 seconds
 - [x] Consolidated TRACON facilities are properly supported
 - [x] Component architecture follows Svelte 5 best practices
+- [x] All 43 unit tests pass
+- [x] All 60 E2E tests pass
 - [x] No critical bugs exist
 
-**Status:** ✅ MVP COMPLETE - All launch criteria met
+**Status:** ✅ MVP COMPLETE + Phase 3 Filtering Complete - All launch criteria met
 
 ### 14. Risks & Mitigations
 
@@ -354,9 +388,28 @@ The MVP is ready to launch when:
 3. ✅ Should we include real-time VATSIM integration in MVP?
    - **Resolution:** Yes, real-time integration implemented with 30-second refresh
 
-### 15. Open Questions
+### 15. Resolved Questions
 
-1. Should we add route filtering by ATC coverage level?
+1. ✅ Should we migrate from CSV to JSON for better performance?
+   - **Resolution:** Migrated to JSON format for TypeScript integration and performance
+
+2. ✅ What should the route generation algorithm prioritize?
+   - **Resolution:** Using real Southwest Airlines route data (1,219 routes from 109 airports)
+
+3. ✅ Should we include real-time VATSIM integration in MVP?
+   - **Resolution:** Yes, real-time integration implemented with 30-second refresh
+
+4. ✅ Should we add route filtering by ATC coverage level?
+   - **Resolution:** Yes, Phase 3 completed with full filtering (airports + granular ATC levels)
+
+5. ✅ Should we display routes grouped by departure?
+   - **Resolution:** Yes, implemented departure-grouped display for better navigation
+
+### 16. Open Questions
+
+### 16. Open Questions
+
+1. Should we add route sorting by distance or ATC coverage quality?
 2. Should we display controller ATIS information in the accordion?
 3. Should we add a map view showing route paths and ATC coverage areas?
 4. Should we implement user accounts for saving favorite routes?
