@@ -1,10 +1,12 @@
 # VATSIM Flight Scheduler
 
-A web application that helps virtual pilots on the VATSIM network find virtual SWA routes with virtual ATC coverage across all positions.
+**Live Site:** https://vatsim-selector.netlify.app
+
+A web application that helps virtual pilots on the VATSIM network find Virtual SWA routes with ATC coverage across all positions.
 
 ## ✨ Features
 
-- **1,219 Routes**: Browse actual virtual route pairs from 109 airports
+- **1,219 Routes**: Browse Virtual SWA routes from 109 airports
 - **Advanced Filtering**: Filter by departure/arrival airports and specific ATC positions
 - **Granular ATC Level Selection**: Choose specific positions (Center, Approach, Tower, Ground, Delivery)
 - **Real-Time Controller Data**: Live updates every 30 seconds from VATSIM API
