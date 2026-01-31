@@ -32,7 +32,7 @@
 			const data = await fetchVatsimData();
 			locationControllers = getLocationControllers(data.controllers);
 			
-			// Count only controllers at our Southwest network airports
+			// Count only controllers at our swa network airports
 			const ourAirportCodes = new Set(airports.map(a => a.vatsim_code));
 			const ourARTCCs = new Set(airports.map(a => a.artcc));
 			
@@ -97,8 +97,8 @@
 </script>
 
 <svelte:head>
-	<title>VATSIM Flight Scheduler - Virtual Southwest</title>
-	<meta name="description" content="Find Southwest Airlines routes with active VATSIM ATC coverage" />
+	<title>VATSIM Flight Scheduler - Virtual SWA</title>
+	<meta name="description" content="Find Virtual SWA Airlines routes with active VATSIM ATC coverage" />
 </svelte:head>
 
 <div class="min-h-screen bg-gray-950">
@@ -111,7 +111,7 @@
 						VATSIM Flight Scheduler
 					</h1>
 					<p class="mt-0.5 text-sm text-gray-400">
-						Virtual Southwest Airlines Routes
+						Virtual SWA Routes
 					</p>
 				</div>
 				<div class="flex items-center space-x-3">
@@ -157,7 +157,7 @@
 						</h2>
 						<div class="text-sm text-gray-300 space-y-3">
 							<p>
-								<strong class="text-white">Select filters above</strong> to find Southwest Airlines routes with active VATSIM ATC coverage:
+								<strong class="text-white">Select filters above</strong> to find Virtual SWA routes with active VATSIM ATC coverage:
 							</p>
 							<ul class="list-disc list-inside space-y-1 ml-4 text-gray-400">
 								<li><strong class="text-gray-300">Airports:</strong> Choose a departure or arrival airport to narrow down routes</li>
@@ -167,7 +167,7 @@
 							<div class="mt-4 pt-4 border-t border-blue-800/50">
 								<p class="text-xs text-gray-500">
 									<strong>Disclaimer:</strong> This is an unofficial tool for VATSIM virtual pilots. 
-									It has no affiliation with Southwest Airlines and should not be used for real-world flight planning. 
+									It has no affiliation with Southwest Airlines, and not to be used for real-world flight planning. 
 									All route data is for simulation purposes only on the VATSIM network.
 								</p>
 							</div>
@@ -187,11 +187,11 @@
 		<!-- Footer Note -->
 		<div class="mt-8 text-center text-sm text-gray-500">
 			<p>
-				{allRoutes.length} Southwest Airlines routes across {airports.length} airports 
-				with live ATC status from VATSIM.
+				{allRoutes.length} Virtual SWA routes across {airports.length} airports 
+				with live status from VATSIM.
 			</p>
 			<p class="mt-2 text-xs text-gray-600">
-				This is an unofficial tool for VATSIM virtual pilots. Not affiliated with Southwest Airlines.
+				This is an unofficial tool for VATSIM virtual pilots. Not affiliated with Southwest Airlines or VATSIM.
 			</p>
 		</div>
 	</main>
