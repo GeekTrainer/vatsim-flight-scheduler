@@ -21,7 +21,7 @@
 	} = $props();
 </script>
 
-<div class="flex items-center space-x-3">
+<div class="flex items-center space-x-3" data-testid="network-status">
 	<div class="flex items-center space-x-2">
 		<div class="w-2 h-2 bg-green-500 rounded-full status-dot-pulse"></div>
 		<span class="text-secondary">VATSIM Network</span>

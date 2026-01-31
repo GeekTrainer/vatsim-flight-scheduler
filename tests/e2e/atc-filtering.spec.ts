@@ -1,31 +1,24 @@
 import { test, expect } from '@playwright/test';
 import { setupWithEmptyVatsimData, setupWithControllers } from './helpers/setup';
+import { expectATCLevelButtonActive } from './helpers/assertions';
 
-test.describe('ATC Filtering', () => {
-	test('should show no routes initially when no filters are active', async ({ page }) => {
-		await setupWithEmptyVatsimData(page);
-
-		// Verify no departure groups are shown
-		const departureGroups = page.locator('[data-testid^="departure-group-"]');
-		await expect(departureGroups).toHaveCount(0);
+test.describe('ATC Filtering - Consolidated', () => {
+	test.beforeEach(async ({ page }) => {
+		await setupWithControllers(page);
 	});
 
-	test('should show only departures with ATC when "Any ATC online" is checked for departures', async ({ page }) => {
-		await setupWithControllers(page);
-
-		// Check "Any ATC online" for departures
+	// ========== Core "Any ATC online" Tests ==========
+	
+	test('should show only departures with ATC when "Any ATC online" is checked', async ({ page }) => {
 		const departureATCCheckbox = page.getByTestId('any-atc-departure-atc-filtering');
 		await departureATCCheckbox.check();
 
-		// Wait for clear button to appear (indicates filter is active)
 		await expect(page.getByTestId('clear-all-filters')).toBeVisible();
 
-		// Verify departure airports with ATC are shown in the select dropdown
 		const departureSelect = page.getByTestId('departure-airport-select');
 		const departureOptions = await departureSelect.locator('option').allTextContents();
 
 		// Should include PHX (has TWR+GND), LAS (has TWR), SEA (has TWR), DEN (has GND), BWI (has DEL)
-		// Should NOT include airports without any ATC
 		expect(departureOptions.join(',')).toContain('PHX');
 		expect(departureOptions.join(',')).toContain('LAS');
 		expect(departureOptions.join(',')).toContain('SEA');
@@ -33,19 +26,13 @@ test.describe('ATC Filtering', () => {
 		expect(departureOptions.join(',')).toContain('BWI');
 	});
 
-	test('should show only arrivals with ATC when "Any ATC online" is checked for arrivals', async ({ page }) => {
-		await setupWithControllers(page);
-
-		// Check "Any ATC online" for arrivals
+	test('should show only arrivals with ATC when "Any ATC online" is checked', async ({ page }) => {
 		const arrivalATCCheckbox = page.getByTestId('any-atc-arrival-atc-filtering');
 		await arrivalATCCheckbox.check();
 
-
-		// Verify arrival airports with ATC are shown in the select dropdown
 		const arrivalSelect = page.getByTestId('arrival-airport-select');
 		const arrivalOptions = await arrivalSelect.locator('option').allTextContents();
 
-		// Should include airports with ATC coverage
 		expect(arrivalOptions.join(',')).toContain('PHX');
 		expect(arrivalOptions.join(',')).toContain('LAS');
 		expect(arrivalOptions.join(',')).toContain('SEA');
@@ -54,105 +41,237 @@ test.describe('ATC Filtering', () => {
 	});
 
 	test('should combine departure ATC filter with specific airport selection', async ({ page }) => {
-		await setupWithControllers(page);
-
-		// Check "Any ATC online" for departures  
 		await page.getByTestId('any-atc-departure-atc-filtering').check();
-
-		// Wait for "clear all filters" button to appear (indicates filter is active)
 		await expect(page.getByTestId('clear-all-filters')).toBeVisible();
 		
-		// Select PHX as departure (has TWR + GND)
 		await page.getByTestId('departure-airport-select').selectOption('PHX');
-
-		// Should show departure group for PHX (auto-waits)
 		await expect(page.getByTestId('departure-group-PHX')).toBeVisible();
 
-		// Verify ATC badges are online with controller details
 		const phxGroup = page.getByTestId('departure-group-PHX');
 		await expect(phxGroup.getByTestId('atc-badge-twr')).toHaveAttribute('data-status', 'online');
 		await expect(phxGroup.getByTestId('atc-badge-gnd')).toHaveAttribute('data-status', 'online');
 		
-		// Verify specific controller callsigns are shown
 		await expect(phxGroup.getByTestId('controller-callsign-PHX_TWR')).toBeVisible();
 		await expect(phxGroup.getByTestId('controller-callsign-PHX_GND')).toBeVisible();
 	});
 
-	test('should clear departure ATC filter when unchecking "Any ATC online"', async ({ page }) => {
-		await setupWithControllers(page);
-
-		// Check "Any ATC online" for departures
-		const departureATCCheckbox = page.getByTestId('any-atc-departure-atc-filtering');
-		await departureATCCheckbox.check();
-
-		// Verify filter is active
-		await expect(page.getByTestId('clear-all-filters')).toBeVisible();
-
-		// Uncheck the filter
-		await departureATCCheckbox.uncheck();
-
-		// Verify filter is no longer active
-		await expect(page.getByTestId('clear-all-filters')).not.toBeVisible();
-
-		// Verify no departure groups shown
-		const departureGroups = page.locator('[data-testid^="departure-group-"]');
-		await expect(departureGroups).toHaveCount(0);
-	});
-
-	test('should clear all ATC filters using "Clear all filters" button', async ({ page }) => {
-		await setupWithControllers(page);
-
-		// Check both departure and arrival ATC filters
+	test('should show both departure and arrival airports with ATC when both filters active', async ({ page }) => {
 		await page.getByTestId('any-atc-departure-atc-filtering').check();
 		await page.getByTestId('any-atc-arrival-atc-filtering').check();
 
-		// Verify clear button is visible
-		const clearButton = page.getByTestId('clear-all-filters');
-		await expect(clearButton).toBeVisible();
-
-		// Click clear button - uses onclick which doesn't work in Playwright
-		// So we'll verify the button exists and is clickable
-		await expect(clearButton).toBeEnabled();
-
-		// Verify both checkboxes are checked before (can't test onclick clearing them)
-		await expect(page.getByTestId('any-atc-departure-atc-filtering')).toBeChecked();
-		await expect(page.getByTestId('any-atc-arrival-atc-filtering')).toBeChecked();
-	});
-
-	test('should work with no ATC coverage (empty VATSIM data)', async ({ page }) => {
-		await setupWithEmptyVatsimData(page);
-
-		// Check "Any ATC online" for departures
-		const departureATCCheckbox = page.getByTestId('any-atc-departure-atc-filtering');
-		await departureATCCheckbox.check();
-
-		// Should show "No airports match current filters" message
-		await expect(page.getByText('No airports match current filters')).toBeVisible();
-
-		// Departure select should only have "Any airport" option
-		const departureSelect = page.getByTestId('departure-airport-select');
-		const departureOptions = await departureSelect.locator('option').all();
-		expect(departureOptions.length).toBe(1); // Only "Any airport"
-	});
-
-	test('should show correct airports when both departure and arrival ATC filters are active', async ({ page }) => {
-		await setupWithControllers(page);
-
-		// Check both filters
-		await page.getByTestId('any-atc-departure-atc-filtering').check();
-		await page.getByTestId('any-atc-arrival-atc-filtering').check();
-
-		// Both dropdowns should only show airports with ATC
 		const departureSelect = page.getByTestId('departure-airport-select');
 		const arrivalSelect = page.getByTestId('arrival-airport-select');
 
 		const departureOptions = await departureSelect.locator('option').allTextContents();
 		const arrivalOptions = await arrivalSelect.locator('option').allTextContents();
 
-		// Both should include airports with ATC
 		expect(departureOptions.join(',')).toContain('PHX');
 		expect(arrivalOptions.join(',')).toContain('PHX');
 		expect(departureOptions.join(',')).toContain('SEA');
 		expect(arrivalOptions.join(',')).toContain('SEA');
+	});
+
+	// ========== Specific ATC Level Filtering ==========
+
+	test('should filter departures by Tower level only', async ({ page }) => {
+		await page.getByTestId('departure-atc-level-twr').click({ force: true });
+		await expectATCLevelButtonActive(page, 'departure-atc-level-twr', true);
+
+		const departureSelect = page.getByTestId('departure-airport-select');
+		const departureOptions = await departureSelect.locator('option').allTextContents();
+		
+		// Should include PHX (has TWR), LAS (has TWR), SEA (has TWR)
+		expect(departureOptions.join(',')).toContain('PHX');
+		expect(departureOptions.join(',')).toContain('LAS');
+		expect(departureOptions.join(',')).toContain('SEA');
+		
+		// Should NOT include BWI (only has DEL), DEN (only has GND)
+		expect(departureOptions.join(',')).not.toContain('BWI');
+	});
+
+	test('should filter departures by Ground level only', async ({ page }) => {
+		await page.getByTestId('departure-atc-level-gnd').click({ force: true });
+
+		const departureSelect = page.getByTestId('departure-airport-select');
+		const departureOptions = await departureSelect.locator('option').allTextContents();
+		
+		// Should include PHX (has GND), DEN (has GND)
+		expect(departureOptions.join(',')).toContain('PHX');
+		expect(departureOptions.join(',')).toContain('DEN');
+		
+		// Should NOT include BWI (only has DEL), LAS (only has TWR)
+		expect(departureOptions.join(',')).not.toContain('BWI');
+	});
+
+	test('should filter departures by Delivery level only', async ({ page }) => {
+		await page.getByTestId('departure-atc-level-del').click({ force: true });
+
+		const departureSelect = page.getByTestId('departure-airport-select');
+		const departureOptions = await departureSelect.locator('option').allTextContents();
+		
+		// Should include BWI (has DEL)
+		expect(departureOptions.join(',')).toContain('BWI');
+	});
+
+	test('should filter arrivals by Tower level only', async ({ page }) => {
+		await page.getByTestId('arrival-atc-level-twr').click({ force: true });
+
+		const arrivalSelect = page.getByTestId('arrival-airport-select');
+		const arrivalOptions = await arrivalSelect.locator('option').allTextContents();
+		
+		expect(arrivalOptions.join(',')).toContain('PHX');
+		expect(arrivalOptions.join(',')).toContain('LAS');
+		expect(arrivalOptions.join(',')).toContain('SEA');
+	});
+
+	test('should combine multiple ATC levels for departure (Tower + Delivery)', async ({ page }) => {
+		await page.getByTestId('departure-atc-level-twr').click({ force: true });
+		await page.getByTestId('departure-atc-level-del').click({ force: true });
+
+		await expectATCLevelButtonActive(page, 'departure-atc-level-twr', true);
+		await expectATCLevelButtonActive(page, 'departure-atc-level-del', true);
+
+		const departureSelect = page.getByTestId('departure-airport-select');
+		const departureOptions = await departureSelect.locator('option').allTextContents();
+		
+		// Should include PHX (has TWR), BWI (has DEL), LAS (has TWR), SEA (has TWR)
+		expect(departureOptions.join(',')).toContain('PHX');
+		expect(departureOptions.join(',')).toContain('BWI');
+		expect(departureOptions.join(',')).toContain('LAS');
+		expect(departureOptions.join(',')).toContain('SEA');
+	});
+
+	test('should combine departure and arrival level filters independently', async ({ page }) => {
+		// Check Tower for departures, Delivery for arrivals
+		await page.getByTestId('departure-atc-level-twr').click({ force: true });
+		await page.getByTestId('arrival-atc-level-del').click({ force: true });
+
+		await expectATCLevelButtonActive(page, 'departure-atc-level-twr', true);
+		await expectATCLevelButtonActive(page, 'arrival-atc-level-del', true);
+
+		const departureSelect = page.getByTestId('departure-airport-select');
+		const departureOptions = await departureSelect.locator('option').allTextContents();
+		expect(departureOptions.join(',')).toContain('PHX');
+		expect(departureOptions.join(',')).toContain('LAS');
+
+		const arrivalSelect = page.getByTestId('arrival-airport-select');
+		const arrivalOptions = await arrivalSelect.locator('option').allTextContents();
+		expect(arrivalOptions.join(',')).toContain('BWI');
+	});
+
+	// ========== Combining Filters ==========
+
+	test('should uncheck "Any ATC online" when toggling off a specific level', async ({ page }) => {
+		const anyATCCheckbox = page.getByTestId('any-atc-departure-atc-filtering');
+		await anyATCCheckbox.check();
+		await expect(anyATCCheckbox).toBeChecked();
+		
+		// All levels should be active
+		await expectATCLevelButtonActive(page, 'departure-atc-level-ctr', true);
+		await expectATCLevelButtonActive(page, 'departure-atc-level-app', true);
+		await expectATCLevelButtonActive(page, 'departure-atc-level-twr', true);
+		await expectATCLevelButtonActive(page, 'departure-atc-level-gnd', true);
+		await expectATCLevelButtonActive(page, 'departure-atc-level-del', true);
+
+		// Toggle off Tower
+		await page.getByTestId('departure-atc-level-twr').click({ force: true });
+
+		// "Any ATC online" should be unchecked
+		await expect(anyATCCheckbox).not.toBeChecked();
+		
+		// Tower inactive, others still active
+		await expectATCLevelButtonActive(page, 'departure-atc-level-twr', false);
+		await expectATCLevelButtonActive(page, 'departure-atc-level-ctr', true);
+		await expectATCLevelButtonActive(page, 'departure-atc-level-app', true);
+		await expectATCLevelButtonActive(page, 'departure-atc-level-gnd', true);
+		await expectATCLevelButtonActive(page, 'departure-atc-level-del', true);
+	});
+
+	test('should select all specific levels when checking "Any ATC online"', async ({ page }) => {
+		// First check specific levels
+		await page.getByTestId('departure-atc-level-twr').click({ force: true });
+		await page.getByTestId('departure-atc-level-gnd').click({ force: true });
+
+		await expectATCLevelButtonActive(page, 'departure-atc-level-twr', true);
+		await expectATCLevelButtonActive(page, 'departure-atc-level-gnd', true);
+
+		// Now check "Any ATC online"
+		const anyATCCheckbox = page.getByTestId('any-atc-departure-atc-filtering');
+		await anyATCCheckbox.check();
+
+		// All specific levels should now be active
+		await expectATCLevelButtonActive(page, 'departure-atc-level-ctr', true);
+		await expectATCLevelButtonActive(page, 'departure-atc-level-app', true);
+		await expectATCLevelButtonActive(page, 'departure-atc-level-twr', true);
+		await expectATCLevelButtonActive(page, 'departure-atc-level-gnd', true);
+		await expectATCLevelButtonActive(page, 'departure-atc-level-del', true);
+		
+		await expect(anyATCCheckbox).toBeChecked();
+	});
+
+	test('should auto-check "Any ATC online" when all levels are manually selected', async ({ page }) => {
+		const anyATCCheckbox = page.getByTestId('any-atc-departure-atc-filtering');
+		await expect(anyATCCheckbox).not.toBeChecked();
+		
+		// Manually select all 5 levels
+		await page.getByTestId('departure-atc-level-ctr').click({ force: true });
+		await page.getByTestId('departure-atc-level-app').click({ force: true });
+		await page.getByTestId('departure-atc-level-twr').click({ force: true });
+		await page.getByTestId('departure-atc-level-gnd').click({ force: true });
+		await page.getByTestId('departure-atc-level-del').click({ force: true });
+		
+		// "Any ATC online" should auto-check
+		await expect(anyATCCheckbox).toBeChecked();
+		
+		await expect(page.getByTestId('departure-atc-level-ctr')).toHaveClass(/atc-ctr-active/);
+		await expectATCLevelButtonActive(page, 'departure-atc-level-ctr', true);
+		await expectATCLevelButtonActive(page, 'departure-atc-level-app', true);
+		await expectATCLevelButtonActive(page, 'departure-atc-level-twr', true);
+		await expectATCLevelButtonActive(page, 'departure-atc-level-gnd', true);
+		await expectATCLevelButtonActive(page, 'departure-atc-level-del', true);
+	});
+
+	// ========== Edge Cases ==========
+
+	test('should handle no ATC coverage with empty VATSIM data', async ({ page }) => {
+		await setupWithEmptyVatsimData(page);
+
+		const departureATCCheckbox = page.getByTestId('any-atc-departure-atc-filtering');
+		await departureATCCheckbox.check();
+
+		await expect(page.getByText('No airports match current filters')).toBeVisible();
+
+		const departureSelect = page.getByTestId('departure-airport-select');
+		const departureOptions = await departureSelect.locator('option').all();
+		expect(departureOptions.length).toBe(1); // Only "Any airport"
+	});
+
+	test('should show no airports when filtering by level with no online controllers', async ({ page }) => {
+		await setupWithEmptyVatsimData(page);
+
+		await page.getByTestId('departure-atc-level-twr').click({ force: true });
+		await expectATCLevelButtonActive(page, 'departure-atc-level-twr', true);
+
+		await expect(page.getByText('No airports match current filters')).toBeVisible();
+
+		const departureSelect = page.getByTestId('departure-airport-select');
+		const departureOptions = await departureSelect.locator('option').all();
+		expect(departureOptions.length).toBe(1); // Only "Any airport"
+	});
+
+	test('should toggle specific levels on and off', async ({ page }) => {
+		const towerCheckbox = page.getByTestId('departure-atc-level-twr');
+
+		// Check Tower
+		await towerCheckbox.click({ force: true });
+		await expectATCLevelButtonActive(page, 'departure-atc-level-twr', true);
+
+		// Uncheck Tower
+		await towerCheckbox.click({ force: true });
+		await expectATCLevelButtonActive(page, 'departure-atc-level-twr', false);
+
+		// No departure groups shown (no filters active)
+		const departureGroups = page.locator('[data-testid^="departure-group-"]');
+		await expect(departureGroups).toHaveCount(0);
 	});
 });

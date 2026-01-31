@@ -21,7 +21,7 @@
 	} = $props();
 </script>
 
-<div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+<div class="bg-gray-800 rounded-lg p-4 border border-gray-700" data-testid="route-card-{route.departure.vatsim_code}-{route.arrival.vatsim_code}">
 	<div class="space-y-4">
 		<!-- Departure -->
 		<div>
