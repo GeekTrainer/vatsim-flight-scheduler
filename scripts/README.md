@@ -1,6 +1,6 @@
 # Data Migration Scripts
 
-TypeScript scripts to convert Southwest Airlines route and airport data from CSV to JSON format.
+TypeScript scripts to convert Virtual SWA route and airport data from CSV to JSON format.
 
 ## Scripts
 
@@ -57,7 +57,7 @@ npm run data:build     # Runs both scripts in sequence
 ## Data Files
 
 ### Generated Files:
-- `src/lib/data/routes.json` - 1,219 Southwest route pairs
+- `src/lib/data/routes.json` - 1,219 Virtual SWA route pairs
 - `src/lib/data/airports.json` - 109 airports with full metadata
 - `raw-data/unique-airports.txt` - List of unique airport codes (for reference)
 

@@ -4,7 +4,7 @@ import type { Route } from './types';
 
 describe('routes', () => {
 	describe('loadAllRoutes', () => {
-		it('should load all Southwest Airlines routes', () => {
+		it('should load all Virtual SWA routes', () => {
 			const routes = loadAllRoutes();
 			expect(routes.length).toBe(1219);
 		});
@@ -49,7 +49,7 @@ describe('routes', () => {
 			});
 		});
 
-		it('should include real Southwest routes like ABQ-BWI', () => {
+		it('should include Virtual SWA routes like ABQ-BWI', () => {
 			const routes = loadAllRoutes();
 			const abqBwi = routes.find((r: Route) => r.id === 'ABQ-BWI');
 			

@@ -10,7 +10,7 @@ const airportsByIATA = new Map<string, Airport>(
 );
 
 /**
- * Loads all Southwest Airlines routes from real route data
+ * Loads all Virtual SWA routes from route data
  * Returns array of Route objects with departure and arrival airport details
  */
 export function loadAllRoutes(): Route[] {

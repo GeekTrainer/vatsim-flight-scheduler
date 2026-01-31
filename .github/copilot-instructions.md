@@ -1,7 +1,7 @@
 # VATSIM Flight Scheduler - Copilot Instructions
 
 ## Project Overview
-A SvelteKit app that helps VATSIM virtual pilots find Southwest Airlines routes with real-time ATC (Air Traffic Control) coverage. Displays 20 routes with live controller data across all positions (Delivery, Ground, Tower, Approach, Center).
+A SvelteKit app that helps VATSIM virtual pilots find Virtual SWA routes with real-time ATC (Air Traffic Control) coverage. Displays 20 routes with live controller data across all positions (Delivery, Ground, Tower, Approach, Center).
 
 ## AI Notes
 
@@ -121,7 +121,7 @@ Legacy Python scripts in [archive/](archive/):
 ## Key Files Reference
 
 **Core Logic:**
-- [src/lib/routes.ts](src/lib/routes.ts) - Route loading from real Southwest Airlines route data
+- [src/lib/routes.ts](src/lib/routes.ts) - Route loading from Virtual SWA route data
 - [src/lib/vatsim.ts](src/lib/vatsim.ts) - VATSIM API client, controller matching, TRACON mappings
 - [src/lib/types.ts](src/lib/types.ts) - TypeScript interfaces for Airport/Route
 
@@ -131,7 +131,7 @@ Legacy Python scripts in [archive/](archive/):
 - [src/lib/components/RouteCard.svelte](src/lib/components/RouteCard.svelte) - Mobile card layout
 
 **Data:**
-- [src/lib/data/airports.json](src/lib/data/airports.json) - 70 Southwest airports with ICAO/VATSIM/ARTCC codes
+- [src/lib/data/airports.json](src/lib/data/airports.json) - 70 Virtual SWA airports with ICAO/VATSIM/ARTCC codes
 
 **Pages:**
 - [src/routes/+page.svelte](src/routes/+page.svelte) - Main landing page with filtering and stats

@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 /**
- * Build complete airports.json from Southwest routes and existing airport database
+ * Build complete airports.json from Virtual SWA routes and existing airport database
  * 
  * Strategy:
  * 1. Extract unique airport codes from routes CSV
  * 2. Load existing airports.json for reference data (ARTCC, city, name)
  * 3. For missing airports, look up data from FAA database or manual mapping
- * 4. Generate complete airports.json with all Southwest airports
+ * 4. Generate complete airports.json with all Virtual SWA airports
  */
 
 import { readFileSync, writeFileSync } from 'fs';

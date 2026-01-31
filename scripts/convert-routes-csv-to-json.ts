@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Convert Southwest routes CSV to JSON format
+ * Convert Virtual SWA routes CSV to JSON format
  * Input: raw-data/southwest_routes_all.csv
  * Output: src/lib/data/routes.json
  */

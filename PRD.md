@@ -1,5 +1,5 @@
 # Product Requirements Document (PRD)
-## VATSIM Flight Scheduler - Virtual Southwest Airlines
+## VATSIM Flight Scheduler - Virtual SWA
 
 ### 1. Overview
 
@@ -10,7 +10,7 @@
 
 ### 2. Product Vision
 
-The VATSIM Flight Scheduler is a web application designed to help virtual pilots on the VATSIM network (Virtual Air Traffic Simulation Network) discover and select flight routes based on real-time air traffic controller availability across all ATC positions (Delivery, Ground, Tower, Approach, and Center). The application focuses on Virtual Southwest Airlines routes and provides live updates on controller staffing.
+The VATSIM Flight Scheduler is a web application designed to help virtual pilots on the VATSIM network (Virtual Air Traffic Simulation Network) discover and select flight routes based on real-time air traffic controller availability across all ATC positions (Delivery, Ground, Tower, Approach, and Center). The application focuses on Virtual SWA routes and provides live updates on controller staffing.
 
 ### 3. Problem Statement
 
@@ -22,13 +22,13 @@ VATSIM is a volunteer-run virtual air traffic control network where ATC position
 
 ### 4. Target Audience
 
-- **Primary:** VATSIM virtual pilots who fly Southwest Airlines routes
+- **Primary:** VATSIM virtual pilots who fly Virtual SWA routes
 - **Secondary:** Flight simulation enthusiasts looking for ATC-covered routes
 
 ### 5. Goals & Success Metrics
 
 **MVP Goals:**
-- Display 1,219 Southwest Airlines routes from 109 airports with real-time ATC position information
+- Display 1,219 Virtual SWA routes from 109 airports with real-time ATC position information
 - Show live controller data across all positions: Delivery (DEL), Ground (GND), Tower (TWR), Approach (APP), Center (CTR)
 - Provide a clean, modern interface for route browsing with expandable controller details
 - Auto-refresh controller data every 30 seconds for real-time accuracy
@@ -45,7 +45,7 @@ VATSIM is a volunteer-run virtual air traffic control network where ATC position
 
 **Core Features:**
 1. **Route Display**
-   - Show all 1,219 real Southwest Airlines routes from 109 airports
+   - Show all 1,219 Virtual SWA routes from 109 airports
    - Display departure and arrival cities with ICAO codes
    - Real-time ATC position status for each airport (DEL, GND, TWR, APP, CTR)
    - Visual indicators showing online/offline status for each ATC position
@@ -98,7 +98,7 @@ VATSIM is a volunteer-run virtual air traffic control network where ATC position
 #### FR-1: Route Display
 **Priority:** P0 (Critical)
 
-- The application SHALL display all 1,219 Southwest Airlines routes on the landing page
+- The application SHALL display all 1,219 Virtual SWA routes on the landing page
 - Routes SHALL be grouped by departure airport for easy navigation
 - Each route SHALL include:
   - Departure city name and ICAO code
@@ -191,7 +191,7 @@ VATSIM is a volunteer-run virtual air traffic control network where ATC position
 
 ### 9. User Stories
 
-**US-1:** As a virtual pilot, I want to see available Southwest routes so that I can choose where to fly.
+**US-1:** As a virtual pilot, I want to see available Virtual SWA routes so that I can choose where to fly.
 
 **US-2:** As a virtual pilot, I want to see real-time ATC position status for each airport so that I can choose routes with active controller coverage.
 
@@ -206,7 +206,7 @@ VATSIM is a volunteer-run virtual air traffic control network where ATC position
 #### 10.1 Data Layer
 ```
 src/lib/data/
-  └── airports.json (70 Southwest airports with ICAO, VATSIM codes, ARTCC)
+  └── airports.json (70 Virtual SWA airports with ICAO, VATSIM codes, ARTCC)
 ```
 
 #### 10.2 Application Structure
@@ -218,7 +218,7 @@ src/
   ├── lib/
   │   ├── data/
   │   │   ├── airports.json (109 airports database)
-  │   │   └── routes.json (1,219 real Southwest routes)
+  │   │   └── routes.json (1,219 Virtual SWA routes)
   │   ├── components/
   │   │   ├── DepartureGroupedList.svelte (Route grouping container)
   │   │   ├── DepartureAirportGroup.svelte (Single departure group)
