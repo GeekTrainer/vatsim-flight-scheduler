@@ -28,12 +28,9 @@ jobs:
         run: npm run build
 
       - name: Deploy to Netlify
-        uses: nwtgck/actions-netlify@v3
-        with:
-          publish-dir: './build'
-          functions-dir: './.netlify/functions-internal'
-          production-deploy: true
-          netlify-config-path: './netlify.toml'
+        run: |
+          npm install -g netlify-cli
+          netlify deploy --prod --dir=build --functions=.netlify/functions-internal
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
