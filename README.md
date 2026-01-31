@@ -1,10 +1,10 @@
 # VATSIM Flight Scheduler
 
-A web application that helps virtual pilots on the VATSIM network find Southwest Airlines routes with real-time ATC (Air Traffic Control) coverage across all positions.
+A web application that helps virtual pilots on the VATSIM network find virtual SWA routes with virtual ATC coverage across all positions.
 
 ## ✨ Features
 
-- **1,219 Real Southwest Routes**: Browse actual Southwest Airlines route pairs from 109 airports
+- **1,219 Routes**: Browse actual virtual route pairs from 109 airports
 - **Advanced Filtering**: Filter by departure/arrival airports and specific ATC positions
 - **Granular ATC Level Selection**: Choose specific positions (Center, Approach, Tower, Ground, Delivery)
 - **Real-Time Controller Data**: Live updates every 30 seconds from VATSIM API
@@ -67,9 +67,9 @@ For detailed architecture information, see [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## 🎮 About VATSIM
 
-VATSIM (Virtual Air Traffic Simulation Network) is a volunteer-run network providing realistic air traffic control for flight simulation enthusiasts. Since not all ATC positions are staffed at all times, this tool helps pilots find routes where controllers are active.
+VATSIM (Virtual Air Traffic Simulation Network) is a volunteer-run network providing realistic air traffic control for flight simulation enthusiasts. Since not all ATC positions are staffed at all times, this tool helps virtual pilots find routes where controllers are active.
 
-**Note**: This application is not affiliated with VATSIM, Southwest Airlines, or any official aviation authority. It is a community tool for flight simulation enthusiasts.
+**Note**: This application is not affiliated with VATSIM, Southwest Airlines, or any official aviation authority. It is a community tool for flight simulation enthusiasts. It is not to be used for any form of real world flight planning or otherwise.
 
 ## 🧪 Testing
 
