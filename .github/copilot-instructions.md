@@ -12,8 +12,8 @@ A SvelteKit app that helps VATSIM virtual pilots find Virtual SWA routes with re
 ## Testing Requirements
 
 ### Before Merging to Main
-- ✅ All unit tests must pass: `npm test` (currently 59/59)
-- ✅ All E2E tests must pass: `npm run test:e2e` (target: 12/12)
+- ✅ All unit tests must pass: `npm test`
+- ✅ All E2E tests must pass: `npm run test:e2e`
 - ✅ TypeScript must be clean: `npm run check` (0 errors)
 
 ### Test Data Attributes
@@ -111,12 +111,6 @@ npm run build        # Production build
 npm run preview      # Preview production build
 npm run check        # TypeScript/Svelte validation
 ```
-
-### Data Processing (Archive)
-Legacy Python scripts in [archive/](archive/):
-- `parse-airports.py`: Converts FAA data to airport JSON
-- `create-southwest-airports.py`: Filters Southwest-served airports
-- Run these ONLY if updating the airport database
 
 ## Key Files Reference
 

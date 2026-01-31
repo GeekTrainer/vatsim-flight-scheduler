@@ -73,10 +73,10 @@ describe('myFunction', () => {
 ## Test Coverage Areas
 
 ### routes.test.ts
-- Route generation algorithm
-- Featured route (SEA-MHT) inclusion
+- Route loading from JSON data
+- Route structure validation
 - Duplicate prevention
-- Edge cases (requesting more routes than possible)
+- Airport data integrity
 
 ### vatsim.test.ts
 - API data fetching with caching (30-second cache)

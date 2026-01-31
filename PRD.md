@@ -78,7 +78,7 @@ VATSIM is a volunteer-run virtual air traffic control network where ATC position
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS v4
 - **Data Format:** JSON
-- **Testing:** Vitest (43 unit tests) + Playwright (60 E2E tests)
+- **Testing:** Vitest + Playwright
 
 #### 6.2 Out of Scope (Future Versions)
 
@@ -363,8 +363,8 @@ The MVP is ready to launch when:
 - [x] Auto-refresh updates controller data every 30 seconds
 - [x] Consolidated TRACON facilities are properly supported
 - [x] Component architecture follows Svelte 5 best practices
-- [x] All 43 unit tests pass
-- [x] All 60 E2E tests pass
+- [x] All unit tests pass
+- [x] All E2E tests pass
 - [x] No critical bugs exist
 
 **Status:** ✅ MVP COMPLETE + Phase 3 Filtering Complete - All launch criteria met
