@@ -6,6 +6,7 @@ A SvelteKit app that helps VATSIM virtual pilots find Virtual SWA routes with re
 ## AI Notes
 
 - **DO NOT** create summary documents of work completed
+- **DO NOT** commit changes without explicit human approval
 - **DO NOT** merge branches to main unless ALL tests pass (unit tests AND E2E tests)
 - **CRITICAL**: **DO NOT** merge any branch to main without explicit human approval, even if all tests pass
 
