@@ -16,10 +16,7 @@
 		"test:coverage": "vitest run --coverage",
 		"test:e2e": "playwright test",
 		"test:e2e:ui": "playwright test --ui",
-		"test:e2e:debug": "playwright test --debug",
-		"data:routes": "tsx scripts/convert-routes-csv-to-json.ts",
-		"data:airports": "tsx scripts/build-airports-json.ts",
-		"data:build": "npm run data:routes && npm run data:airports"
+		"test:e2e:debug": "playwright test --debug"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.57.0",
@@ -32,7 +29,6 @@
 		"svelte": "^5.45.6",
 		"svelte-check": "^4.3.4",
 		"tailwindcss": "^4.1.17",
-		"tsx": "^4.21.0",
 		"typescript": "^5.9.3",
 		"vite": "^7.2.6",
 		"vitest": "^4.0.16"
