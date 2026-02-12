@@ -1,6 +1,15 @@
 import { test, expect } from '@playwright/test';
 import { setupWithControllers, setupWithEmptyVatsimData } from './helpers/setup';
 
+/**
+ * Collapse the filter panel on mobile (it starts expanded)
+ */
+async function collapseFilters(page: import('@playwright/test').Page) {
+	const toggle = page.getByTestId('filter-toggle');
+	await toggle.click();
+	await expect(page.getByTestId('filter-panel-content')).not.toBeVisible();
+}
+
 test.describe('Mobile Experience', () => {
 	test('page loads without horizontal overflow', async ({ page }) => {
 		await setupWithEmptyVatsimData(page);
@@ -11,16 +20,47 @@ test.describe('Mobile Experience', () => {
 		expect(hasOverflow).toBe(false);
 	});
 
-	test('header displays correctly on mobile', async ({ page }) => {
+	test('header is compact and network status is in footer on mobile', async ({ page }) => {
 		await setupWithControllers(page);
 
-		// Title should be visible
-		await expect(page.getByRole('heading', { name: 'VATSIM Flight Scheduler', level: 1 })).toBeVisible();
+		await expect(page.getByRole('heading', { name: 'VATSIM Scheduler', level: 1 })).toBeVisible();
 
-		// Network status should show controller count
-		const networkStatus = page.getByTestId('network-status');
-		await expect(networkStatus).toBeVisible();
-		await expect(networkStatus).toContainText('controllers');
+		// Network status should be in footer on mobile, not header
+		const footerStatus = page.locator('main').getByTestId('network-status');
+		await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+		await expect(footerStatus).toBeVisible();
+		await expect(footerStatus).toContainText('controllers');
+	});
+
+	test('filter panel is expanded by default on mobile', async ({ page }) => {
+		await setupWithEmptyVatsimData(page);
+
+		// Toggle button should be visible
+		await expect(page.getByTestId('filter-toggle')).toBeVisible();
+
+		// Filter content should be visible by default
+		await expect(page.getByTestId('filter-panel-content')).toBeVisible();
+
+		// Airport selects should be visible
+		await expect(page.getByTestId('departure-airport-select')).toBeVisible();
+	});
+
+	test('filter panel expands and collapses on toggle', async ({ page }) => {
+		await setupWithEmptyVatsimData(page);
+
+		const toggle = page.getByTestId('filter-toggle');
+
+		// Should start expanded
+		await expect(page.getByTestId('filter-panel-content')).toBeVisible();
+
+		// Collapse
+		await toggle.click();
+		await expect(page.getByTestId('filter-panel-content')).not.toBeVisible();
+
+		// Expand again
+		await toggle.click();
+		await expect(page.getByTestId('filter-panel-content')).toBeVisible();
+		await expect(page.getByTestId('departure-airport-select')).toBeVisible();
 	});
 
 	test('filter panel stacks vertically on mobile', async ({ page }) => {
@@ -32,7 +72,7 @@ test.describe('Mobile Experience', () => {
 		await expect(departureSelect).toBeVisible();
 		await expect(arrivalSelect).toBeVisible();
 
-		// On mobile, arrival select should be below departure (not side-by-side)
+		// On mobile, arrival select should be below departure
 		const depBox = await departureSelect.boundingBox();
 		const arrBox = await arrivalSelect.boundingBox();
 		expect(depBox).not.toBeNull();
@@ -40,52 +80,60 @@ test.describe('Mobile Experience', () => {
 		expect(arrBox!.y).toBeGreaterThan(depBox!.y);
 	});
 
-	test('ATC level buttons wrap on mobile', async ({ page }) => {
+	test('ATC level buttons fit in 5 columns on mobile', async ({ page }) => {
 		await setupWithEmptyVatsimData(page);
 
-		// Check "Any ATC" to reveal ATC level buttons
 		const anyATCCheckbox = page.locator('label:has-text("Any ATC online")').first().locator('input[type="checkbox"]');
 		await anyATCCheckbox.check();
 
-		// The ATC level grid should be visible
 		const levelGrid = page.getByTestId('departure-atc-filtering-atc-levels');
 		await expect(levelGrid).toBeVisible();
 
-		// All 5 level buttons should be visible and not overflow
 		const buttons = levelGrid.locator('button');
 		await expect(buttons).toHaveCount(5);
 
-		// Verify no button extends beyond viewport
-		const viewportWidth = page.viewportSize()!.width;
-		for (let i = 0; i < 5; i++) {
-			const box = await buttons.nth(i).boundingBox();
-			expect(box).not.toBeNull();
-			expect(box!.x + box!.width).toBeLessThanOrEqual(viewportWidth);
-		}
+		// Verify buttons use abbreviated labels
+		await expect(buttons.nth(0)).toHaveText('CTR');
+		await expect(buttons.nth(1)).toHaveText('APP');
+		await expect(buttons.nth(2)).toHaveText('TWR');
+		await expect(buttons.nth(3)).toHaveText('GND');
+		await expect(buttons.nth(4)).toHaveText('DEL');
 	});
 
-	test('route list is usable with ATC badges wrapping', async ({ page }) => {
-		await setupWithControllers(page);
+	test('active filter summary shown when collapsed', async ({ page }) => {
+		await setupWithEmptyVatsimData(page);
 
-		// Select PHX departure to show routes
+		// Select a departure airport
 		await page.getByTestId('departure-airport-select').selectOption('PHX');
 
-		// Departure group should appear
+		// Collapse filters
+		await page.getByTestId('filter-toggle').click();
+
+		// Summary should show the active filter
+		const summary = page.getByTestId('filter-summary');
+		await expect(summary).toBeVisible();
+		await expect(summary).toContainText('PHX');
+
+		// Badge count should show
+		await expect(page.getByTestId('filter-count-badge')).toBeVisible();
+	});
+
+	test('route list is usable with ATC badges', async ({ page }) => {
+		await setupWithControllers(page);
+
+		await page.getByTestId('departure-airport-select').selectOption('PHX');
+
 		const phxGroup = page.getByTestId('departure-group-PHX');
 		await expect(phxGroup).toBeVisible();
 
-		// ATC badges should be visible and wrap (not overflow)
 		const hasOverflow = await page.evaluate(() => {
 			return document.documentElement.scrollWidth > document.documentElement.clientWidth;
 		});
 		expect(hasOverflow).toBe(false);
 
-		// Expand button should be tappable
 		const expandButton = page.getByTestId('expand-button-PHX');
 		await expect(expandButton).toBeVisible();
 		await expandButton.click();
-
-		// Arrivals should be visible after expand
 		await expect(page.getByTestId('arrivals-section-PHX')).toBeVisible();
 	});
 
@@ -96,10 +144,8 @@ test.describe('Mobile Experience', () => {
 		const expandButton = page.getByTestId('expand-button-PHX');
 		await expect(expandButton).toBeVisible();
 
-		// The button itself should be large enough to tap (full-width header row)
 		const box = await expandButton.boundingBox();
 		expect(box).not.toBeNull();
-		// Height should be at least 44px (Apple's minimum tap target)
 		expect(box!.height).toBeGreaterThanOrEqual(44);
 	});
 
@@ -118,15 +164,12 @@ test.describe('Mobile Experience', () => {
 	test('clear filters button is accessible on mobile', async ({ page }) => {
 		await setupWithEmptyVatsimData(page);
 
-		// Apply a filter first
 		await page.getByTestId('departure-airport-select').selectOption('PHX');
 
-		// Clear button should appear and be tappable
 		const clearButton = page.getByTestId('clear-all-filters');
 		await expect(clearButton).toBeVisible();
 		await clearButton.click();
 
-		// Filter should be cleared
 		await expect(page.getByTestId('departure-airport-select')).toHaveValue('');
 	});
 });

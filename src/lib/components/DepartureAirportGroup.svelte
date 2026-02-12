@@ -25,7 +25,7 @@
 	<button
 		data-testid="expand-button-{departureAirport.vatsim_code}"
 		onclick={() => isExpanded = !isExpanded}
-		class="w-full px-6 py-5 flex items-center justify-between hover:bg-blue-900/10 transition-all text-left bg-gradient-to-r from-blue-950/30 via-transparent to-blue-950/30 border-b-2 border-blue-800/30"
+		class="w-full px-3 sm:px-6 py-4 sm:py-5 flex items-center justify-between hover:bg-blue-900/10 transition-all text-left bg-gradient-to-r from-blue-950/30 via-transparent to-blue-950/30 border-b-2 border-blue-800/30"
 	>
 		<div class="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4 lg:gap-6 flex-1">
 			<!-- Airport Info -->
@@ -74,12 +74,12 @@
 			class="border-t border-gray-800 bg-gray-900/30"
 			data-testid="arrivals-section-{departureAirport.vatsim_code}"
 		>
-			<div class="px-6 py-4 bg-gray-800/30">
+			<div class="px-3 sm:px-6 py-4 bg-gray-800/30">
 				<h4 class="text-base font-bold text-gray-200">Available Destinations</h4>
 			</div>
 			<div class="divide-y divide-gray-800">
 				{#each routes as route}
-					<div class="px-6 py-3 interactive-subtle">
+					<div class="px-3 sm:px-6 py-3 interactive-subtle">
 						<div class="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4 lg:gap-6">
 							<!-- Arrival Airport Info -->
 							<div class="sm:w-40 md:w-48 shrink-0">

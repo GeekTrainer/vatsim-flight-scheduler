@@ -30,8 +30,8 @@
 	const atcLabel = $derived(type === 'departure' ? 'Departure ATC Filtering' : 'Arrival ATC Filtering');
 </script>
 
-<div class="stack-md h-full flex flex-col">
-	<div class="label-md">
+<div class="stack-sm h-full flex flex-col">
+	<div class="text-sm sm:text-xl font-bold text-gray-100 text-center">
 		{label}
 	</div>
 	
