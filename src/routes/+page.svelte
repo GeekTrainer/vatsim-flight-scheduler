@@ -105,12 +105,12 @@
 	<!-- Header -->
 	<header class="border-b border-gray-800 bg-gray-900/50 backdrop-blur-sm sticky top-0 z-10">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-			<div class="flex items-center justify-between">
-				<div>
-					<h1 class="text-2xl font-bold text-white">
+			<div class="flex items-center justify-between gap-4">
+				<div class="min-w-0">
+					<h1 class="text-xl sm:text-2xl font-bold text-white truncate">
 						VATSIM Flight Scheduler
 					</h1>
-					<p class="mt-0.5 text-sm text-gray-400">
+					<p class="mt-0.5 text-sm text-gray-400 hidden sm:block">
 						Virtual SWA Routes
 					</p>
 				</div>

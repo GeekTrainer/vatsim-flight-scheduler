@@ -44,7 +44,7 @@
 
 <div class="space-y-2">
 	<!-- Position Badges -->
-	<div class="flex gap-2">
+	<div class="flex flex-wrap gap-2">
 		{#each POSITIONS as pos (pos.type)}
 			{@const locationCode = pos.type === ControllerPosition.CTR ? artcc : icao}
 			{@const controllers = getControllers(locationCode, pos.type)}

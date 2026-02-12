@@ -21,14 +21,15 @@
 	} = $props();
 </script>
 
-<div class="flex items-center space-x-3" data-testid="network-status">
+<div class="flex flex-wrap items-center gap-x-3 gap-y-1" data-testid="network-status">
 	<div class="flex items-center space-x-2">
 		<div class="w-2 h-2 bg-green-500 rounded-full status-dot-pulse"></div>
 		<span class="text-secondary">VATSIM Network</span>
 	</div>
 	{#if !isLoading}
 		<div class="text-secondary">
-			{onlineControllers} controllers • Updated {lastUpdate}
+			<span>{onlineControllers} controllers</span>
+			<span class="hidden sm:inline"> • Updated {lastUpdate}</span>
 		</div>
 	{/if}
 </div>
