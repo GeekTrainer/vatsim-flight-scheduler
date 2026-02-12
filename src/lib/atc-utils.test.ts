@@ -117,9 +117,45 @@ describe('atc-utils', () => {
 			expect(filtered).toEqual(mockRoutes);
 		});
 
+		it('should filter by departure ATC availability', () => {
+			const locationControllers = new Map<string, Map<ControllerPosition, ATCController[]>>();
+			const bosControllers = new Map<ControllerPosition, ATCController[]>();
+			bosControllers.set(ControllerPosition.TWR, [mockController]);
+			locationControllers.set('KBOS', bosControllers);
 
+			const filtered = filterRoutes(mockRoutes, {
+				selectedDeparture: null,
+				selectedArrival: null,
+				onlyDepartureWithATC: true,
+				onlyArrivalWithATC: false,
+				departureATCLevels: [],
+				arrivalATCLevels: []
+			}, locationControllers);
+			
+			// Only route with KBOS departure should be included
+			expect(filtered).toHaveLength(1);
+			expect(filtered[0].id).toBe('KBOS-KLAX');
+		});
 
+		it('should filter by arrival ATC availability', () => {
+			const locationControllers = new Map<string, Map<ControllerPosition, ATCController[]>>();
+			const laxControllers = new Map<ControllerPosition, ATCController[]>();
+			laxControllers.set(ControllerPosition.TWR, [mockController]);
+			locationControllers.set('KLAX', laxControllers);
 
+			const filtered = filterRoutes(mockRoutes, {
+				selectedDeparture: null,
+				selectedArrival: null,
+				onlyDepartureWithATC: false,
+				onlyArrivalWithATC: true,
+				departureATCLevels: [],
+				arrivalATCLevels: []
+			}, locationControllers);
+			
+			// Only route with KLAX arrival should be included
+			expect(filtered).toHaveLength(1);
+			expect(filtered[0].id).toBe('KBOS-KLAX');
+		});
 
 		it('should filter by both departure and arrival ATC', () => {
 			const locationControllers = new Map<string, Map<ControllerPosition, ATCController[]>>();
@@ -274,9 +310,45 @@ describe('atc-utils', () => {
 				expect(result).toBe(false);
 			});
 
+			it('should work with both VATSIM and ICAO codes', () => {
+				const locationControllers = new Map<string, Map<ControllerPosition, ATCController[]>>();
+				const bosControllers = new Map<ControllerPosition, ATCController[]>();
+				bosControllers.set(ControllerPosition.APP, [{
+					...mockController,
+					callsign: 'BOS_APP',
+					position: ControllerPosition.APP
+				}]);
+				locationControllers.set('KBOS', bosControllers);
 
+				const resultVatsim = hasSpecificATCLevel('BOS', 'ZBW', [ControllerPosition.APP], locationControllers);
+				const resultIcao = hasSpecificATCLevel('KBOS', 'ZBW', [ControllerPosition.APP], locationControllers);
+				
+				expect(resultVatsim).toBe(true);
+				expect(resultIcao).toBe(true);
+			});
 
+			it('should handle all 5 position types correctly', () => {
+				const locationControllers = new Map<string, Map<ControllerPosition, ATCController[]>>();
+				const bosControllers = new Map<ControllerPosition, ATCController[]>();
+				
+				// Add all 5 positions
+				bosControllers.set(ControllerPosition.DEL, [{ ...mockController, position: ControllerPosition.DEL }]);
+				bosControllers.set(ControllerPosition.GND, [{ ...mockController, position: ControllerPosition.GND }]);
+				bosControllers.set(ControllerPosition.TWR, [{ ...mockController, position: ControllerPosition.TWR }]);
+				bosControllers.set(ControllerPosition.APP, [{ ...mockController, position: ControllerPosition.APP }]);
+				locationControllers.set('KBOS', bosControllers);
+				
+				const zbwControllers = new Map<ControllerPosition, ATCController[]>();
+				zbwControllers.set(ControllerPosition.CTR, [{ ...mockController, position: ControllerPosition.CTR }]);
+				locationControllers.set('ZBW', zbwControllers);
 
+				// Test each position individually
+				expect(hasSpecificATCLevel('BOS', 'ZBW', [ControllerPosition.DEL], locationControllers)).toBe(true);
+				expect(hasSpecificATCLevel('BOS', 'ZBW', [ControllerPosition.GND], locationControllers)).toBe(true);
+				expect(hasSpecificATCLevel('BOS', 'ZBW', [ControllerPosition.TWR], locationControllers)).toBe(true);
+				expect(hasSpecificATCLevel('BOS', 'ZBW', [ControllerPosition.APP], locationControllers)).toBe(true);
+				expect(hasSpecificATCLevel('BOS', 'ZBW', [ControllerPosition.CTR], locationControllers)).toBe(true);
+			});
 		});
 
 		describe('filterRoutes with ATC level filtering', () => {
