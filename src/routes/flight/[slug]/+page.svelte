@@ -139,8 +139,11 @@
 							</svg>
 							{#if simbriefPlan}
 								<div class="flex items-center gap-4 text-xs text-gray-300 flex-1 min-w-0">
-									<span class="font-mono text-gray-400 truncate flex-1" title={simbriefPlan.general.route}>{simbriefPlan.general.route}</span>
+									<span class="font-mono text-gray-400 truncate flex-1" title={simbriefPlan.general.route}>
+										{simbriefPlan.general.route}{#if simbriefPlan.alternate?.icao_code} <span class="text-yellow-400/70">({simbriefPlan.alternate.icao_code})</span>{/if}
+									</span>
 									<span class="shrink-0 font-semibold">{formatAltitude(simbriefPlan.general.initial_altitude)}</span>
+									<span class="shrink-0">M{simbriefPlan.general.cruise_mach}</span>
 									<span class="shrink-0">{formatFlightTime(simbriefPlan.times.est_time_enroute)}</span>
 									<span class="shrink-0 text-gray-500">{simbriefPlan.aircraft.name}</span>
 								</div>
