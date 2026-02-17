@@ -12,10 +12,17 @@
 	let atisStations = $state<VatsimATIS[]>([]);
 	let departureFaaAtis = $state<ATISInfo | null>(null);
 	let arrivalFaaAtis = $state<ATISInfo | null>(null);
+	let departureOtherFaaAtis = $state<ATISInfo | null>(null);
+	let arrivalOtherFaaAtis = $state<ATISInfo | null>(null);
 	let isLoading = $state(true);
 
+	// Primary ATIS for each side (role-specific)
 	let departureVatsimAtis = $derived(getVatsimATIS(atisStations, data.departure.icao, 'departure'));
 	let arrivalVatsimAtis = $derived(getVatsimATIS(atisStations, data.arrival.icao, 'arrival'));
+
+	// Other side's ATIS for situational awareness (only shown for split ATIS airports)
+	let departureOtherVatsimAtis = $derived(getVatsimATIS(atisStations, data.departure.icao, 'arrival'));
+	let arrivalOtherVatsimAtis = $derived(getVatsimATIS(atisStations, data.arrival.icao, 'departure'));
 
 	async function loadVatsimData() {
 		try {
@@ -37,12 +44,16 @@
 	});
 
 	async function loadFaaAtis() {
-		const [depAtis, arrAtis] = await Promise.all([
+		const [depAtis, arrAtis, depOtherAtis, arrOtherAtis] = await Promise.all([
 			fetchFAADatis(data.departure.icao, 'departure'),
-			fetchFAADatis(data.arrival.icao, 'arrival')
+			fetchFAADatis(data.arrival.icao, 'arrival'),
+			fetchFAADatis(data.departure.icao, 'arrival'),
+			fetchFAADatis(data.arrival.icao, 'departure')
 		]);
 		departureFaaAtis = depAtis;
 		arrivalFaaAtis = arrAtis;
+		departureOtherFaaAtis = depOtherAtis;
+		arrivalOtherFaaAtis = arrOtherAtis;
 	}
 </script>
 
@@ -130,6 +141,8 @@
 						<ATISDisplay
 							vatsimAtis={departureVatsimAtis}
 							faaAtis={departureFaaAtis}
+							otherVatsimAtis={departureOtherVatsimAtis}
+							otherFaaAtis={departureOtherFaaAtis}
 							airportCode={data.departure.icao}
 						/>
 					</div>
@@ -158,6 +171,8 @@
 						<ATISDisplay
 							vatsimAtis={arrivalVatsimAtis}
 							faaAtis={arrivalFaaAtis}
+							otherVatsimAtis={arrivalOtherVatsimAtis}
+							otherFaaAtis={arrivalOtherFaaAtis}
 							airportCode={data.arrival.icao}
 						/>
 					</div>
