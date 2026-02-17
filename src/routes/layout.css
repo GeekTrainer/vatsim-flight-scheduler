@@ -97,7 +97,7 @@
 	}
 	
 	.badge-interactive {
-		@apply p-1.5 rounded border transition-colors min-w-0;
+		@apply p-1 sm:p-1.5 rounded border transition-colors min-w-0;
 	}
 	
 	/* Status indicators */

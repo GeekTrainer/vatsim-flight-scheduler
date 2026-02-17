@@ -59,7 +59,7 @@
 	>
 		<div class="flex flex-col gap-0.5">
 			<!-- Position Label -->
-			<div class="text-xs font-bold flex items-center gap-1">
+			<div class="text-[10px] sm:text-xs font-bold flex items-center gap-1 whitespace-nowrap">
 				{label}
 				<span class="status-dot-pulse"></span>
 			</div>
@@ -92,6 +92,6 @@
 		data-status="offline"
 		class="badge-interactive text-center min-w-0 {getBadgeClasses()}"
 	>
-		<div class="text-xs font-bold opacity-50">{label}</div>
+		<div class="text-[10px] sm:text-xs font-bold opacity-50 whitespace-nowrap">{label}</div>
 	</div>
 {/if}

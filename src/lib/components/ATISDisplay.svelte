@@ -59,13 +59,12 @@
 			role="tab"
 			aria-selected={currentTab === 'vatsim'}
 			onclick={() => selectedTab = 'vatsim'}
-			class="flex-1 px-4 py-2.5 text-sm font-semibold transition-colors flex items-center justify-center gap-2
+			class="flex-1 px-2 py-1.5 text-xs font-semibold transition-colors flex items-center justify-center gap-1.5
 				{currentTab === 'vatsim' ? 'bg-blue-900/40 text-blue-300 border-b-2 border-blue-400' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800/30'}"
 		>
-			<span class="text-base">🌐</span>
-			VATSIM ATIS
+			🌐 VATSIM
 			{#if vatsimAtis}
-				<span class="w-2 h-2 bg-green-400 rounded-full"></span>
+				<span class="w-1.5 h-1.5 bg-green-400 rounded-full"></span>
 			{/if}
 		</button>
 		<button
@@ -73,13 +72,12 @@
 			role="tab"
 			aria-selected={currentTab === 'realworld'}
 			onclick={() => selectedTab = 'realworld'}
-			class="flex-1 px-4 py-2.5 text-sm font-semibold transition-colors flex items-center justify-center gap-2
+			class="flex-1 px-2 py-1.5 text-xs font-semibold transition-colors flex items-center justify-center gap-1.5
 				{currentTab === 'realworld' ? 'bg-blue-900/40 text-blue-300 border-b-2 border-blue-400' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800/30'}"
 		>
-			<span class="text-base">✈️</span>
-			Real World
+			✈️ Real World
 			{#if faaAtis}
-				<span class="w-2 h-2 bg-green-400 rounded-full"></span>
+				<span class="w-1.5 h-1.5 bg-green-400 rounded-full"></span>
 			{/if}
 		</button>
 	</div>
