@@ -118,7 +118,52 @@ export function getLocationControllers(
 		}
 	}
 
+	// Deduplicate controllers sharing the same frequency at each position
+	// (common during training sessions, e.g., ATL_TWR and ATL_1_TWR on same freq)
+	for (const positionMap of locationControllers.values()) {
+		for (const [pos, controllers] of positionMap) {
+			positionMap.set(pos, deduplicateByFrequency(controllers));
+		}
+	}
+
 	return locationControllers;
+}
+
+/**
+ * Removes duplicate controllers on the same frequency, keeping the primary
+ * (no number in callsign, or lowest number). Training sessions often have
+ * two controllers on the same frequency (e.g., ATL_TWR and ATL_1_TWR).
+ */
+function deduplicateByFrequency(controllers: ATCController[]): ATCController[] {
+	const byFreq = new Map<string, ATCController>();
+
+	for (const controller of controllers) {
+		const existing = byFreq.get(controller.frequency);
+		if (!existing) {
+			byFreq.set(controller.frequency, controller);
+		} else {
+			// Keep the one with no number or the lowest number in callsign
+			const existingNum = extractCallsignNumber(existing.callsign);
+			const newNum = extractCallsignNumber(controller.callsign);
+			if (newNum < existingNum) {
+				byFreq.set(controller.frequency, controller);
+			}
+		}
+	}
+
+	return Array.from(byFreq.values());
+}
+
+/**
+ * Extracts the numeric suffix from a callsign (e.g., ATL_1_TWR → 1, ATL_TWR → 0)
+ */
+function extractCallsignNumber(callsign: string): number {
+	const parts = callsign.split('_');
+	for (const part of parts) {
+		const num = parseInt(part, 10);
+		if (!isNaN(num)) return num;
+	}
+	return 0;
 }
 
 /**
