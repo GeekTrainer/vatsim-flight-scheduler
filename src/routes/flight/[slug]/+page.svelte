@@ -182,7 +182,8 @@
 
 		<!-- Footer -->
 		<div class="text-center text-xs text-gray-600 pt-4">
-			<p>VATSIM data refreshes every 30 seconds. FAA D-ATIS is real-world data from the FAA.</p>
+			<p>VATSIM data refreshes every 30 seconds. Real World ATIS sourced from FAA D-ATIS.</p>
+			<p class="mt-1 text-gray-700">For VATSIM simulation use only. Not for real-world flight planning or navigation.</p>
 		</div>
 	</main>
 </div>
