@@ -35,15 +35,15 @@
 	<header class="border-b border-gray-800 bg-gray-900/50 backdrop-blur-sm sticky top-0 z-10">
 		<div class="max-w-3xl mx-auto px-3 sm:px-6 lg:px-8 py-2 sm:py-3">
 			<div class="flex items-center gap-4">
-				<a
-					href="/"
+				<button
+					onclick={() => history.back()}
 					class="text-xs text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-1 shrink-0"
 				>
 					<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
 					</svg>
 					Back
-				</a>
+				</button>
 				<h1 class="text-sm font-bold text-white">Settings</h1>
 			</div>
 		</div>
