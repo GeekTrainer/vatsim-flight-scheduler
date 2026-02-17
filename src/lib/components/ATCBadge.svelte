@@ -55,9 +55,9 @@
 	<div 
 		data-testid="atc-badge-{position.toLowerCase()}"
 		data-status="online"
-		class="badge-interactive {getBadgeClasses()}"
+		class="badge-interactive overflow-hidden min-w-0 {getBadgeClasses()}"
 	>
-		<div class="flex flex-col gap-0.5 overflow-hidden">
+		<div class="flex flex-col gap-0.5">
 			<!-- Position Label -->
 			<div class="text-xs font-bold flex items-center gap-1">
 				{label}
@@ -75,18 +75,11 @@
 				>
 					{controller.callsign}
 				</div>
-				<!-- Frequency -->
-				<div 
-					class="text-[10px] opacity-80 leading-tight"
-					data-testid="controller-frequency-{controller.callsign}"
-				>
+				<!-- Frequency + Time on one line -->
+				<div class="text-[10px] opacity-80 leading-tight" data-testid="controller-frequency-{controller.callsign}">
 					{controller.frequency}
 				</div>
-				<!-- Time Online -->
-				<div 
-					class="text-[10px] opacity-60 leading-tight"
-					data-testid="controller-time-{controller.callsign}"
-				>
+				<div class="text-[10px] opacity-60 leading-tight" data-testid="controller-time-{controller.callsign}">
 					{formatOnlineTime(controller.onlineTimeMinutes)}
 				</div>
 			{/each}
@@ -97,7 +90,7 @@
 	<div 
 		data-testid="atc-badge-{position.toLowerCase()}"
 		data-status="offline"
-		class="badge-interactive text-center {getBadgeClasses()}"
+		class="badge-interactive text-center min-w-0 {getBadgeClasses()}"
 	>
 		<div class="text-xs font-bold opacity-50">{label}</div>
 	</div>
