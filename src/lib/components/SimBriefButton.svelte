@@ -32,9 +32,19 @@ return;
 
 isLoading = true;
 
+// Timeout after 10 minutes
+const timeout = setTimeout(() => {
+clearInterval(pollInterval);
+window.removeEventListener('message', handler);
+isLoading = false;
+error = 'SimBrief session timed out. Try again.';
+}, 10 * 60 * 1000);
+
 const pollInterval = setInterval(async () => {
 if (popup.closed) {
 clearInterval(pollInterval);
+clearTimeout(timeout);
+window.removeEventListener('message', handler);
 await loadPlan();
 }
 }, 2000);
@@ -44,6 +54,7 @@ if (event.origin !== window.location.origin) return;
 if (event.data?.type === 'simbrief-plan-ready') {
 window.removeEventListener('message', handler);
 clearInterval(pollInterval);
+clearTimeout(timeout);
 await loadPlan();
 }
 };
