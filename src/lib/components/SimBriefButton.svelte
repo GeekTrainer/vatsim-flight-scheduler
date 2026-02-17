@@ -79,7 +79,7 @@ onPlanLoaded(plan);
 
 <div data-testid="simbrief-section" class="space-y-3">
 {#if isConfigured}
-<div class="flex items-center gap-3 flex-wrap">
+<div class="flex items-center gap-2 flex-wrap">
 <button
 data-testid="simbrief-file-button"
 onclick={openSimBrief}
@@ -91,6 +91,18 @@ class="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 disabled:tex
 Loading plan...
 {:else}
 📋 File with SimBrief
+{/if}
+</button>
+<button
+data-testid="simbrief-load-button"
+onclick={loadPlan}
+disabled={isLoading}
+class="px-4 py-2 bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800 disabled:text-gray-500 text-gray-200 text-sm font-semibold rounded-lg transition-colors flex items-center gap-2"
+>
+{#if isLoading}
+<div class="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+{:else}
+📥 Load from SimBrief
 {/if}
 </button>
 </div>
