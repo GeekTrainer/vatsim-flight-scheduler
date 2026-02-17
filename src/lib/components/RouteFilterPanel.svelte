@@ -75,9 +75,9 @@
 	const hasActiveFilters = $derived(checkActiveFilters(filterState));
 </script>
 
-<div class="stack-lg">
+<div class="space-y-2 sm:space-y-4">
 	<!-- Airport Selectors with ATC Filters - Side by side layout -->
-	<div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:items-start">
+	<div class="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4 md:items-start">
 		<!-- Departure Airport -->
 		<AirportFilterSelect
 			type="departure"

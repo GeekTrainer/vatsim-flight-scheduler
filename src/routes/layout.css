@@ -6,8 +6,14 @@
 		@apply border-gray-800;
 	}
 	
+	html {
+		overflow-x: hidden;
+	}
+
 	body {
 		@apply bg-gray-950 text-gray-100;
+		overflow-wrap: break-word;
+		word-break: break-word;
 	}
 }
 
@@ -49,7 +55,7 @@
 	}
 	
 	.form-checkbox {
-		@apply w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500;
+		@apply w-5 h-5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500;
 	}
 	
 	/* Typography */
@@ -58,7 +64,7 @@
 	}
 	
 	.label-md {
-		@apply text-xl font-bold text-gray-100 text-center;
+		@apply text-lg sm:text-xl font-bold text-gray-100 text-center;
 	}
 	
 	.text-secondary {
@@ -87,7 +93,7 @@
 	}
 	
 	.badge-sm {
-		@apply py-2 rounded-md text-sm font-semibold border text-center;
+		@apply py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-semibold border text-center;
 	}
 	
 	.badge-interactive {

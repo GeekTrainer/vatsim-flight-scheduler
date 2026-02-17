@@ -25,11 +25,11 @@
 	<button
 		data-testid="expand-button-{departureAirport.vatsim_code}"
 		onclick={() => isExpanded = !isExpanded}
-		class="w-full px-6 py-5 flex items-center justify-between hover:bg-blue-900/10 transition-all text-left bg-gradient-to-r from-blue-950/30 via-transparent to-blue-950/30 border-b-2 border-blue-800/30"
+		class="w-full px-3 sm:px-6 py-4 sm:py-5 flex items-center justify-between hover:bg-blue-900/10 transition-all text-left bg-gradient-to-r from-blue-950/30 via-transparent to-blue-950/30 border-b-2 border-blue-800/30"
 	>
-		<div class="flex items-start gap-2 md:gap-4 lg:gap-6 flex-1">
+		<div class="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4 lg:gap-6 flex-1">
 			<!-- Airport Info -->
-			<div class="w-32 sm:w-40 md:w-48 shrink-0">
+			<div class="sm:w-40 md:w-48 shrink-0">
 				<div class="flex items-center gap-2">
 					<span class="text-xl font-bold text-blue-300">{departureAirport.icao}</span>
 					<span class="text-sm text-blue-400/60">({departureAirport.vatsim_code})</span>
@@ -56,7 +56,7 @@
 		</div>
 
 		<!-- Expand/Collapse Icon -->
-		<div class="ml-4">
+		<div class="ml-4 p-2 -m-2">
 			<svg
 				class="w-6 h-6 text-blue-300 transition-transform {isExpanded ? 'rotate-180' : ''}"
 				fill="none"
@@ -74,15 +74,15 @@
 			class="border-t border-gray-800 bg-gray-900/30"
 			data-testid="arrivals-section-{departureAirport.vatsim_code}"
 		>
-			<div class="px-6 py-4 bg-gray-800/30">
+			<div class="px-3 sm:px-6 py-4 bg-gray-800/30">
 				<h4 class="text-base font-bold text-gray-200">Available Destinations</h4>
 			</div>
 			<div class="divide-y divide-gray-800">
 				{#each routes as route}
-					<div class="px-6 py-3 interactive-subtle">
-						<div class="flex items-start gap-2 md:gap-4 lg:gap-6">
+					<div class="px-3 sm:px-6 py-3 interactive-subtle">
+						<div class="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4 lg:gap-6">
 							<!-- Arrival Airport Info -->
-							<div class="w-32 sm:w-40 md:w-48 shrink-0">
+							<div class="sm:w-40 md:w-48 shrink-0">
 								<div class="flex items-center gap-2">
 									<span class="text-base font-semibold text-green-400">{route.arrival.icao}</span>
 									<span class="text-xs text-gray-500">({route.arrival.vatsim_code})</span>

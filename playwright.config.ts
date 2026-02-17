@@ -21,6 +21,16 @@ export default defineConfig({
 		{
 			name: 'chromium',
 			use: { ...devices['Desktop Chrome'] },
+			testIgnore: /mobile.*\.spec\.ts/,
+		},
+		{
+			name: 'mobile',
+			use: {
+				...devices['Desktop Chrome'],
+				viewport: { width: 390, height: 844 },
+				isMobile: true,
+			},
+			testMatch: /mobile.*\.spec\.ts/,
 		},
 	],
 

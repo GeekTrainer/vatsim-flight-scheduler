@@ -20,31 +20,31 @@
 	const atcLevels = [
 		{ 
 			position: ControllerPosition.CTR, 
-			label: 'Center', 
+			label: 'CTR', 
 			activeClass: 'atc-ctr-active',
 			inactiveClass: 'atc-inactive'
 		},
 		{ 
 			position: ControllerPosition.APP, 
-			label: 'Approach', 
+			label: 'APP', 
 			activeClass: 'atc-app-active',
 			inactiveClass: 'atc-inactive'
 		},
 		{ 
 			position: ControllerPosition.TWR, 
-			label: 'Tower', 
+			label: 'TWR', 
 			activeClass: 'atc-twr-active',
 			inactiveClass: 'atc-inactive'
 		},
 		{ 
 			position: ControllerPosition.GND, 
-			label: 'Ground', 
+			label: 'GND', 
 			activeClass: 'atc-gnd-active',
 			inactiveClass: 'atc-inactive'
 		},
 		{ 
 			position: ControllerPosition.DEL, 
-			label: 'Delivery', 
+			label: 'DEL', 
 			activeClass: 'atc-del-active',
 			inactiveClass: 'atc-inactive'
 		}
@@ -88,9 +88,9 @@
 	const hasAnySelection = $derived(anyATCChecked || selectedLevels.length > 0);
 </script>
 
-<div class="stack-sm">
+<div class="space-y-1 sm:space-y-2">
 	<!-- Any ATC Checkbox -->
-	<label class="flex items-center space-x-3 p-3 bg-gray-800/50 rounded cursor-pointer hover:bg-gray-800 transition-colors">
+	<label class="flex items-center space-x-2 sm:space-x-3 px-2 py-1.5 sm:p-3 bg-gray-800/50 rounded cursor-pointer hover:bg-gray-800 transition-colors">
 		<input
 			type="checkbox"
 			data-testid="any-atc-{label.toLowerCase().replace(/\s+/g, '-')}"
@@ -98,13 +98,13 @@
 			onchange={handleAnyATCChange}
 			class="form-checkbox w-4 h-4"
 		/>
-		<span class="text-sm font-medium text-gray-200">Any ATC online</span>
+		<span class="text-xs sm:text-sm font-medium text-gray-200">Any ATC online</span>
 	</label>
 
 	<!-- Specific ATC Levels -->
-	<div class="space-y-1">
-		<div class="text-secondary px-2">Or select specific levels:</div>
-		<div class="grid grid-cols-5 gap-2" data-testid="{label.toLowerCase().replace(/\s+/g, '-')}-atc-levels">
+	<div>
+		<div class="text-secondary px-2 hidden sm:block">Or select specific levels:</div>
+		<div class="grid grid-cols-5 gap-0.5 sm:gap-2 mt-0.5 sm:mt-1" data-testid="{label.toLowerCase().replace(/\s+/g, '-')}-atc-levels">
 			{#each atcLevels as level (level.position)}
 				<button
 					type="button"
