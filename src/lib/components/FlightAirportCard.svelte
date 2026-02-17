@@ -66,7 +66,7 @@
 
 <div
 	data-testid="flight-card-{role}"
-	class="rounded-lg border {borderClass} overflow-hidden transition-all {isExpanded ? 'bg-gray-900/50' : 'bg-gray-900/20'}"
+	class="rounded-lg border {borderClass} overflow-hidden transition-all {isExpanded ? 'bg-gray-800/50' : 'bg-gray-800/30'}"
 >
 	<!-- Card Header (always visible, tappable) -->
 	<button
