@@ -232,7 +232,26 @@
 					</div>
 
 					{#if simbriefPlan}
-						<!-- Expanded plan details below the strip -->
+						<!-- Enroute Centers -->
+						{#if enrouteCenters.length > 0}
+							<div class="mt-3 pt-3 border-t border-gray-700/50 flex items-center gap-1">
+								<span class="text-[10px] text-gray-500 uppercase tracking-wide mr-1 shrink-0">Enroute</span>
+								{#each enrouteCenters as center, i (center.artcc)}
+									{#if i > 0}
+										<div class="flex-1 border-t {center.online || enrouteCenters[i-1].online ? 'border-green-600/40' : 'border-gray-700/50'} min-w-[16px]"></div>
+									{/if}
+									<div class="flex items-center gap-1 shrink-0 px-1.5 py-0.5 rounded {center.online ? 'bg-green-900/30' : ''}">
+										<span class="w-1.5 h-1.5 rounded-full {center.online ? 'bg-green-400' : 'bg-gray-600'}"></span>
+										<span class="text-xs font-semibold {center.online ? 'text-green-300' : 'text-gray-500'}">{center.artcc}</span>
+										{#if center.controllerCount > 1}
+											<span class="text-[10px] text-gray-400">({center.controllerCount})</span>
+										{/if}
+									</div>
+								{/each}
+							</div>
+						{/if}
+
+						<!-- Fuel & Weights -->
 						<div class="mt-3 pt-3 border-t border-gray-700/50 grid grid-cols-6 gap-3 text-xs text-center">
 							<div>
 								<div class="text-gray-500">Block Fuel</div>
@@ -268,27 +287,6 @@
 					{/if}
 				</div>
 			</div>
-
-			<!-- Enroute Centers Strip (desktop) -->
-			{#if enrouteCenters.length > 0}
-				<div class="hidden md:block">
-					<div class="flex items-center gap-1 px-2">
-						<span class="text-[10px] text-gray-500 uppercase tracking-wide mr-2 shrink-0">Enroute</span>
-						{#each enrouteCenters as center, i (center.artcc)}
-							{#if i > 0}
-								<div class="flex-1 border-t {center.online || enrouteCenters[i-1].online ? 'border-green-700/50' : 'border-gray-700'} min-w-[20px]"></div>
-							{/if}
-							<div class="flex items-center gap-1 shrink-0 px-2 py-1 rounded {center.online ? 'bg-green-900/20' : ''}">
-								<span class="w-2 h-2 rounded-full {center.online ? 'bg-green-400' : 'bg-gray-600'}"></span>
-								<span class="text-xs font-semibold {center.online ? 'text-green-300' : 'text-gray-500'}">{center.artcc}</span>
-								{#if center.controllerCount > 1}
-									<span class="text-[10px] text-gray-400">({center.controllerCount})</span>
-								{/if}
-							</div>
-						{/each}
-					</div>
-				</div>
-			{/if}
 
 			<!-- Mobile: Stacked collapsible cards -->
 			<div class="md:hidden space-y-3">
