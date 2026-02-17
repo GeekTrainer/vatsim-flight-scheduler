@@ -76,7 +76,7 @@
 					{controller.callsign}
 				</div>
 				<!-- Frequency + Time on one line -->
-				<div class="text-[10px] opacity-80 leading-tight" data-testid="controller-frequency-{controller.callsign}">
+				<div class="text-xs font-bold opacity-90 leading-tight" data-testid="controller-frequency-{controller.callsign}">
 					{controller.frequency}
 				</div>
 				<div class="text-[10px] opacity-60 leading-tight" data-testid="controller-time-{controller.callsign}">

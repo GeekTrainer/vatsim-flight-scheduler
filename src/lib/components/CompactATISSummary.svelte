@@ -29,20 +29,20 @@
 		{#if parsedAtis.arrivalRunways.length > 0 || parsedAtis.departureRunways.length > 0}
 			<div class="flex items-center gap-x-3">
 				{#if parsedAtis.arrivalRunways.length > 0}
-					<span data-testid="compact-arrivals" class="flex items-center gap-1">
-						🛬
+					<span data-testid="compact-arrivals" class="flex items-center gap-1.5">
+						<span class="text-green-400 font-bold text-xs">ARR</span>
 						{#each parsedAtis.arrivalRunways as rwy, i}
 							{#if i > 0}<span class="text-gray-500">/</span>{/if}
-							<span class="font-medium">{rwy.runway}</span>
+							<span class="font-semibold">{rwy.runway}</span>
 						{/each}
 					</span>
 				{/if}
 				{#if parsedAtis.departureRunways.length > 0}
-					<span data-testid="compact-departures" class="flex items-center gap-1">
-						🛫
+					<span data-testid="compact-departures" class="flex items-center gap-1.5">
+						<span class="text-blue-400 font-bold text-xs">DEP</span>
 						{#each parsedAtis.departureRunways as rwy, i}
 							{#if i > 0}<span class="text-gray-500">/</span>{/if}
-							<span class="font-medium">{rwy.runway}</span>
+							<span class="font-semibold">{rwy.runway}</span>
 						{/each}
 					</span>
 				{/if}
