@@ -7,6 +7,7 @@
 	import { fetchVatsimData, getLocationControllers, getVatsimATIS } from '$lib/vatsim';
 	import { fetchFAADatis } from '$lib/atis';
 	import { formatFlightTime, formatFuel, formatAltitude, validatePlanMatchesRoute, buildVatsimPrefileUrl, getStoredVatsimCid, checkVatsimFlightStatus } from '$lib/simbrief';
+	import { detectEnrouteCenters, getBasicEnrouteCenters } from '$lib/enroute';
 	import type { LocationControllers, ATISInfo } from '$lib/types';
 	import type { VatsimATIS, VatsimData } from '$lib/types/vatsim';
 	import type { SimBriefPlan } from '$lib/types/simbrief';
@@ -80,6 +81,19 @@
 
 	// SimBrief integration
 	let simbriefPlan = $state<SimBriefPlan | null>(null);
+
+	// Enroute centers: use SimBrief navlog when available, fallback to airport ARTCCs
+	let enrouteCenters = $derived.by(() => {
+		if (simbriefPlan?.navlog?.fix?.length) {
+			return detectEnrouteCenters(
+				simbriefPlan.navlog.fix,
+				data.departure.artcc,
+				data.arrival.artcc,
+				locationControllers
+			);
+		}
+		return getBasicEnrouteCenters(data.departure.artcc, data.arrival.artcc, locationControllers);
+	});
 
 	function handlePlanLoaded(plan: SimBriefPlan) {
 		simbriefPlan = plan;
@@ -254,6 +268,27 @@
 					{/if}
 				</div>
 			</div>
+
+			<!-- Enroute Centers Strip (desktop) -->
+			{#if enrouteCenters.length > 0}
+				<div class="hidden md:block">
+					<div class="flex items-center gap-1 px-2">
+						<span class="text-[10px] text-gray-500 uppercase tracking-wide mr-2 shrink-0">Enroute</span>
+						{#each enrouteCenters as center, i (center.artcc)}
+							{#if i > 0}
+								<div class="flex-1 border-t {center.online || enrouteCenters[i-1].online ? 'border-green-700/50' : 'border-gray-700'} min-w-[20px]"></div>
+							{/if}
+							<div class="flex items-center gap-1 shrink-0 px-2 py-1 rounded {center.online ? 'bg-green-900/20' : ''}">
+								<span class="w-2 h-2 rounded-full {center.online ? 'bg-green-400' : 'bg-gray-600'}"></span>
+								<span class="text-xs font-semibold {center.online ? 'text-green-300' : 'text-gray-500'}">{center.artcc}</span>
+								{#if center.controllerCount > 1}
+									<span class="text-[10px] text-gray-400">({center.controllerCount})</span>
+								{/if}
+							</div>
+						{/each}
+					</div>
+				</div>
+			{/if}
 
 			<!-- Mobile: Stacked collapsible cards -->
 			<div class="md:hidden space-y-3">
