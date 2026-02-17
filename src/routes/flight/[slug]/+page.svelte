@@ -1,6 +1,7 @@
 <script lang="ts">
 	import ATCStatusDisplay from '$lib/components/ATCStatusDisplay.svelte';
 	import ATISDisplay from '$lib/components/ATISDisplay.svelte';
+	import FlightAirportCard from '$lib/components/FlightAirportCard.svelte';
 	import { fetchVatsimData, getLocationControllers, getVatsimATIS } from '$lib/vatsim';
 	import { fetchFAADatis } from '$lib/atis';
 	import type { LocationControllers, ATISInfo } from '$lib/types';
@@ -55,6 +56,9 @@
 		departureOtherFaaAtis = depOtherAtis;
 		arrivalOtherFaaAtis = arrOtherAtis;
 	}
+
+	// Mobile: only one card expanded at a time
+	let mobileExpanded = $state<'departure' | 'arrival'>('departure');
 </script>
 
 <svelte:head>
@@ -91,8 +95,34 @@
 				<div class="spinner"></div>
 			</div>
 		{:else}
-			<!-- Two-column grid with aligned rows -->
-			<div class="grid grid-cols-2 gap-x-6 gap-y-4" style="grid-template-rows: auto auto auto;">
+			<!-- Mobile: Stacked collapsible cards -->
+			<div class="md:hidden space-y-3">
+				<FlightAirportCard
+					airport={data.departure}
+					role="departure"
+					{locationControllers}
+					vatsimAtis={departureVatsimAtis}
+					faaAtis={departureFaaAtis}
+					otherVatsimAtis={departureOtherVatsimAtis}
+					otherFaaAtis={departureOtherFaaAtis}
+					isExpanded={mobileExpanded === 'departure'}
+					onToggle={() => mobileExpanded = mobileExpanded === 'departure' ? 'arrival' : 'departure'}
+				/>
+				<FlightAirportCard
+					airport={data.arrival}
+					role="arrival"
+					{locationControllers}
+					vatsimAtis={arrivalVatsimAtis}
+					faaAtis={arrivalFaaAtis}
+					otherVatsimAtis={arrivalOtherVatsimAtis}
+					otherFaaAtis={arrivalOtherFaaAtis}
+					isExpanded={mobileExpanded === 'arrival'}
+					onToggle={() => mobileExpanded = mobileExpanded === 'arrival' ? 'departure' : 'arrival'}
+				/>
+			</div>
+
+			<!-- Desktop: Two-column grid with aligned rows -->
+			<div data-testid="desktop-layout" class="hidden md:grid grid-cols-2 gap-x-6 gap-y-4" style="grid-template-rows: auto auto auto;">
 				<!-- Row 1: Headers -->
 				<div>
 					<h2 class="text-2xl font-bold text-blue-300" data-testid="flight-departure-code">

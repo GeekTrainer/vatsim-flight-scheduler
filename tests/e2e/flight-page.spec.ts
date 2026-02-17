@@ -101,7 +101,7 @@ test.describe('Flight Detail Page', () => {
 		await page.goto('/flight/KPHX-KLAS');
 
 		// VATSIM tab should be active by default for departure
-		const depAtis = page.getByTestId('atis-display-KPHX');
+		const depAtis = page.getByTestId('desktop-layout').getByTestId('atis-display-KPHX');
 		await expect(depAtis).toBeVisible();
 
 		const vatsimContent = depAtis.getByTestId('atis-content-vatsim');
@@ -116,7 +116,7 @@ test.describe('Flight Detail Page', () => {
 		await setupMocks(page);
 		await page.goto('/flight/KPHX-KLAS');
 
-		const arrAtis = page.getByTestId('atis-display-KLAS');
+		const arrAtis = page.getByTestId('desktop-layout').getByTestId('atis-display-KLAS');
 		await expect(arrAtis).toBeVisible();
 
 		await expect(arrAtis.getByTestId('atis-text-KLAS')).toContainText('LAS ATIS INFO A');
@@ -127,7 +127,7 @@ test.describe('Flight Detail Page', () => {
 		await setupMocks(page);
 		await page.goto('/flight/KPHX-KLAS');
 
-		const depAtis = page.getByTestId('atis-display-KPHX');
+		const depAtis = page.getByTestId('desktop-layout').getByTestId('atis-display-KPHX');
 		await expect(depAtis).toBeVisible();
 
 		// Click Real World tab
@@ -147,7 +147,7 @@ test.describe('Flight Detail Page', () => {
 		await setupMocks(page);
 		await page.goto('/flight/KPHX-KLAS');
 
-		const depAtis = page.getByTestId('atis-display-KPHX');
+		const depAtis = page.getByTestId('desktop-layout').getByTestId('atis-display-KPHX');
 
 		// Switch to Real World then back
 		await depAtis.getByTestId('atis-tab-realworld').click();
@@ -196,7 +196,7 @@ test.describe('Flight Detail Page', () => {
 		await page.goto('/flight/KPHX-KLAS');
 
 		// With no VATSIM ATIS, should default to Real World tab
-		const depAtis = page.getByTestId('atis-display-KPHX');
+		const depAtis = page.getByTestId('desktop-layout').getByTestId('atis-display-KPHX');
 		await expect(depAtis.getByTestId('atis-content-realworld')).toBeVisible();
 		await expect(depAtis.getByTestId('atis-text-KPHX')).toContainText('PHX ATIS INFO R');
 
@@ -217,7 +217,7 @@ test.describe('Flight Detail Page', () => {
 		await setupMocks(page);
 		await page.goto('/flight/KPHX-KLAS');
 
-		const depAtis = page.getByTestId('atis-display-KPHX');
+		const depAtis = page.getByTestId('desktop-layout').getByTestId('atis-display-KPHX');
 		await expect(depAtis).toBeVisible();
 
 		// Summary should show parsed wind and altimeter from mock data
@@ -232,7 +232,7 @@ test.describe('Flight Detail Page', () => {
 		await setupMocks(page);
 		await page.goto('/flight/KPHX-KLAS');
 
-		const depAtis = page.getByTestId('atis-display-KPHX');
+		const depAtis = page.getByTestId('desktop-layout').getByTestId('atis-display-KPHX');
 		await expect(depAtis).toBeVisible();
 
 		// PHX mock has "LANDING AND DEPARTING RWY 25L AND 25R"
@@ -244,7 +244,7 @@ test.describe('Flight Detail Page', () => {
 		await setupMocks(page);
 		await page.goto('/flight/KPHX-KLAS');
 
-		const arrAtis = page.getByTestId('atis-display-KLAS');
+		const arrAtis = page.getByTestId('desktop-layout').getByTestId('atis-display-KLAS');
 		await expect(arrAtis).toBeVisible();
 
 		// LAS mock has "ILS APPROACHES IN USE" and "LANDING RWY 26L AND 26R"
@@ -255,7 +255,7 @@ test.describe('Flight Detail Page', () => {
 		await setupMocks(page);
 		await page.goto('/flight/KPHX-KLAS');
 
-		const depAtis = page.getByTestId('atis-display-KPHX');
+		const depAtis = page.getByTestId('desktop-layout').getByTestId('atis-display-KPHX');
 		await depAtis.getByTestId('atis-tab-realworld').click();
 
 		// Real World tab should also show a summary card
