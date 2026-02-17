@@ -226,6 +226,22 @@ function parseApproachSentence(sentence: string, arrivals: RunwayInfo[], seen: S
 			}
 		}
 
+		// Handle "APCHS IN USE VIS 8L, VIS 9R, VIS 10" or "ILS 22L, ILS 22R"
+		// Pattern: approach type directly before runway number, comma-separated
+		const inlineMatches = [...sentence.matchAll(/\b(ILS|VISUAL|VIS|RNAV|GPS|RNP|LDA)\s+(\d{1,2}[LRC]?)\b/g)];
+		if (inlineMatches.length > 0) {
+			for (const m of inlineMatches) {
+				const apchType = normalizeApproachType(m[1]);
+				const rwy = m[2];
+				const num = parseInt(rwy, 10);
+				if (num >= 1 && num <= 36 && !seen.has(rwy)) {
+					arrivals.push({ runway: rwy, approachType: apchType });
+					seen.add(rwy);
+				}
+			}
+			return;
+		}
+
 		const rwyMatch = sentence.match(/(?:RWY|RY|RWYS|RUNWAY|RUNWAYS)\s+([\d\w\s,AND&]+?)(?:\s+(?:APCHS?|IN USE|APCH)|\.|$)/);
 		if (rwyMatch) {
 			const rwys = extractRunwayNumbers(rwyMatch[1]);

@@ -161,6 +161,21 @@ describe('ATIS Parser', () => {
 			expect(arrivals[0]).toEqual({ runway: '22L', approachType: 'ILS' });
 		});
 
+		it('should parse inline approach type + runway pairs (VIS 8L, VIS 9R)', () => {
+			const { arrivals } = parseRunways('SIMULTANEOUS APCHS IN USE VIS 8L, VIS 9R, VIS 10.');
+			expect(arrivals).toHaveLength(3);
+			expect(arrivals[0]).toEqual({ runway: '8L', approachType: 'Visual' });
+			expect(arrivals[1]).toEqual({ runway: '9R', approachType: 'Visual' });
+			expect(arrivals[2]).toEqual({ runway: '10', approachType: 'Visual' });
+		});
+
+		it('should parse inline ILS runway pairs (ILS 22L, ILS 22R)', () => {
+			const { arrivals } = parseRunways('SIMUL APCHS IN USE ILS 22L, ILS 22R.');
+			expect(arrivals).toHaveLength(2);
+			expect(arrivals[0]).toEqual({ runway: '22L', approachType: 'ILS' });
+			expect(arrivals[1]).toEqual({ runway: '22R', approachType: 'ILS' });
+		});
+
 		it('should return empty arrays for unparseable text', () => {
 			const { arrivals, departures } = parseRunways('NOTAMS ONLY. BIRDS IN VICINITY.');
 			expect(arrivals).toHaveLength(0);
