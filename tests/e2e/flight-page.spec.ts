@@ -79,8 +79,8 @@ test.describe('Flight Detail Page', () => {
 		await page.goto('/flight/KPHX-KLAS');
 
 		await expect(page.getByTestId('flight-page')).toBeVisible();
-		await expect(page.getByTestId('flight-departure-code')).toHaveText('KPHX');
-		await expect(page.getByTestId('flight-arrival-code')).toHaveText('KLAS');
+		await expect(page.getByTestId('flight-departure-code')).toContainText('KPHX');
+		await expect(page.getByTestId('flight-arrival-code')).toContainText('KLAS');
 	});
 
 	test('should display ATC status for both airports', async ({ page }) => {

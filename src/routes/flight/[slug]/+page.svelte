@@ -86,31 +86,6 @@
 	</header>
 
 	<main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-6">
-		<!-- Flight Route Header -->
-		<div class="card-themed p-4 sm:p-6">
-			<div class="flex items-center justify-center gap-4 sm:gap-8">
-				<!-- Departure -->
-				<div class="text-center">
-					<div class="text-2xl sm:text-4xl font-bold text-blue-300" data-testid="flight-departure-code">{data.departure.icao}</div>
-					<div class="text-sm sm:text-base text-gray-200 font-medium">{data.departure.city}</div>
-					<div class="text-xs text-gray-400">{data.departure.name}</div>
-				</div>
-				<!-- Arrow -->
-				<div class="flex flex-col items-center gap-1">
-					<svg class="w-8 h-8 sm:w-10 sm:h-10 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-					</svg>
-					<span class="text-xs text-gray-500">Flight Route</span>
-				</div>
-				<!-- Arrival -->
-				<div class="text-center">
-					<div class="text-2xl sm:text-4xl font-bold text-green-400" data-testid="flight-arrival-code">{data.arrival.icao}</div>
-					<div class="text-sm sm:text-base text-gray-200 font-medium">{data.arrival.city}</div>
-					<div class="text-xs text-gray-400">{data.arrival.name}</div>
-				</div>
-			</div>
-		</div>
-
 		{#if isLoading}
 			<div class="flex justify-center py-12">
 				<div class="spinner"></div>
@@ -120,12 +95,12 @@
 			<div class="grid grid-cols-2 gap-6">
 				<!-- Departure Airport Section -->
 				<section data-testid="flight-departure-section" class="space-y-4">
-					<h2 class="text-lg font-bold text-blue-300 flex items-center gap-2">
-						<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-							<path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-						</svg>
-						Departure — {data.departure.icao}
-					</h2>
+					<div>
+						<h2 class="text-2xl font-bold text-blue-300" data-testid="flight-departure-code">
+							Departure — {data.departure.icao}
+						</h2>
+						<div class="text-sm text-gray-400">{data.departure.name} · {data.departure.city}</div>
+					</div>
 
 					<div class="card-subtle p-4">
 						<h3 class="text-sm font-semibold text-gray-300 mb-3">ATC Coverage</h3>
@@ -150,12 +125,12 @@
 
 				<!-- Arrival Airport Section -->
 				<section data-testid="flight-arrival-section" class="space-y-4">
-					<h2 class="text-lg font-bold text-green-400 flex items-center gap-2">
-						<svg class="w-5 h-5 rotate-90" fill="currentColor" viewBox="0 0 20 20">
-							<path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-						</svg>
-						Arrival — {data.arrival.icao}
-					</h2>
+					<div>
+						<h2 class="text-2xl font-bold text-green-400" data-testid="flight-arrival-code">
+							Arrival — {data.arrival.icao}
+						</h2>
+						<div class="text-sm text-gray-400">{data.arrival.name} · {data.arrival.city}</div>
+					</div>
 
 					<div class="card-subtle p-4">
 						<h3 class="text-sm font-semibold text-gray-300 mb-3">ATC Coverage</h3>
