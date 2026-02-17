@@ -82,7 +82,7 @@
 					<a
 						href="/flight/{departureAirport.icao}-{route.arrival.icao}"
 						data-testid="flight-link-{departureAirport.icao}-{route.arrival.icao}"
-						class="block px-3 sm:px-6 py-3 interactive-subtle no-underline"
+						class="group block px-3 sm:px-6 py-3 no-underline transition-colors hover:bg-blue-900/15"
 					>
 						<div class="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4 lg:gap-6">
 							<!-- Arrival Airport Info -->
@@ -103,11 +103,14 @@
 								/>
 							</div>
 
-							<!-- Link Arrow -->
-							<div class="hidden sm:flex items-center text-gray-500">
-								<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-								</svg>
+							<!-- Link Arrow + Label -->
+							<div class="hidden sm:flex items-center gap-1.5 text-gray-600 group-hover:text-blue-400 transition-colors shrink-0">
+								<span class="text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity">View flight</span>
+								<div class="w-8 h-8 rounded-full flex items-center justify-center group-hover:bg-blue-500/20 group-hover:ring-2 group-hover:ring-blue-500/30 transition-all">
+									<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+									</svg>
+								</div>
 							</div>
 						</div>
 					</a>
