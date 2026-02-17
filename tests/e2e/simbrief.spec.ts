@@ -44,6 +44,18 @@ await page.goto('/');
 await page.locator('a[href="/settings"]').first().click();
 await expect(page).toHaveURL('/settings');
 });
+
+test('should have VATSIM CID field', async ({ page }) => {
+await page.goto('/settings');
+await expect(page.getByTestId('settings-vatsim-cid')).toBeVisible();
+});
+
+test('should read stored VATSIM CID from localStorage', async ({ page }) => {
+await page.goto('/settings');
+await page.evaluate(() => localStorage.setItem('vatsim_cid', '1234567'));
+await page.reload();
+await expect(page.getByTestId('settings-vatsim-cid')).toHaveValue('1234567');
+});
 });
 
 test.describe('SimBrief on Flight Page', () => {

@@ -6,7 +6,8 @@ import {
 	formatFlightTime,
 	formatFuel,
 	formatAltitude,
-	buildVatsimPrefileUrl
+	buildVatsimPrefileUrl,
+	checkVatsimFlightStatus
 } from './simbrief';
 import type { SimBriefPlan } from './types/simbrief';
 
@@ -224,6 +225,43 @@ describe('SimBrief Service', () => {
 			const planNoAlt = { ...mockPlan, alternate: undefined };
 			const url = buildVatsimPrefileUrl(planNoAlt);
 			expect(url).not.toContain('alternate');
+		});
+	});
+
+	describe('checkVatsimFlightStatus', () => {
+		it('should return connected when CID is in pilots', () => {
+			const data = { pilots: [{ cid: 1234567 }], prefiles: [] };
+			expect(checkVatsimFlightStatus(data, '1234567')).toBe('connected');
+		});
+
+		it('should return prefiled when CID is in prefiles', () => {
+			const data = { pilots: [], prefiles: [{ cid: 1234567 }] };
+			expect(checkVatsimFlightStatus(data, '1234567')).toBe('prefiled');
+		});
+
+		it('should return not-filed when CID is not found', () => {
+			const data = { pilots: [], prefiles: [] };
+			expect(checkVatsimFlightStatus(data, '1234567')).toBe('not-filed');
+		});
+
+		it('should prefer connected over prefiled', () => {
+			const data = { pilots: [{ cid: 1234567 }], prefiles: [{ cid: 1234567 }] };
+			expect(checkVatsimFlightStatus(data, '1234567')).toBe('connected');
+		});
+
+		it('should return not-filed for invalid CID', () => {
+			const data = { pilots: [{ cid: 1234567 }], prefiles: [] };
+			expect(checkVatsimFlightStatus(data, 'abc')).toBe('not-filed');
+		});
+
+		it('should return not-filed for empty CID', () => {
+			const data = { pilots: [], prefiles: [] };
+			expect(checkVatsimFlightStatus(data, '')).toBe('not-filed');
+		});
+
+		it('should not match different CIDs', () => {
+			const data = { pilots: [{ cid: 9999999 }], prefiles: [{ cid: 8888888 }] };
+			expect(checkVatsimFlightStatus(data, '1234567')).toBe('not-filed');
 		});
 	});
 });
