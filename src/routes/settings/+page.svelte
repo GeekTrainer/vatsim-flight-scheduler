@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { getStoredUsername, storeUsername, clearStoredUsername } from '$lib/simbrief';
+	import { onMount } from 'svelte';
 
 	let username = $state('');
 	let saved = $state(false);
 
-	$effect(() => {
+	onMount(() => {
 		username = getStoredUsername() || '';
 	});
 
@@ -91,7 +92,7 @@
 						{/if}
 					</div>
 					{#if saved}
-						<p class="text-xs text-green-400 mt-2">✓ Saved</p>
+						<p data-testid="settings-saved-message" class="text-xs text-green-400 mt-2">✓ Saved</p>
 					{/if}
 				</div>
 
