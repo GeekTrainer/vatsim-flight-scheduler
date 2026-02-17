@@ -174,13 +174,31 @@
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
 							</svg>
 							{#if simbriefPlan}
-								<div class="flex items-center gap-4 text-xs text-gray-300 flex-1 min-w-0">
-									<span class="font-mono text-gray-400 truncate flex-1" title={simbriefPlan.general.route}>
-										{simbriefPlan.general.route}{#if simbriefPlan.alternate?.icao_code} &nbsp; <span class="text-yellow-400/70">(ALTN: {simbriefPlan.alternate.icao_code})</span>{/if}
-									</span>
-									<span class="shrink-0 font-semibold">{formatAltitude(simbriefPlan.general.initial_altitude)}</span>
-									<span class="shrink-0">M{simbriefPlan.general.cruise_mach}</span>
-									<span class="shrink-0">{formatFlightTime(simbriefPlan.times.est_time_enroute)}</span>
+								<div class="flex-1 min-w-0">
+									<div class="flex items-center gap-4 text-xs text-gray-300">
+										<span class="font-mono text-gray-400 truncate flex-1" title={simbriefPlan.general.route}>
+											{simbriefPlan.general.route}{#if simbriefPlan.alternate?.icao_code} &nbsp; <span class="text-yellow-400/70">(ALTN: {simbriefPlan.alternate.icao_code})</span>{/if}
+										</span>
+										<span class="shrink-0 font-semibold">{formatAltitude(simbriefPlan.general.initial_altitude)}</span>
+										<span class="shrink-0">M{simbriefPlan.general.cruise_mach}</span>
+										<span class="shrink-0">{formatFlightTime(simbriefPlan.times.est_time_enroute)}</span>
+									</div>
+									{#if enrouteCenters.length > 0}
+										<div class="flex items-center gap-1 mt-1.5">
+											{#each enrouteCenters as center, i (center.artcc)}
+												{#if i > 0}
+													<div class="flex-1 border-t {center.online || enrouteCenters[i-1].online ? 'border-green-600/40' : 'border-gray-700/50'} min-w-[12px]"></div>
+												{/if}
+												<div class="flex items-center gap-1 shrink-0">
+													<span class="w-1.5 h-1.5 rounded-full {center.online ? 'bg-green-400' : 'bg-gray-600'}"></span>
+													<span class="text-[10px] font-semibold {center.online ? 'text-green-300' : 'text-gray-500'}">{center.artcc}</span>
+													{#if center.controllerCount > 1}
+														<span class="text-[9px] text-gray-400">({center.controllerCount})</span>
+													{/if}
+												</div>
+											{/each}
+										</div>
+									{/if}
 								</div>
 							{:else}
 								<div class="flex-1 border-t border-dashed border-gray-700"></div>
@@ -232,25 +250,6 @@
 					</div>
 
 					{#if simbriefPlan}
-						<!-- Enroute Centers -->
-						{#if enrouteCenters.length > 0}
-							<div class="mt-3 pt-3 border-t border-gray-700/50 flex items-center gap-1">
-								<span class="text-[10px] text-gray-500 uppercase tracking-wide mr-1 shrink-0">Enroute</span>
-								{#each enrouteCenters as center, i (center.artcc)}
-									{#if i > 0}
-										<div class="flex-1 border-t {center.online || enrouteCenters[i-1].online ? 'border-green-600/40' : 'border-gray-700/50'} min-w-[16px]"></div>
-									{/if}
-									<div class="flex items-center gap-1 shrink-0 px-1.5 py-0.5 rounded {center.online ? 'bg-green-900/30' : ''}">
-										<span class="w-1.5 h-1.5 rounded-full {center.online ? 'bg-green-400' : 'bg-gray-600'}"></span>
-										<span class="text-xs font-semibold {center.online ? 'text-green-300' : 'text-gray-500'}">{center.artcc}</span>
-										{#if center.controllerCount > 1}
-											<span class="text-[10px] text-gray-400">({center.controllerCount})</span>
-										{/if}
-									</div>
-								{/each}
-							</div>
-						{/if}
-
 						<!-- Fuel & Weights -->
 						<div class="mt-3 pt-3 border-t border-gray-700/50 grid grid-cols-6 gap-3 text-xs text-center">
 							<div>
