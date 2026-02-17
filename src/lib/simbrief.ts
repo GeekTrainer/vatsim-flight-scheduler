@@ -31,11 +31,11 @@ export function buildDispatchUrl(
 }
 
 /**
- * Fetch the latest SimBrief OFP for a given pilot ID
+ * Fetch the latest SimBrief OFP for a given username
  */
-export async function fetchSimBriefPlan(pilotId: string): Promise<SimBriefPlan | null> {
+export async function fetchSimBriefPlan(username: string): Promise<SimBriefPlan | null> {
 	try {
-		const response = await fetch(`${SIMBRIEF_FETCHER_URL}?userid=${pilotId}&json=1`);
+		const response = await fetch(`${SIMBRIEF_FETCHER_URL}?username=${encodeURIComponent(username)}&json=1`);
 		if (!response.ok) return null;
 
 		const data = await response.json();
@@ -122,17 +122,17 @@ export function buildVatsimPrefileUrl(plan: SimBriefPlan): string {
 }
 
 // localStorage helpers
-const PILOT_ID_KEY = 'simbrief_pilot_id';
+const USERNAME_KEY = 'simbrief_username';
 
-export function getStoredPilotId(): string | null {
+export function getStoredUsername(): string | null {
 	if (typeof window === 'undefined') return null;
-	return localStorage.getItem(PILOT_ID_KEY);
+	return localStorage.getItem(USERNAME_KEY);
 }
 
-export function storePilotId(id: string): void {
-	localStorage.setItem(PILOT_ID_KEY, id);
+export function storeUsername(username: string): void {
+	localStorage.setItem(USERNAME_KEY, username);
 }
 
-export function clearStoredPilotId(): void {
-	localStorage.removeItem(PILOT_ID_KEY);
+export function clearStoredUsername(): void {
+	localStorage.removeItem(USERNAME_KEY);
 }
