@@ -126,6 +126,15 @@
 			<div class="hidden md:block">
 				<div class="card-themed px-5 py-3">
 					<div class="flex items-center gap-4">
+						<!-- Callsign -->
+						{#if simbriefPlan}
+							<div class="shrink-0">
+								<div class="text-sm font-bold text-white">{simbriefPlan.general.icao_airline}{simbriefPlan.general.flight_number}</div>
+								<div class="text-[10px] text-gray-500">{simbriefPlan.aircraft.icaocode}</div>
+							</div>
+							<div class="w-px h-10 bg-gray-700"></div>
+						{/if}
+
 						<!-- Departure -->
 						<div class="text-center min-w-[100px]">
 							<div class="text-2xl font-bold text-blue-300" data-testid="flight-departure-code">{data.departure.icao}</div>
@@ -145,7 +154,6 @@
 									<span class="shrink-0 font-semibold">{formatAltitude(simbriefPlan.general.initial_altitude)}</span>
 									<span class="shrink-0">M{simbriefPlan.general.cruise_mach}</span>
 									<span class="shrink-0">{formatFlightTime(simbriefPlan.times.est_time_enroute)}</span>
-									<span class="shrink-0 text-gray-500">{simbriefPlan.aircraft.name}</span>
 								</div>
 							{:else}
 								<div class="flex-1 border-t border-dashed border-gray-700"></div>
