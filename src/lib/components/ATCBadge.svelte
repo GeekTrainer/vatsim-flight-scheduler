@@ -57,7 +57,7 @@
 		data-status="online"
 		class="badge-interactive {getBadgeClasses()}"
 	>
-		<div class="flex flex-col gap-0.5">
+		<div class="flex flex-col gap-0.5 whitespace-nowrap">
 			<!-- Position Label -->
 			<div class="text-xs font-bold flex items-center gap-1">
 				{label}
@@ -70,21 +70,21 @@
 				{/if}
 				<!-- Callsign -->
 				<div 
-					class="text-xs font-semibold"
+					class="text-[10px] font-semibold leading-tight"
 					data-testid="controller-callsign-{controller.callsign}"
 				>
 					{controller.callsign}
 				</div>
 				<!-- Frequency -->
 				<div 
-					class="text-xs opacity-80"
+					class="text-[10px] opacity-80 leading-tight"
 					data-testid="controller-frequency-{controller.callsign}"
 				>
 					{controller.frequency}
 				</div>
 				<!-- Time Online -->
 				<div 
-					class="text-xs opacity-60"
+					class="text-[10px] opacity-60 leading-tight"
 					data-testid="controller-time-{controller.callsign}"
 				>
 					{formatOnlineTime(controller.onlineTimeMinutes)}
