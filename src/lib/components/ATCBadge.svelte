@@ -57,7 +57,7 @@
 		data-status="online"
 		class="badge-interactive {getBadgeClasses()}"
 	>
-		<div class="flex flex-col gap-0.5 whitespace-nowrap">
+		<div class="flex flex-col gap-0.5 overflow-hidden">
 			<!-- Position Label -->
 			<div class="text-xs font-bold flex items-center gap-1">
 				{label}
@@ -70,7 +70,7 @@
 				{/if}
 				<!-- Callsign -->
 				<div 
-					class="text-[10px] font-semibold leading-tight"
+					class="text-[9px] font-medium leading-tight opacity-70 truncate"
 					data-testid="controller-callsign-{controller.callsign}"
 				>
 					{controller.callsign}
