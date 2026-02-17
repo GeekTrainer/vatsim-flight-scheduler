@@ -212,4 +212,55 @@ test.describe('Flight Detail Page', () => {
 
 		await expect(page).toHaveTitle(/KPHX.*KLAS.*VATSIM Flight Scheduler/);
 	});
+
+	test('should display ATIS summary with wind and altimeter', async ({ page }) => {
+		await setupMocks(page);
+		await page.goto('/flight/KPHX-KLAS');
+
+		const depAtis = page.getByTestId('atis-display-KPHX');
+		await expect(depAtis).toBeVisible();
+
+		// Summary should show parsed wind and altimeter from mock data
+		const summary = depAtis.getByTestId('atis-summary');
+		await expect(summary).toBeVisible();
+		await expect(depAtis.getByTestId('atis-summary-wind')).toContainText('240°');
+		await expect(depAtis.getByTestId('atis-summary-wind')).toContainText('10kt');
+		await expect(depAtis.getByTestId('atis-summary-altimeter')).toContainText('29.90');
+	});
+
+	test('should display runway info in ATIS summary', async ({ page }) => {
+		await setupMocks(page);
+		await page.goto('/flight/KPHX-KLAS');
+
+		const depAtis = page.getByTestId('atis-display-KPHX');
+		await expect(depAtis).toBeVisible();
+
+		// PHX mock has "LANDING AND DEPARTING RWY 25L AND 25R"
+		await expect(depAtis.getByTestId('atis-summary-arrivals')).toContainText('25L');
+		await expect(depAtis.getByTestId('atis-summary-departures')).toContainText('25L');
+	});
+
+	test('should show arrival runway info with approach type', async ({ page }) => {
+		await setupMocks(page);
+		await page.goto('/flight/KPHX-KLAS');
+
+		const arrAtis = page.getByTestId('atis-display-KLAS');
+		await expect(arrAtis).toBeVisible();
+
+		// LAS mock has "ILS APPROACHES IN USE" and "LANDING RWY 26L AND 26R"
+		await expect(arrAtis.getByTestId('atis-summary-arrivals')).toContainText('26L');
+	});
+
+	test('should show summary on Real World tab too', async ({ page }) => {
+		await setupMocks(page);
+		await page.goto('/flight/KPHX-KLAS');
+
+		const depAtis = page.getByTestId('atis-display-KPHX');
+		await depAtis.getByTestId('atis-tab-realworld').click();
+
+		// Real World tab should also show a summary card
+		await expect(depAtis.getByTestId('atis-content-realworld')).toBeVisible();
+		await expect(depAtis.getByTestId('atis-summary')).toBeVisible();
+		await expect(depAtis.getByTestId('atis-summary-altimeter')).toBeVisible();
+	});
 });

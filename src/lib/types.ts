@@ -14,6 +14,7 @@ export interface Route {
 
 export interface ATISInfo {
 	source: 'vatsim' | 'faa';
+	atisType?: 'combined' | 'arrival' | 'departure';
 	code?: string;
 	text: string;
 	frequency?: string;

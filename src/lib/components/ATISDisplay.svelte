@@ -1,5 +1,7 @@
 <script lang="ts">
 	import type { ATISInfo } from '$lib/types';
+	import ATISSummary from './ATISSummary.svelte';
+	import { parseATIS } from '$lib/utils/atis-parser';
 
 	interface Props {
 		vatsimAtis: ATISInfo | null;
@@ -12,6 +14,16 @@
 	let activeTab = $derived(vatsimAtis ? 'vatsim' as const : 'realworld' as const);
 	let selectedTab = $state<'vatsim' | 'realworld' | null>(null);
 	let currentTab = $derived(selectedTab ?? activeTab);
+
+	// Parse ATIS text for summary display
+	let currentAtis = $derived(currentTab === 'vatsim' ? vatsimAtis : faaAtis);
+	let parsedAtis = $derived(currentAtis ? parseATIS(currentAtis.text) : null);
+
+	function atisTypeLabel(atis: ATISInfo): string | null {
+		if (atis.atisType === 'arrival') return 'Arrival ATIS';
+		if (atis.atisType === 'departure') return 'Departure ATIS';
+		return null;
+	}
 </script>
 
 <div data-testid="atis-display-{airportCode}" class="card-subtle overflow-hidden">
@@ -59,6 +71,11 @@
 									Info {vatsimAtis.code}
 								</span>
 							{/if}
+							{#if atisTypeLabel(vatsimAtis)}
+								<span class="badge bg-gray-700/50 text-gray-300 border-gray-600 text-xs">
+									{atisTypeLabel(vatsimAtis)}
+								</span>
+							{/if}
 							{#if vatsimAtis.frequency}
 								<span class="text-xs text-gray-400">📻 {vatsimAtis.frequency}</span>
 							{/if}
@@ -66,6 +83,9 @@
 								<span class="text-xs text-gray-500">Updated {new Date(vatsimAtis.lastUpdated).toLocaleTimeString()}</span>
 							{/if}
 						</div>
+						{#if parsedAtis}
+							<ATISSummary {parsedAtis} />
+						{/if}
 						<div data-testid="atis-text-{airportCode}" class="bg-gray-900/70 rounded-lg p-3 font-mono text-sm text-gray-200 leading-relaxed border border-gray-700/50">
 							{vatsimAtis.text}
 						</div>
@@ -87,8 +107,16 @@
 									Info {faaAtis.code}
 								</span>
 							{/if}
+							{#if atisTypeLabel(faaAtis)}
+								<span class="badge bg-gray-700/50 text-gray-300 border-gray-600 text-xs">
+									{atisTypeLabel(faaAtis)}
+								</span>
+							{/if}
 							<span class="text-xs text-gray-400">Source: FAA D-ATIS</span>
 						</div>
+						{#if parsedAtis}
+							<ATISSummary {parsedAtis} />
+						{/if}
 						<div data-testid="atis-text-{airportCode}" class="bg-gray-900/70 rounded-lg p-3 font-mono text-sm text-gray-200 leading-relaxed border border-gray-700/50">
 							{faaAtis.text}
 						</div>

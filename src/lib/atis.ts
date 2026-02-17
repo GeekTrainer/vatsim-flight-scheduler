@@ -14,7 +14,7 @@ interface FAADatisResponse {
 }
 
 interface CachedATIS {
-	data: ATISInfo | null;
+	data: FAADatisResponse[];
 	timestamp: number;
 }
 
@@ -24,44 +24,55 @@ const CACHE_DURATION = 60 * 1000; // 60 seconds
 const atisCache = new Map<string, CachedATIS>();
 
 /**
- * Fetches FAA D-ATIS for a US airport
- * Returns null gracefully on any error
+ * Fetches FAA D-ATIS for a US airport, selecting the correct entry for the role.
+ * Split ATIS airports return multiple entries (type: 'arr', 'dep').
+ * Combined airports return a single entry (type: 'combined').
  */
-export async function fetchFAADatis(icao: string): Promise<ATISInfo | null> {
+export async function fetchFAADatis(icao: string, role: 'departure' | 'arrival' = 'arrival'): Promise<ATISInfo | null> {
 	const now = Date.now();
 	const cached = atisCache.get(icao);
+	let entries: FAADatisResponse[];
 
 	if (cached && now - cached.timestamp < CACHE_DURATION) {
-		return cached.data;
-	}
+		entries = cached.data;
+	} else {
+		try {
+			const response = await fetch(`${DATIS_API_URL}/${icao}`);
+			if (!response.ok) {
+				atisCache.set(icao, { data: [], timestamp: now });
+				return null;
+			}
 
-	try {
-		const response = await fetch(`${DATIS_API_URL}/${icao}`);
-		if (!response.ok) {
-			atisCache.set(icao, { data: null, timestamp: now });
+			const data: FAADatisResponse[] = await response.json();
+			if (!Array.isArray(data) || data.length === 0) {
+				atisCache.set(icao, { data: [], timestamp: now });
+				return null;
+			}
+
+			entries = data;
+			atisCache.set(icao, { data: entries, timestamp: now });
+		} catch {
+			atisCache.set(icao, { data: [], timestamp: now });
 			return null;
 		}
-
-		const data: FAADatisResponse[] = await response.json();
-
-		if (!Array.isArray(data) || data.length === 0) {
-			atisCache.set(icao, { data: null, timestamp: now });
-			return null;
-		}
-
-		// Prefer 'combined' type if available, otherwise take first
-		const entry = data.find(d => d.type === 'combined') || data[0];
-
-		const result: ATISInfo = {
-			source: 'faa',
-			code: entry.code || undefined,
-			text: entry.datis,
-		};
-
-		atisCache.set(icao, { data: result, timestamp: now });
-		return result;
-	} catch {
-		atisCache.set(icao, { data: null, timestamp: now });
-		return null;
 	}
+
+	if (entries.length === 0) return null;
+
+	// Select the right entry based on role
+	const roleType = role === 'departure' ? 'dep' : 'arr';
+	const roleSpecific = entries.find(d => d.type === roleType);
+	const combined = entries.find(d => d.type === 'combined');
+	const entry = roleSpecific || combined || entries[0];
+
+	let atisType: 'combined' | 'arrival' | 'departure' = 'combined';
+	if (entry.type === 'arr') atisType = 'arrival';
+	else if (entry.type === 'dep') atisType = 'departure';
+
+	return {
+		source: 'faa',
+		atisType,
+		code: entry.code || undefined,
+		text: entry.datis,
+	};
 }

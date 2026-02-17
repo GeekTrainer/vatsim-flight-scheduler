@@ -167,24 +167,43 @@ function extractCallsignNumber(callsign: string): number {
 }
 
 /**
- * Looks up VATSIM ATIS for a specific airport from the ATIS stations array
- * ATIS callsigns use ICAO codes (e.g., KBWI_ATIS, KLAX_ATIS, KTPA_D_ATIS)
+ * Looks up VATSIM ATIS for a specific airport, respecting split arrival/departure ATIS.
+ * Split ATIS airports (e.g., ATL, MIA) have separate _A_ATIS and _D_ATIS callsigns.
+ * The role parameter selects the correct one for each side of the flight page.
  */
-export function getVatsimATIS(atisStations: VatsimATIS[], icao: string): ATISInfo | null {
-	const atis = atisStations.find(a => {
+export function getVatsimATIS(atisStations: VatsimATIS[], icao: string, role: 'departure' | 'arrival' = 'arrival'): ATISInfo | null {
+	// Find all ATIS entries for this airport
+	const matches = atisStations.filter(a => {
 		const callsignPrefix = a.callsign.split('_')[0];
 		return callsignPrefix === icao && a.callsign.includes('ATIS');
 	});
 
-	if (!atis || !atis.text_atis || atis.text_atis.length === 0) {
+	if (matches.length === 0) return null;
+
+	// Classify each match
+	const roleSpecific = matches.find(a => {
+		if (role === 'departure') return /_D_ATIS/.test(a.callsign);
+		return /_A_ATIS/.test(a.callsign);
+	});
+
+	// Prefer role-specific, fall back to combined (plain _ATIS)
+	const combined = matches.find(a => !/_[AD]_ATIS/.test(a.callsign));
+	const best = roleSpecific || combined || matches[0];
+
+	if (!best || !best.text_atis || best.text_atis.length === 0) {
 		return null;
 	}
 
+	let atisType: 'combined' | 'arrival' | 'departure' = 'combined';
+	if (/_A_ATIS/.test(best.callsign)) atisType = 'arrival';
+	else if (/_D_ATIS/.test(best.callsign)) atisType = 'departure';
+
 	return {
 		source: 'vatsim',
-		code: atis.atis_code || undefined,
-		text: atis.text_atis.join(' '),
-		frequency: atis.frequency,
-		lastUpdated: atis.last_updated
+		atisType,
+		code: best.atis_code || undefined,
+		text: best.text_atis.join(' '),
+		frequency: best.frequency,
+		lastUpdated: best.last_updated
 	};
 }

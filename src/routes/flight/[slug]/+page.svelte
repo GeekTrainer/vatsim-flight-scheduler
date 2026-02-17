@@ -14,8 +14,8 @@
 	let arrivalFaaAtis = $state<ATISInfo | null>(null);
 	let isLoading = $state(true);
 
-	let departureVatsimAtis = $derived(getVatsimATIS(atisStations, data.departure.icao));
-	let arrivalVatsimAtis = $derived(getVatsimATIS(atisStations, data.arrival.icao));
+	let departureVatsimAtis = $derived(getVatsimATIS(atisStations, data.departure.icao, 'departure'));
+	let arrivalVatsimAtis = $derived(getVatsimATIS(atisStations, data.arrival.icao, 'arrival'));
 
 	async function loadVatsimData() {
 		try {
@@ -38,8 +38,8 @@
 
 	async function loadFaaAtis() {
 		const [depAtis, arrAtis] = await Promise.all([
-			fetchFAADatis(data.departure.icao),
-			fetchFAADatis(data.arrival.icao)
+			fetchFAADatis(data.departure.icao, 'departure'),
+			fetchFAADatis(data.arrival.icao, 'arrival')
 		]);
 		departureFaaAtis = depAtis;
 		arrivalFaaAtis = arrAtis;
