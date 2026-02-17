@@ -92,8 +92,9 @@
 
 	<main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-6">
 		{#if isLoading}
-			<div class="flex justify-center py-12">
+			<div class="flex flex-col items-center justify-center py-12 gap-4">
 				<div class="spinner"></div>
+				<p class="text-xs text-gray-700">For VATSIM simulation use only. Not for real-world flight planning or navigation.</p>
 			</div>
 		{:else}
 			<!-- Mobile: Stacked collapsible cards -->
