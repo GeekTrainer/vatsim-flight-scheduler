@@ -57,8 +57,9 @@
 		arrivalOtherFaaAtis = arrOtherAtis;
 	}
 
-	// Mobile: only one card expanded at a time
-	let mobileExpanded = $state<'departure' | 'arrival'>('departure');
+	// Mobile: independent expand/collapse, both collapsed by default
+	let depExpanded = $state(false);
+	let arrExpanded = $state(false);
 </script>
 
 <svelte:head>
@@ -105,8 +106,8 @@
 					faaAtis={departureFaaAtis}
 					otherVatsimAtis={departureOtherVatsimAtis}
 					otherFaaAtis={departureOtherFaaAtis}
-					isExpanded={mobileExpanded === 'departure'}
-					onToggle={() => mobileExpanded = mobileExpanded === 'departure' ? 'arrival' : 'departure'}
+					isExpanded={depExpanded}
+					onToggle={() => depExpanded = !depExpanded}
 				/>
 				<FlightAirportCard
 					airport={data.arrival}
@@ -116,8 +117,8 @@
 					faaAtis={arrivalFaaAtis}
 					otherVatsimAtis={arrivalOtherVatsimAtis}
 					otherFaaAtis={arrivalOtherFaaAtis}
-					isExpanded={mobileExpanded === 'arrival'}
-					onToggle={() => mobileExpanded = mobileExpanded === 'arrival' ? 'departure' : 'arrival'}
+					isExpanded={arrExpanded}
+					onToggle={() => arrExpanded = !arrExpanded}
 				/>
 			</div>
 
