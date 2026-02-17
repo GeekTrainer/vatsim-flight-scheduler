@@ -91,67 +91,61 @@
 				<div class="spinner"></div>
 			</div>
 		{:else}
-			<!-- Two-column layout: Departure (left) | Arrival (right) -->
-			<div class="grid grid-cols-2 gap-6">
-				<!-- Departure Airport Section -->
-				<section data-testid="flight-departure-section" class="space-y-4">
-					<div>
-						<h2 class="text-2xl font-bold text-blue-300" data-testid="flight-departure-code">
-							Departure — {data.departure.icao}
-						</h2>
-						<div class="text-sm text-gray-400">{data.departure.name} · {data.departure.city}</div>
-					</div>
+			<!-- Two-column grid with aligned rows -->
+			<div class="grid grid-cols-2 gap-x-6 gap-y-4" style="grid-template-rows: auto auto auto;">
+				<!-- Row 1: Headers -->
+				<div>
+					<h2 class="text-2xl font-bold text-blue-300" data-testid="flight-departure-code">
+						Departure — {data.departure.icao}
+					</h2>
+					<div class="text-sm text-gray-400">{data.departure.name} · {data.departure.city}</div>
+				</div>
+				<div>
+					<h2 class="text-2xl font-bold text-green-400" data-testid="flight-arrival-code">
+						Arrival — {data.arrival.icao}
+					</h2>
+					<div class="text-sm text-gray-400">{data.arrival.name} · {data.arrival.city}</div>
+				</div>
 
-					<div class="card-subtle p-4">
-						<h3 class="text-sm font-semibold text-gray-300 mb-3">ATC Coverage</h3>
-						<ATCStatusDisplay
-							icao={data.departure.icao}
-							artcc={data.departure.artcc}
-							{locationControllers}
-						/>
-					</div>
+				<!-- Row 2: ATC Coverage -->
+				<div class="card-subtle p-4" data-testid="flight-departure-section">
+					<h3 class="text-sm font-semibold text-gray-300 mb-3">ATC Coverage</h3>
+					<ATCStatusDisplay
+						icao={data.departure.icao}
+						artcc={data.departure.artcc}
+						{locationControllers}
+					/>
+				</div>
+				<div class="card-subtle p-4" data-testid="flight-arrival-section">
+					<h3 class="text-sm font-semibold text-gray-300 mb-3">ATC Coverage</h3>
+					<ATCStatusDisplay
+						icao={data.arrival.icao}
+						artcc={data.arrival.artcc}
+						{locationControllers}
+					/>
+				</div>
 
-					<div>
-						<h3 class="text-sm font-semibold text-gray-300 mb-3">ATIS Information</h3>
-						<ATISDisplay
-							vatsimAtis={departureVatsimAtis}
-							faaAtis={departureFaaAtis}
-							otherVatsimAtis={departureOtherVatsimAtis}
-							otherFaaAtis={departureOtherFaaAtis}
-							airportCode={data.departure.icao}
-						/>
-					</div>
-				</section>
-
-				<!-- Arrival Airport Section -->
-				<section data-testid="flight-arrival-section" class="space-y-4">
-					<div>
-						<h2 class="text-2xl font-bold text-green-400" data-testid="flight-arrival-code">
-							Arrival — {data.arrival.icao}
-						</h2>
-						<div class="text-sm text-gray-400">{data.arrival.name} · {data.arrival.city}</div>
-					</div>
-
-					<div class="card-subtle p-4">
-						<h3 class="text-sm font-semibold text-gray-300 mb-3">ATC Coverage</h3>
-						<ATCStatusDisplay
-							icao={data.arrival.icao}
-							artcc={data.arrival.artcc}
-							{locationControllers}
-						/>
-					</div>
-
-					<div>
-						<h3 class="text-sm font-semibold text-gray-300 mb-3">ATIS Information</h3>
-						<ATISDisplay
-							vatsimAtis={arrivalVatsimAtis}
-							faaAtis={arrivalFaaAtis}
-							otherVatsimAtis={arrivalOtherVatsimAtis}
-							otherFaaAtis={arrivalOtherFaaAtis}
-							airportCode={data.arrival.icao}
-						/>
-					</div>
-				</section>
+				<!-- Row 3: ATIS Information -->
+				<div>
+					<h3 class="text-sm font-semibold text-gray-300 mb-3">ATIS Information</h3>
+					<ATISDisplay
+						vatsimAtis={departureVatsimAtis}
+						faaAtis={departureFaaAtis}
+						otherVatsimAtis={departureOtherVatsimAtis}
+						otherFaaAtis={departureOtherFaaAtis}
+						airportCode={data.departure.icao}
+					/>
+				</div>
+				<div>
+					<h3 class="text-sm font-semibold text-gray-300 mb-3">ATIS Information</h3>
+					<ATISDisplay
+						vatsimAtis={arrivalVatsimAtis}
+						faaAtis={arrivalFaaAtis}
+						otherVatsimAtis={arrivalOtherVatsimAtis}
+						otherFaaAtis={arrivalOtherFaaAtis}
+						airportCode={data.arrival.icao}
+					/>
+				</div>
 			</div>
 		{/if}
 
