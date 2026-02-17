@@ -11,7 +11,7 @@
 </script>
 
 {#if parsedAtis}
-	<div class="text-xs text-gray-300 space-y-0.5">
+	<div class="text-sm text-gray-200 space-y-1">
 		<!-- Line 1: Wind + Altimeter -->
 		<div class="flex items-center gap-x-3">
 			{#if parsedAtis.wind}
@@ -29,20 +29,20 @@
 		{#if parsedAtis.arrivalRunways.length > 0 || parsedAtis.departureRunways.length > 0}
 			<div class="flex items-center gap-x-3">
 				{#if parsedAtis.arrivalRunways.length > 0}
-					<span data-testid="compact-arrivals" class="flex items-center gap-1">
-						🛬
+					<span data-testid="compact-arrivals" class="flex items-center gap-1.5">
+						<span class="text-base">🛬</span>
 						{#each parsedAtis.arrivalRunways as rwy, i}
 							{#if i > 0}<span class="text-gray-500">/</span>{/if}
-							<span class="font-medium">{rwy.runway}</span>
+							<span class="font-semibold">{rwy.runway}</span>
 						{/each}
 					</span>
 				{/if}
 				{#if parsedAtis.departureRunways.length > 0}
-					<span data-testid="compact-departures" class="flex items-center gap-1">
-						🛫
+					<span data-testid="compact-departures" class="flex items-center gap-1.5">
+						<span class="text-base">🛫</span>
 						{#each parsedAtis.departureRunways as rwy, i}
 							{#if i > 0}<span class="text-gray-500">/</span>{/if}
-							<span class="font-medium">{rwy.runway}</span>
+							<span class="font-semibold">{rwy.runway}</span>
 						{/each}
 					</span>
 				{/if}
