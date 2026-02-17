@@ -39,7 +39,7 @@ Following the project's guidelines, we focus on:
 
 **CRITICAL**: All remote API calls must be mocked in E2E tests using `page.route()`. This includes:
 - VATSIM data API (`https://data.vatsim.net/v3/vatsim-data.json`)
-- FAA D-ATIS API (`https://datis.clowd.io/api/*`)
+- FAA D-ATIS API (`https://atis.info/api/*`)
 - Any other external service
 
 External API calls should be made **client-side** (not in `+page.server.ts`) so Playwright's `page.route()` can intercept them. Server-side fetches bypass Playwright's network interception.
@@ -49,7 +49,7 @@ External API calls should be made **client-side** (not in `+page.server.ts`) so 
 await page.route('https://data.vatsim.net/v3/vatsim-data.json', async (route) => {
   await route.fulfill({ status: 200, body: JSON.stringify(mockData) });
 });
-await page.route('https://datis.clowd.io/api/*', async (route) => {
+await page.route('https://atis.info/api/*', async (route) => {
   await route.fulfill({ status: 200, body: JSON.stringify(mockAtis) });
 });
 await page.goto('/');

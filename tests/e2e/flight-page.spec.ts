@@ -28,14 +28,14 @@ function setupMocks(page: import('@playwright/test').Page) {
 				body: JSON.stringify(mockVatsimDataWithControllers)
 			});
 		}),
-		page.route('https://datis.clowd.io/api/KPHX', async (route) => {
+		page.route('https://atis.info/api/KPHX', async (route) => {
 			await route.fulfill({
 				status: 200,
 				contentType: 'application/json',
 				body: JSON.stringify(mockFaaDatisPhx)
 			});
 		}),
-		page.route('https://datis.clowd.io/api/KLAS', async (route) => {
+		page.route('https://atis.info/api/KLAS', async (route) => {
 			await route.fulfill({
 				status: 200,
 				contentType: 'application/json',
@@ -178,14 +178,14 @@ test.describe('Flight Detail Page', () => {
 			});
 		});
 		// Mock FAA D-ATIS with data so Real World tab has content
-		await page.route('https://datis.clowd.io/api/KPHX', async (route) => {
+		await page.route('https://atis.info/api/KPHX', async (route) => {
 			await route.fulfill({
 				status: 200,
 				contentType: 'application/json',
 				body: JSON.stringify(mockFaaDatisPhx)
 			});
 		});
-		await page.route('https://datis.clowd.io/api/KLAS', async (route) => {
+		await page.route('https://atis.info/api/KLAS', async (route) => {
 			await route.fulfill({
 				status: 200,
 				contentType: 'application/json',

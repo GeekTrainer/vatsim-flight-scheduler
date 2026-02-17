@@ -18,7 +18,7 @@ interface CachedATIS {
 	timestamp: number;
 }
 
-const DATIS_API_URL = 'https://datis.clowd.io/api';
+const DATIS_API_URL = 'https://atis.info/api';
 const CACHE_DURATION = 60 * 1000; // 60 seconds
 
 const atisCache = new Map<string, CachedATIS>();
