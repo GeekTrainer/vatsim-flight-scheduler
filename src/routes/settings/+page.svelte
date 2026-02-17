@@ -1,28 +1,40 @@
 <script lang="ts">
-	import { getStoredUsername, storeUsername, clearStoredUsername } from '$lib/simbrief';
+	import { getStoredUsername, storeUsername, clearStoredUsername, getStoredVatsimCid, storeVatsimCid, clearStoredVatsimCid } from '$lib/simbrief';
 	import { onMount } from 'svelte';
 
 	let username = $state('');
+	let vatsimCid = $state('');
 	let saved = $state(false);
 
 	onMount(() => {
 		username = getStoredUsername() || '';
+		vatsimCid = getStoredVatsimCid() || '';
 	});
 
 	function save() {
-		const trimmed = username.trim();
-		if (trimmed) {
-			storeUsername(trimmed);
+		const trimmedUsername = username.trim();
+		if (trimmedUsername) {
+			storeUsername(trimmedUsername);
 		} else {
 			clearStoredUsername();
 		}
+
+		const trimmedCid = vatsimCid.trim();
+		if (trimmedCid) {
+			storeVatsimCid(trimmedCid);
+		} else {
+			clearStoredVatsimCid();
+		}
+
 		saved = true;
 		setTimeout(() => saved = false, 2000);
 	}
 
 	function clear() {
 		clearStoredUsername();
+		clearStoredVatsimCid();
 		username = '';
+		vatsimCid = '';
 		saved = true;
 		setTimeout(() => saved = false, 2000);
 	}
@@ -98,6 +110,45 @@
 
 				<div class="text-xs text-gray-600 border-t border-gray-700 pt-3">
 					Don't have SimBrief? <a href="https://www.simbrief.com/home/?page=register" target="_blank" class="text-blue-400 hover:text-blue-300">Create a free account</a> — it's the most popular flight planning tool for flight simulation.
+				</div>
+			</div>
+		</section>
+
+		<!-- VATSIM Section -->
+		<section class="space-y-4">
+			<div>
+				<h2 class="text-lg font-bold text-gray-200">VATSIM</h2>
+				<p class="text-sm text-gray-400 mt-1">Your VATSIM CID lets us check your flight plan filing status in real time.</p>
+			</div>
+
+			<div class="card-subtle p-4 space-y-4">
+				<div>
+					<label for="vatsim-cid" class="text-sm font-semibold text-gray-300 block mb-1">VATSIM CID</label>
+					<p class="text-xs text-gray-500 mb-2">
+						Your numeric VATSIM ID — find it at
+						<a href="https://my.vatsim.net" target="_blank" class="text-blue-400 hover:text-blue-300">my.vatsim.net</a>.
+					</p>
+					<div class="flex gap-2">
+						<input
+							id="vatsim-cid"
+							data-testid="settings-vatsim-cid"
+							type="text"
+							bind:value={vatsimCid}
+							placeholder="e.g. 1234567"
+							class="form-input text-sm flex-1"
+							onkeydown={(e) => e.key === 'Enter' && save()}
+						/>
+						<button
+							data-testid="settings-vatsim-save"
+							onclick={save}
+							class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-lg transition-colors"
+						>
+							Save
+						</button>
+					</div>
+					{#if saved}
+						<p class="text-xs text-green-400 mt-2">✓ Saved</p>
+					{/if}
 				</div>
 			</div>
 		</section>

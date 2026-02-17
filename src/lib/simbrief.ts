@@ -123,6 +123,7 @@ export function buildVatsimPrefileUrl(plan: SimBriefPlan): string {
 
 // localStorage helpers
 const USERNAME_KEY = 'simbrief_username';
+const VATSIM_CID_KEY = 'vatsim_cid';
 
 export function getStoredUsername(): string | null {
 	if (typeof window === 'undefined') return null;
@@ -135,4 +136,38 @@ export function storeUsername(username: string): void {
 
 export function clearStoredUsername(): void {
 	localStorage.removeItem(USERNAME_KEY);
+}
+
+export function getStoredVatsimCid(): string | null {
+	if (typeof window === 'undefined') return null;
+	return localStorage.getItem(VATSIM_CID_KEY);
+}
+
+export function storeVatsimCid(cid: string): void {
+	localStorage.setItem(VATSIM_CID_KEY, cid);
+}
+
+export function clearStoredVatsimCid(): void {
+	localStorage.removeItem(VATSIM_CID_KEY);
+}
+
+/**
+ * Check a user's VATSIM filing status from the live data feed
+ */
+export type VatsimFlightStatus = 'not-filed' | 'prefiled' | 'connected';
+
+export function checkVatsimFlightStatus(
+	vatsimData: { pilots: any[]; prefiles: any[] },
+	cid: string
+): VatsimFlightStatus {
+	const cidNum = parseInt(cid, 10);
+	if (isNaN(cidNum)) return 'not-filed';
+
+	if (vatsimData.pilots?.some((p: any) => p.cid === cidNum)) {
+		return 'connected';
+	}
+	if (vatsimData.prefiles?.some((p: any) => p.cid === cidNum)) {
+		return 'prefiled';
+	}
+	return 'not-filed';
 }

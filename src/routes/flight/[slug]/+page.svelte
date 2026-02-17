@@ -6,20 +6,27 @@
 	import SimBriefPlanDisplay from '$lib/components/SimBriefPlanDisplay.svelte';
 	import { fetchVatsimData, getLocationControllers, getVatsimATIS } from '$lib/vatsim';
 	import { fetchFAADatis } from '$lib/atis';
-	import { formatFlightTime, formatFuel, formatAltitude, validatePlanMatchesRoute, buildVatsimPrefileUrl } from '$lib/simbrief';
+	import { formatFlightTime, formatFuel, formatAltitude, validatePlanMatchesRoute, buildVatsimPrefileUrl, getStoredVatsimCid, checkVatsimFlightStatus } from '$lib/simbrief';
 	import type { LocationControllers, ATISInfo } from '$lib/types';
-	import type { VatsimATIS } from '$lib/types/vatsim';
+	import type { VatsimATIS, VatsimData } from '$lib/types/vatsim';
 	import type { SimBriefPlan } from '$lib/types/simbrief';
 
 	let { data } = $props();
 
 	let locationControllers = $state<LocationControllers>(new Map());
 	let atisStations = $state<VatsimATIS[]>([]);
+	let vatsimRawData = $state<{ pilots: any[]; prefiles: any[] }>({ pilots: [], prefiles: [] });
 	let departureFaaAtis = $state<ATISInfo | null>(null);
 	let arrivalFaaAtis = $state<ATISInfo | null>(null);
 	let departureOtherFaaAtis = $state<ATISInfo | null>(null);
 	let arrivalOtherFaaAtis = $state<ATISInfo | null>(null);
 	let isLoading = $state(true);
+	let vatsimCid = $state('');
+
+	import { onMount } from 'svelte';
+	onMount(() => {
+		vatsimCid = getStoredVatsimCid() || '';
+	});
 
 	// Primary ATIS for each side (role-specific)
 	let departureVatsimAtis = $derived(getVatsimATIS(atisStations, data.departure.icao, 'departure'));
@@ -29,11 +36,17 @@
 	let departureOtherVatsimAtis = $derived(getVatsimATIS(atisStations, data.departure.icao, 'arrival'));
 	let arrivalOtherVatsimAtis = $derived(getVatsimATIS(atisStations, data.arrival.icao, 'departure'));
 
+	// VATSIM flight status (prefiled / connected / not filed)
+	let vatsimFlightStatus = $derived(
+		vatsimCid ? checkVatsimFlightStatus(vatsimRawData, vatsimCid) : 'not-filed' as const
+	);
+
 	async function loadVatsimData() {
 		try {
 			const vatsimData = await fetchVatsimData();
 			locationControllers = getLocationControllers(vatsimData.controllers);
 			atisStations = vatsimData.atis;
+			vatsimRawData = { pilots: vatsimData.pilots, prefiles: vatsimData.prefiles };
 			isLoading = false;
 		} catch (error) {
 			console.error('Failed to load VATSIM data:', error);
@@ -173,14 +186,24 @@
 						<div class="shrink-0">
 							{#if simbriefPlan}
 								<div class="flex items-center gap-2">
-									<a
-										href={buildVatsimPrefileUrl(simbriefPlan)}
-										target="_blank"
-										data-testid="vatsim-prefile-link"
-										class="px-3 py-1.5 text-xs font-semibold bg-green-700 hover:bg-green-600 text-white rounded transition-colors"
-									>
-										Pre-file VATSIM
-									</a>
+									{#if vatsimFlightStatus === 'connected'}
+										<span data-testid="vatsim-status" class="px-3 py-1.5 text-xs font-semibold bg-green-600/30 text-green-300 border border-green-700 rounded">
+											✓ Connected
+										</span>
+									{:else if vatsimFlightStatus === 'prefiled'}
+										<span data-testid="vatsim-status" class="px-3 py-1.5 text-xs font-semibold bg-blue-600/30 text-blue-300 border border-blue-700 rounded">
+											✓ Filed
+										</span>
+									{:else}
+										<a
+											href={buildVatsimPrefileUrl(simbriefPlan)}
+											target="_blank"
+											data-testid="vatsim-prefile-link"
+											class="px-3 py-1.5 text-xs font-semibold bg-green-700 hover:bg-green-600 text-white rounded transition-colors"
+										>
+											Pre-file VATSIM
+										</a>
+									{/if}
 									<button onclick={handleRefile} class="text-xs text-blue-400 hover:text-blue-300">Re-file</button>
 									<button onclick={handleClearPlan} class="text-xs text-gray-600 hover:text-gray-400">✕</button>
 								</div>
