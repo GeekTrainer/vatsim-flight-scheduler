@@ -185,7 +185,7 @@
 
 					{#if simbriefPlan}
 						<!-- Expanded plan details below the strip -->
-						<div class="mt-3 pt-3 border-t border-gray-700/50 grid grid-cols-6 gap-3 text-xs">
+						<div class="mt-3 pt-3 border-t border-gray-700/50 grid grid-cols-6 gap-3 text-xs text-center">
 							<div>
 								<div class="text-gray-500">Block Fuel</div>
 								<div class="text-gray-200 font-semibold">{formatFuel(simbriefPlan.fuel.plan_ramp)}</div>
