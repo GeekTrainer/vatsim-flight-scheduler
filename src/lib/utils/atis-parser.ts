@@ -49,6 +49,15 @@ export function parseATIS(text: string): ParsedATIS {
 	result.arrivalRunways = arrivals;
 	result.departureRunways = departures;
 
+	// Infer: if arrivals found but no departures, assume same runways for departure
+	if (result.arrivalRunways.length > 0 && result.departureRunways.length === 0) {
+		result.departureRunways = result.arrivalRunways.map(r => ({ runway: r.runway }));
+	}
+	// Infer: if departures found but no arrivals, assume same runways for arrival
+	if (result.departureRunways.length > 0 && result.arrivalRunways.length === 0) {
+		result.arrivalRunways = result.departureRunways.map(r => ({ runway: r.runway }));
+	}
+
 	return result;
 }
 

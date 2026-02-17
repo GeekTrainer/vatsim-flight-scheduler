@@ -203,6 +203,26 @@ describe('ATIS Parser', () => {
 			expect(result.arrivalRunways).toHaveLength(0);
 			expect(result.departureRunways).toHaveLength(0);
 		});
+
+		it('should infer departure runways when only arrivals are found', () => {
+			const text = 'CMH ATIS INFO D. 00000KT 1 1/2SM BR BKN005 03/03 A3010. ILS, RWY 28L, AND, ILS, RWY 28R, SIMUL APCH IN USE.';
+			const result = parseATIS(text);
+			expect(result.arrivalRunways).toHaveLength(2);
+			expect(result.arrivalRunways[0]).toEqual({ runway: '28L', approachType: 'ILS' });
+			// Departures inferred from arrivals (without approach type)
+			expect(result.departureRunways).toHaveLength(2);
+			expect(result.departureRunways[0]).toEqual({ runway: '28L' });
+			expect(result.departureRunways[1]).toEqual({ runway: '28R' });
+		});
+
+		it('should infer arrival runways when only departures are found', () => {
+			const text = 'DEP INFO N. 14004KT 10SM BKN250 A3015. DEPG RWYS 8R, 9L.';
+			const result = parseATIS(text);
+			expect(result.departureRunways).toHaveLength(2);
+			// Arrivals inferred from departures
+			expect(result.arrivalRunways).toHaveLength(2);
+			expect(result.arrivalRunways[0]).toEqual({ runway: '8R' });
+		});
 	});
 
 	describe('formatWind', () => {
