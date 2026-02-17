@@ -2,17 +2,20 @@
 	import ATCStatusDisplay from '$lib/components/ATCStatusDisplay.svelte';
 	import ATISDisplay from '$lib/components/ATISDisplay.svelte';
 	import { fetchVatsimData, getLocationControllers, getVatsimATIS } from '$lib/vatsim';
-	import type { LocationControllers } from '$lib/types';
+	import { fetchFAADatis } from '$lib/atis';
+	import type { LocationControllers, ATISInfo } from '$lib/types';
 	import type { VatsimATIS } from '$lib/types/vatsim';
 
 	let { data } = $props();
 
 	let locationControllers = $state<LocationControllers>(new Map());
 	let atisStations = $state<VatsimATIS[]>([]);
+	let departureFaaAtis = $state<ATISInfo | null>(null);
+	let arrivalFaaAtis = $state<ATISInfo | null>(null);
 	let isLoading = $state(true);
 
-	let departureVatsimAtis = $derived(getVatsimATIS(atisStations, data.departure.vatsim_code));
-	let arrivalVatsimAtis = $derived(getVatsimATIS(atisStations, data.arrival.vatsim_code));
+	let departureVatsimAtis = $derived(getVatsimATIS(atisStations, data.departure.icao));
+	let arrivalVatsimAtis = $derived(getVatsimATIS(atisStations, data.arrival.icao));
 
 	async function loadVatsimData() {
 		try {
@@ -28,9 +31,19 @@
 
 	$effect(() => {
 		loadVatsimData();
+		loadFaaAtis();
 		const interval = setInterval(loadVatsimData, 30000);
 		return () => clearInterval(interval);
 	});
+
+	async function loadFaaAtis() {
+		const [depAtis, arrAtis] = await Promise.all([
+			fetchFAADatis(data.departure.icao),
+			fetchFAADatis(data.arrival.icao)
+		]);
+		departureFaaAtis = depAtis;
+		arrivalFaaAtis = arrAtis;
+	}
 </script>
 
 <svelte:head>
@@ -116,7 +129,7 @@
 						<h3 class="text-sm font-semibold text-gray-300 mb-3">ATIS Information</h3>
 						<ATISDisplay
 							vatsimAtis={departureVatsimAtis}
-							faaAtis={data.departureFaaAtis}
+							faaAtis={departureFaaAtis}
 							airportCode={data.departure.icao}
 						/>
 					</div>
@@ -144,7 +157,7 @@
 						<h3 class="text-sm font-semibold text-gray-300 mb-3">ATIS Information</h3>
 						<ATISDisplay
 							vatsimAtis={arrivalVatsimAtis}
-							faaAtis={data.arrivalFaaAtis}
+							faaAtis={arrivalFaaAtis}
 							airportCode={data.arrival.icao}
 						/>
 					</div>

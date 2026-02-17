@@ -147,11 +147,11 @@ export const mockVatsimDataWithControllers = {
 		}
 	],
 	atis: [
-		// Phoenix ATIS
+		// Phoenix ATIS (uses ICAO code in callsign)
 		{
 			cid: 1234580,
 			name: 'PHX ATIS Bot',
-			callsign: 'PHX_ATIS',
+			callsign: 'KPHX_ATIS',
 			frequency: '127.175',
 			facility: 4,
 			atis_code: 'S',
@@ -165,11 +165,11 @@ export const mockVatsimDataWithControllers = {
 			last_updated: '2026-01-13T23:45:00.0000000Z',
 			logon_time: '2026-01-13T22:00:00.0000000Z'
 		},
-		// Las Vegas ATIS
+		// Las Vegas ATIS (uses ICAO code in callsign)
 		{
 			cid: 1234581,
 			name: 'LAS ATIS Bot',
-			callsign: 'LAS_ATIS',
+			callsign: 'KLAS_ATIS',
 			frequency: '132.400',
 			facility: 4,
 			atis_code: 'A',

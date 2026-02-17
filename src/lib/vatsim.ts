@@ -123,12 +123,12 @@ export function getLocationControllers(
 
 /**
  * Looks up VATSIM ATIS for a specific airport from the ATIS stations array
- * Matches by callsign pattern: {vatsim_code}_ATIS or {vatsim_code}_D_ATIS
+ * ATIS callsigns use ICAO codes (e.g., KBWI_ATIS, KLAX_ATIS, KTPA_D_ATIS)
  */
-export function getVatsimATIS(atisStations: VatsimATIS[], vatsimCode: string): ATISInfo | null {
+export function getVatsimATIS(atisStations: VatsimATIS[], icao: string): ATISInfo | null {
 	const atis = atisStations.find(a => {
 		const callsignPrefix = a.callsign.split('_')[0];
-		return callsignPrefix === vatsimCode && a.callsign.includes('ATIS');
+		return callsignPrefix === icao && a.callsign.includes('ATIS');
 	});
 
 	if (!atis || !atis.text_atis || atis.text_atis.length === 0) {

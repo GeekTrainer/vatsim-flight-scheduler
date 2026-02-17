@@ -133,17 +133,14 @@ test.describe('Flight Detail Page', () => {
 		// Click Real World tab
 		await depAtis.getByTestId('atis-tab-realworld').click();
 
-		// Should show Real World content area
+		// Should show Real World content area with mocked FAA data
 		const realworldContent = depAtis.getByTestId('atis-content-realworld');
 		await expect(realworldContent).toBeVisible();
+		await expect(depAtis.getByTestId('atis-text-KPHX')).toContainText('PHX ATIS INFO R');
+		await expect(depAtis.getByTestId('atis-code-KPHX')).toContainText('Info R');
 
 		// VATSIM content should be hidden
 		await expect(depAtis.getByTestId('atis-content-vatsim')).not.toBeVisible();
-
-		// Should show either FAA ATIS text or empty state (FAA data is server-fetched, can't be mocked in E2E)
-		const hasAtisText = await depAtis.getByTestId('atis-text-KPHX').isVisible().catch(() => false);
-		const hasEmptyState = await depAtis.getByTestId('atis-empty-KPHX').isVisible().catch(() => false);
-		expect(hasAtisText || hasEmptyState).toBe(true);
 	});
 
 	test('should switch tabs back to VATSIM', async ({ page }) => {
@@ -180,12 +177,28 @@ test.describe('Flight Detail Page', () => {
 				body: JSON.stringify(mockVatsimDataEmpty)
 			});
 		});
+		// Mock FAA D-ATIS with data so Real World tab has content
+		await page.route('https://datis.clowd.io/api/KPHX', async (route) => {
+			await route.fulfill({
+				status: 200,
+				contentType: 'application/json',
+				body: JSON.stringify(mockFaaDatisPhx)
+			});
+		});
+		await page.route('https://datis.clowd.io/api/KLAS', async (route) => {
+			await route.fulfill({
+				status: 200,
+				contentType: 'application/json',
+				body: JSON.stringify(mockFaaDatisLas)
+			});
+		});
 
 		await page.goto('/flight/KPHX-KLAS');
 
 		// With no VATSIM ATIS, should default to Real World tab
 		const depAtis = page.getByTestId('atis-display-KPHX');
 		await expect(depAtis.getByTestId('atis-content-realworld')).toBeVisible();
+		await expect(depAtis.getByTestId('atis-text-KPHX')).toContainText('PHX ATIS INFO R');
 
 		// Switching to VATSIM tab should show empty state
 		await depAtis.getByTestId('atis-tab-vatsim').click();

@@ -58,3 +58,4 @@ lerna-debug.log*
 .cache
 
 # Archive data (too large for GitHub)
+*.png

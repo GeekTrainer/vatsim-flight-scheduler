@@ -1,7 +1,7 @@
 /**
  * FAA D-ATIS Service
  * Fetches real-world Digital ATIS from the FAA via datis.clowd.io
- * Server-side only to avoid CORS issues
+ * Client-side fetch so Playwright can mock it in E2E tests
  */
 
 import type { ATISInfo } from './types';
