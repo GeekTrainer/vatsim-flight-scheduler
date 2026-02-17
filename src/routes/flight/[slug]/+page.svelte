@@ -2,10 +2,13 @@
 	import ATCStatusDisplay from '$lib/components/ATCStatusDisplay.svelte';
 	import ATISDisplay from '$lib/components/ATISDisplay.svelte';
 	import FlightAirportCard from '$lib/components/FlightAirportCard.svelte';
+	import SimBriefButton from '$lib/components/SimBriefButton.svelte';
+	import SimBriefPlanDisplay from '$lib/components/SimBriefPlanDisplay.svelte';
 	import { fetchVatsimData, getLocationControllers, getVatsimATIS } from '$lib/vatsim';
 	import { fetchFAADatis } from '$lib/atis';
 	import type { LocationControllers, ATISInfo } from '$lib/types';
 	import type { VatsimATIS } from '$lib/types/vatsim';
+	import type { SimBriefPlan } from '$lib/types/simbrief';
 
 	let { data } = $props();
 
@@ -60,6 +63,21 @@
 	// Mobile: independent expand/collapse, both collapsed by default
 	let depExpanded = $state(false);
 	let arrExpanded = $state(false);
+
+	// SimBrief integration
+	let simbriefPlan = $state<SimBriefPlan | null>(null);
+
+	function handlePlanLoaded(plan: SimBriefPlan) {
+		simbriefPlan = plan;
+	}
+
+	function handleRefile() {
+		simbriefPlan = null;
+	}
+
+	function handleClearPlan() {
+		simbriefPlan = null;
+	}
 </script>
 
 <svelte:head>
@@ -97,6 +115,25 @@
 				<p class="text-xs text-gray-700">For VATSIM simulation use only. Not for real-world flight planning or navigation.</p>
 			</div>
 		{:else}
+			<!-- SimBrief Section -->
+			<div class="hidden md:block">
+				{#if simbriefPlan}
+					<SimBriefPlanDisplay
+						plan={simbriefPlan}
+						departureIcao={data.departure.icao}
+						arrivalIcao={data.arrival.icao}
+						onRefile={handleRefile}
+						onClear={handleClearPlan}
+					/>
+				{:else}
+					<SimBriefButton
+						departureIcao={data.departure.icao}
+						arrivalIcao={data.arrival.icao}
+						onPlanLoaded={handlePlanLoaded}
+					/>
+				{/if}
+			</div>
+
 			<!-- Mobile: Stacked collapsible cards -->
 			<div class="md:hidden space-y-3">
 				<FlightAirportCard
