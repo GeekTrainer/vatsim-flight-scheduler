@@ -103,9 +103,8 @@
 								/>
 							</div>
 
-							<!-- Link Arrow + Label -->
-							<div class="hidden sm:flex items-center gap-1.5 text-gray-600 group-hover:text-blue-400 transition-colors shrink-0">
-								<span class="text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity">View flight</span>
+							<!-- Link Arrow -->
+							<div class="hidden sm:flex items-center text-gray-600 group-hover:text-blue-400 transition-colors shrink-0">
 								<div class="w-8 h-8 rounded-full flex items-center justify-center group-hover:bg-blue-500/20 group-hover:ring-2 group-hover:ring-blue-500/30 transition-all">
 									<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
