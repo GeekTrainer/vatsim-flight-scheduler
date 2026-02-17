@@ -6,6 +6,7 @@
 	import SimBriefPlanDisplay from '$lib/components/SimBriefPlanDisplay.svelte';
 	import { fetchVatsimData, getLocationControllers, getVatsimATIS } from '$lib/vatsim';
 	import { fetchFAADatis } from '$lib/atis';
+	import { formatFlightTime, formatFuel, formatAltitude, validatePlanMatchesRoute, buildVatsimPrefileUrl } from '$lib/simbrief';
 	import type { LocationControllers, ATISInfo } from '$lib/types';
 	import type { VatsimATIS } from '$lib/types/vatsim';
 	import type { SimBriefPlan } from '$lib/types/simbrief';
@@ -121,23 +122,103 @@
 				<p class="text-xs text-gray-700">For VATSIM simulation use only. Not for real-world flight planning or navigation.</p>
 			</div>
 		{:else}
-			<!-- SimBrief Section -->
+			<!-- Flight Strip -->
 			<div class="hidden md:block">
-				{#if simbriefPlan}
-					<SimBriefPlanDisplay
-						plan={simbriefPlan}
-						departureIcao={data.departure.icao}
-						arrivalIcao={data.arrival.icao}
-						onRefile={handleRefile}
-						onClear={handleClearPlan}
-					/>
-				{:else}
-					<SimBriefButton
-						departureIcao={data.departure.icao}
-						arrivalIcao={data.arrival.icao}
-						onPlanLoaded={handlePlanLoaded}
-					/>
-				{/if}
+				<div class="card-themed px-5 py-3">
+					<div class="flex items-center gap-4">
+						<!-- Departure -->
+						<div class="text-center min-w-[100px]">
+							<div class="text-2xl font-bold text-blue-300" data-testid="flight-departure-code">{data.departure.icao}</div>
+							<div class="text-[10px] text-gray-500 truncate">{data.departure.city}</div>
+						</div>
+
+						<!-- Arrow + Route info -->
+						<div class="flex-1 flex items-center gap-3">
+							<svg class="w-5 h-5 text-gray-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+							</svg>
+							{#if simbriefPlan}
+								<div class="flex items-center gap-4 text-xs text-gray-300 flex-1 min-w-0">
+									<span class="font-mono text-gray-400 truncate flex-1" title={simbriefPlan.general.route}>{simbriefPlan.general.route}</span>
+									<span class="shrink-0 font-semibold">{formatAltitude(simbriefPlan.general.initial_altitude)}</span>
+									<span class="shrink-0">{formatFlightTime(simbriefPlan.times.est_time_enroute)}</span>
+									<span class="shrink-0 text-gray-500">{simbriefPlan.aircraft.name}</span>
+								</div>
+							{:else}
+								<div class="flex-1 border-t border-dashed border-gray-700"></div>
+							{/if}
+						</div>
+
+						<!-- Arrival -->
+						<div class="text-center min-w-[100px]">
+							<div class="text-2xl font-bold text-green-400" data-testid="flight-arrival-code">{data.arrival.icao}</div>
+							<div class="text-[10px] text-gray-500 truncate">{data.arrival.city}</div>
+						</div>
+
+						<!-- Divider -->
+						<div class="w-px h-10 bg-gray-700"></div>
+
+						<!-- SimBrief Actions -->
+						<div class="shrink-0">
+							{#if simbriefPlan}
+								<div class="flex items-center gap-2">
+									<a
+										href={buildVatsimPrefileUrl(simbriefPlan)}
+										target="_blank"
+										data-testid="vatsim-prefile-link"
+										class="px-3 py-1.5 text-xs font-semibold bg-green-700 hover:bg-green-600 text-white rounded transition-colors"
+									>
+										Pre-file VATSIM
+									</a>
+									<button onclick={handleRefile} class="text-xs text-blue-400 hover:text-blue-300">Re-file</button>
+									<button onclick={handleClearPlan} class="text-xs text-gray-600 hover:text-gray-400">✕</button>
+								</div>
+							{:else}
+								<SimBriefButton
+									departureIcao={data.departure.icao}
+									arrivalIcao={data.arrival.icao}
+									onPlanLoaded={handlePlanLoaded}
+								/>
+							{/if}
+						</div>
+					</div>
+
+					{#if simbriefPlan}
+						<!-- Expanded plan details below the strip -->
+						<div class="mt-3 pt-3 border-t border-gray-700/50 grid grid-cols-6 gap-3 text-xs">
+							<div>
+								<div class="text-gray-500">Block Fuel</div>
+								<div class="text-gray-200 font-semibold">{formatFuel(simbriefPlan.fuel.plan_ramp)}</div>
+							</div>
+							<div>
+								<div class="text-gray-500">Trip Fuel</div>
+								<div class="text-gray-200 font-semibold">{formatFuel(simbriefPlan.fuel.enroute_burn)}</div>
+							</div>
+							<div>
+								<div class="text-gray-500">ZFW</div>
+								<div class="text-gray-200 font-semibold">{formatFuel(simbriefPlan.weights.est_zfw)}</div>
+							</div>
+							<div>
+								<div class="text-gray-500">TOW</div>
+								<div class="text-gray-200 font-semibold">{formatFuel(simbriefPlan.weights.est_tow)}</div>
+							</div>
+							<div>
+								<div class="text-gray-500">LDW</div>
+								<div class="text-gray-200 font-semibold">{formatFuel(simbriefPlan.weights.est_ldw)}</div>
+							</div>
+							<div>
+								<div class="text-gray-500">Cost Index</div>
+								<div class="text-gray-200 font-semibold">CI {simbriefPlan.general.costindex}</div>
+							</div>
+						</div>
+						{#if !validatePlanMatchesRoute(simbriefPlan, data.departure.icao, data.arrival.icao)}
+							<div data-testid="simbrief-route-mismatch" class="mt-2 text-xs text-yellow-400 bg-yellow-900/20 rounded px-3 py-1.5">
+								⚠️ This plan is for {simbriefPlan.origin.icao_code}→{simbriefPlan.destination.icao_code}, not this route.
+								<button onclick={handleRefile} class="underline ml-1">File a new plan?</button>
+							</div>
+						{/if}
+					{/if}
+				</div>
 			</div>
 
 			<!-- Mobile: Stacked collapsible cards -->
@@ -167,24 +248,10 @@
 			</div>
 
 			<!-- Desktop: Two-column grid with aligned rows -->
-			<div data-testid="desktop-layout" class="hidden md:grid grid-cols-2 gap-x-6 gap-y-4" style="grid-template-rows: auto auto auto;">
-				<!-- Row 1: Headers -->
-				<div>
-					<h2 class="text-2xl font-bold text-blue-300" data-testid="flight-departure-code">
-						Departure — {data.departure.icao}
-					</h2>
-					<div class="text-sm text-gray-400">{data.departure.name} · {data.departure.city}</div>
-				</div>
-				<div>
-					<h2 class="text-2xl font-bold text-green-400" data-testid="flight-arrival-code">
-						Arrival — {data.arrival.icao}
-					</h2>
-					<div class="text-sm text-gray-400">{data.arrival.name} · {data.arrival.city}</div>
-				</div>
-
-				<!-- Row 2: ATC Coverage -->
+			<div data-testid="desktop-layout" class="hidden md:grid grid-cols-2 gap-x-6 gap-y-4" style="grid-template-rows: auto auto;">
+				<!-- Row 1: ATC Coverage -->
 				<div class="card-subtle p-4" data-testid="flight-departure-section">
-					<h3 class="text-sm font-semibold text-gray-300 mb-3">ATC Coverage</h3>
+					<h3 class="text-sm font-semibold text-gray-300 mb-3">ATC Coverage — {data.departure.icao}</h3>
 					<ATCStatusDisplay
 						icao={data.departure.icao}
 						artcc={data.departure.artcc}
@@ -192,7 +259,7 @@
 					/>
 				</div>
 				<div class="card-subtle p-4" data-testid="flight-arrival-section">
-					<h3 class="text-sm font-semibold text-gray-300 mb-3">ATC Coverage</h3>
+					<h3 class="text-sm font-semibold text-gray-300 mb-3">ATC Coverage — {data.arrival.icao}</h3>
 					<ATCStatusDisplay
 						icao={data.arrival.icao}
 						artcc={data.arrival.artcc}
