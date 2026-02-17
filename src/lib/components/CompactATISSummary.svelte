@@ -11,7 +11,7 @@
 </script>
 
 {#if parsedAtis}
-	<div class="text-xs text-gray-300 space-y-0.5">
+	<div class="text-sm text-gray-200 space-y-1">
 		<!-- Line 1: Wind + Altimeter -->
 		<div class="flex items-center gap-x-3">
 			{#if parsedAtis.wind}
