@@ -146,7 +146,45 @@ export const mockVatsimDataWithControllers = {
 			logon_time: '2026-01-13T23:00:00.0000000Z'
 		}
 	],
-	atis: [],
+	atis: [
+		// Phoenix ATIS
+		{
+			cid: 1234580,
+			name: 'PHX ATIS Bot',
+			callsign: 'PHX_ATIS',
+			frequency: '127.175',
+			facility: 4,
+			atis_code: 'S',
+			text_atis: [
+				'PHX ATIS INFO S.',
+				'24010KT 10SM FEW250 35/12 A2990.',
+				'VISUAL APPROACHES IN USE.',
+				'LANDING AND DEPARTING RWY 25L AND 25R.',
+				'ADVS YOU HAVE INFO S.'
+			],
+			last_updated: '2026-01-13T23:45:00.0000000Z',
+			logon_time: '2026-01-13T22:00:00.0000000Z'
+		},
+		// Las Vegas ATIS
+		{
+			cid: 1234581,
+			name: 'LAS ATIS Bot',
+			callsign: 'LAS_ATIS',
+			frequency: '132.400',
+			facility: 4,
+			atis_code: 'A',
+			text_atis: [
+				'LAS ATIS INFO A.',
+				'21008KT 10SM CLR 30/08 A2985.',
+				'ILS APPROACHES IN USE.',
+				'LANDING RWY 26L AND 26R.',
+				'DEPARTING RWY 26L AND 26R.',
+				'ADVS YOU HAVE INFO A.'
+			],
+			last_updated: '2026-01-13T23:40:00.0000000Z',
+			logon_time: '2026-01-13T22:30:00.0000000Z'
+		}
+	],
 	servers: [],
 	prefiles: [],
 	facilities: [],

@@ -12,6 +12,14 @@ export interface Route {
 	arrival: Airport;
 }
 
+export interface ATISInfo {
+	source: 'vatsim' | 'faa';
+	code?: string;
+	text: string;
+	frequency?: string;
+	lastUpdated?: string;
+}
+
 // Import types from vatsim module for type alias
 import type { ATCController, ControllerPosition } from './types/vatsim';
 

@@ -5,9 +5,10 @@
  * Implements 30-second caching to avoid rate limiting and reduce network calls.
  */
 
-import type { VatsimData, ATCController } from './types/vatsim';
+import type { VatsimData, ATCController, VatsimATIS } from './types/vatsim';
 import { ControllerPosition } from './types/vatsim';
 import { extractController } from './utils/controller-parser';
+import type { ATISInfo } from './types';
 
 const VATSIM_API_URL = 'https://data.vatsim.net/v3/vatsim-data.json';
 const CACHE_DURATION = 30 * 1000; // 30 seconds in milliseconds
@@ -118,4 +119,27 @@ export function getLocationControllers(
 	}
 
 	return locationControllers;
+}
+
+/**
+ * Looks up VATSIM ATIS for a specific airport from the ATIS stations array
+ * Matches by callsign pattern: {vatsim_code}_ATIS or {vatsim_code}_D_ATIS
+ */
+export function getVatsimATIS(atisStations: VatsimATIS[], vatsimCode: string): ATISInfo | null {
+	const atis = atisStations.find(a => {
+		const callsignPrefix = a.callsign.split('_')[0];
+		return callsignPrefix === vatsimCode && a.callsign.includes('ATIS');
+	});
+
+	if (!atis || !atis.text_atis || atis.text_atis.length === 0) {
+		return null;
+	}
+
+	return {
+		source: 'vatsim',
+		code: atis.atis_code || undefined,
+		text: atis.text_atis.join(' '),
+		frequency: atis.frequency,
+		lastUpdated: atis.last_updated
+	};
 }
