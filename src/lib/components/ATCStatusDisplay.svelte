@@ -42,9 +42,9 @@
 	}
 </script>
 
-<div class="space-y-2">
+<div>
 	<!-- Position Badges -->
-	<div class="flex flex-wrap gap-2">
+	<div class="grid grid-cols-5 gap-1.5">
 		{#each POSITIONS as pos (pos.type)}
 			{@const locationCode = pos.type === ControllerPosition.CTR ? artcc : icao}
 			{@const controllers = getControllers(locationCode, pos.type)}

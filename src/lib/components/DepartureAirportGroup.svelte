@@ -79,7 +79,11 @@
 			</div>
 			<div class="divide-y divide-gray-800">
 				{#each routes as route}
-					<div class="px-3 sm:px-6 py-3 interactive-subtle">
+					<a
+						href="/flight/{departureAirport.icao}-{route.arrival.icao}"
+						data-testid="flight-link-{departureAirport.icao}-{route.arrival.icao}"
+						class="group block px-3 sm:px-6 py-3 no-underline transition-colors hover:bg-blue-900/15"
+					>
 						<div class="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4 lg:gap-6">
 							<!-- Arrival Airport Info -->
 							<div class="sm:w-40 md:w-48 shrink-0">
@@ -98,8 +102,17 @@
 									{locationControllers}
 								/>
 							</div>
+
+							<!-- Link Arrow -->
+							<div class="hidden sm:flex items-center text-gray-600 group-hover:text-blue-400 transition-colors shrink-0">
+								<div class="w-8 h-8 rounded-full flex items-center justify-center group-hover:bg-blue-500/20 group-hover:ring-2 group-hover:ring-blue-500/30 transition-all">
+									<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+									</svg>
+								</div>
+							</div>
 						</div>
-					</div>
+					</a>
 				{/each}
 			</div>
 		</div>

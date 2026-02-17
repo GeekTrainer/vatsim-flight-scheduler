@@ -55,11 +55,11 @@
 	<div 
 		data-testid="atc-badge-{position.toLowerCase()}"
 		data-status="online"
-		class="badge-interactive {getBadgeClasses()}"
+		class="badge-interactive overflow-hidden min-w-0 {getBadgeClasses()}"
 	>
 		<div class="flex flex-col gap-0.5">
 			<!-- Position Label -->
-			<div class="text-xs font-bold flex items-center gap-1">
+			<div class="text-[10px] sm:text-xs font-bold flex items-center gap-1 whitespace-nowrap">
 				{label}
 				<span class="status-dot-pulse"></span>
 			</div>
@@ -70,23 +70,16 @@
 				{/if}
 				<!-- Callsign -->
 				<div 
-					class="text-xs font-semibold"
+					class="text-[9px] font-medium leading-tight opacity-70 truncate"
 					data-testid="controller-callsign-{controller.callsign}"
 				>
 					{controller.callsign}
 				</div>
-				<!-- Frequency -->
-				<div 
-					class="text-xs opacity-80"
-					data-testid="controller-frequency-{controller.callsign}"
-				>
+				<!-- Frequency + Time on one line -->
+				<div class="text-[10px] opacity-80 leading-tight" data-testid="controller-frequency-{controller.callsign}">
 					{controller.frequency}
 				</div>
-				<!-- Time Online -->
-				<div 
-					class="text-xs opacity-60"
-					data-testid="controller-time-{controller.callsign}"
-				>
+				<div class="text-[10px] opacity-60 leading-tight" data-testid="controller-time-{controller.callsign}">
 					{formatOnlineTime(controller.onlineTimeMinutes)}
 				</div>
 			{/each}
@@ -97,8 +90,8 @@
 	<div 
 		data-testid="atc-badge-{position.toLowerCase()}"
 		data-status="offline"
-		class="badge-interactive text-center {getBadgeClasses()}"
+		class="badge-interactive text-center min-w-0 {getBadgeClasses()}"
 	>
-		<div class="text-xs font-bold opacity-50">{label}</div>
+		<div class="text-[10px] sm:text-xs font-bold opacity-50 whitespace-nowrap">{label}</div>
 	</div>
 {/if}

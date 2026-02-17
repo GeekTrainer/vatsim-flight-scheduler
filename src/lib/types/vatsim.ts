@@ -21,11 +21,23 @@ export interface VatsimGeneral {
 	unique_users: number;
 }
 
+export interface VatsimATIS {
+	cid: number;
+	name: string;
+	callsign: string;
+	frequency: string;
+	facility: number;
+	atis_code: string;
+	text_atis: string[];
+	last_updated: string;
+	logon_time: string;
+}
+
 export interface VatsimData {
 	general: VatsimGeneral;
 	pilots: any[];
 	controllers: VatsimController[];
-	atis: any[];
+	atis: VatsimATIS[];
 	servers: any[];
 	prefiles: any[];
 	facilities: any[];

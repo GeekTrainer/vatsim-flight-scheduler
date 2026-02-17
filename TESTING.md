@@ -32,8 +32,28 @@ Following the project's guidelines, we focus on:
 
 1. **Core functionality only** - Not aiming for 100% coverage, just the important parts
 2. **Library files only** - Currently testing TypeScript files, not Svelte components
-3. **Mocked external calls** - VATSIM API calls are always mocked to avoid hitting the real API
+3. **Mocked external calls** - All external API calls are **always** mocked in both unit tests and E2E tests. Never hit real APIs during testing.
 4. **Practical tests** - Testing real-world scenarios and edge cases
+
+### Mocking External APIs in E2E Tests
+
+**CRITICAL**: All remote API calls must be mocked in E2E tests using `page.route()`. This includes:
+- VATSIM data API (`https://data.vatsim.net/v3/vatsim-data.json`)
+- FAA D-ATIS API (`https://atis.info/api/*`)
+- Any other external service
+
+External API calls should be made **client-side** (not in `+page.server.ts`) so Playwright's `page.route()` can intercept them. Server-side fetches bypass Playwright's network interception.
+
+```typescript
+// Always mock ALL external APIs before navigating
+await page.route('https://data.vatsim.net/v3/vatsim-data.json', async (route) => {
+  await route.fulfill({ status: 200, body: JSON.stringify(mockData) });
+});
+await page.route('https://atis.info/api/*', async (route) => {
+  await route.fulfill({ status: 200, body: JSON.stringify(mockAtis) });
+});
+await page.goto('/');
+```
 
 ## Writing New Tests
 

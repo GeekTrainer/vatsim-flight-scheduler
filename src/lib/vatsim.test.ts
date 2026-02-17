@@ -232,5 +232,76 @@ describe('vatsim', () => {
 			);
 			expect(allControllers.some(c => c.callsign === 'OBS_123')).toBe(false);
 		});
+
+		it('should deduplicate controllers on the same frequency (training sessions)', () => {
+			const controllersWithTrainee = [
+				{
+					cid: 1000001,
+					name: 'Primary Controller',
+					callsign: 'ATL_TWR',
+					frequency: '119.100',
+					facility: 4,
+					rating: 5,
+					server: 'USA-EAST',
+					visual_range: 100,
+					last_updated: '2026-01-04T12:00:00Z',
+					logon_time: '2026-01-04T11:00:00Z'
+				},
+				{
+					cid: 1000002,
+					name: 'Trainee Controller',
+					callsign: 'ATL_1_TWR',
+					frequency: '119.100',
+					facility: 4,
+					rating: 3,
+					server: 'USA-EAST',
+					visual_range: 100,
+					last_updated: '2026-01-04T12:00:00Z',
+					logon_time: '2026-01-04T11:30:00Z'
+				}
+			];
+
+			const locationControllers = getLocationControllers(controllersWithTrainee);
+			const atlTwr = locationControllers.get('KATL')?.get(ControllerPosition.TWR);
+
+			// Should only have one controller (the primary, no number in callsign)
+			expect(atlTwr).toHaveLength(1);
+			expect(atlTwr![0].callsign).toBe('ATL_TWR');
+		});
+
+		it('should keep controllers on different frequencies at same position', () => {
+			const controllersMultiFreq = [
+				{
+					cid: 1000001,
+					name: 'Controller A',
+					callsign: 'ATL_TWR',
+					frequency: '119.100',
+					facility: 4,
+					rating: 5,
+					server: 'USA-EAST',
+					visual_range: 100,
+					last_updated: '2026-01-04T12:00:00Z',
+					logon_time: '2026-01-04T11:00:00Z'
+				},
+				{
+					cid: 1000002,
+					name: 'Controller B',
+					callsign: 'ATL_S_TWR',
+					frequency: '123.850',
+					facility: 4,
+					rating: 5,
+					server: 'USA-EAST',
+					visual_range: 100,
+					last_updated: '2026-01-04T12:00:00Z',
+					logon_time: '2026-01-04T11:30:00Z'
+				}
+			];
+
+			const locationControllers = getLocationControllers(controllersMultiFreq);
+			const atlTwr = locationControllers.get('KATL')?.get(ControllerPosition.TWR);
+
+			// Both should remain since they're on different frequencies
+			expect(atlTwr).toHaveLength(2);
+		});
 	});
 });
