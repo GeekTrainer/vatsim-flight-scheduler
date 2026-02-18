@@ -1,11 +1,11 @@
 <script lang="ts">
 	import CenterTooltip from './CenterTooltip.svelte';
-	import SimBriefButton from './SimBriefButton.svelte';
-	import { formatFlightTime, formatFuel, formatAltitude, validatePlanMatchesRoute, buildVatsimPrefileUrl, checkVatsimFlightStatus } from '$lib/simbrief';
+	import { formatFlightTime, formatFuel, formatAltitude, validatePlanMatchesRoute, buildVatsimPrefileUrl, buildDispatchUrl, fetchSimBriefPlan, getStoredUsername } from '$lib/simbrief';
 	import type { SimBriefPlan } from '$lib/types/simbrief';
 	import type { EnrouteCenter } from '$lib/enroute';
 	import type { LocationControllers } from '$lib/types';
 	import type { VatsimFlightStatus } from '$lib/simbrief';
+	import { onMount } from 'svelte';
 
 	interface Props {
 		departureIcao: string;
@@ -27,9 +27,39 @@
 
 	let isExpanded = $state(false);
 
+	let username = $state('');
+	let isLoadingPlan = $state(false);
+	let error = $state<string | null>(null);
+
+	onMount(() => {
+		username = getStoredUsername() || '';
+	});
+
+	const isConfigured = $derived(username.length > 0);
+
 	const routeMatches = $derived(
 		simbriefPlan ? validatePlanMatchesRoute(simbriefPlan, departureIcao, arrivalIcao) : true
 	);
+
+	function openSimBrief() {
+		if (!isConfigured) return;
+		const url = buildDispatchUrl(departureIcao, arrivalIcao, `${window.location.origin}/simbrief/callback`);
+		const popup = window.open(url, 'simbrief', 'width=1000,height=750');
+		if (!popup) { error = 'Popup blocked!'; return; }
+		isLoadingPlan = true;
+		const poll = setInterval(async () => {
+			if (popup.closed) { clearInterval(poll); await loadPlan(); }
+		}, 2000);
+	}
+
+	async function loadPlan() {
+		isLoadingPlan = true;
+		error = null;
+		const plan = await fetchSimBriefPlan(username);
+		isLoadingPlan = false;
+		if (!plan) { error = 'Could not load plan.'; return; }
+		onPlanLoaded(plan);
+	}
 </script>
 
 <div class="card-themed px-4 py-3 space-y-2">
@@ -146,14 +176,13 @@
 			</div>
 		{/if}
 	{:else}
-		<!-- No plan: show route + SimBrief buttons -->
-		<div class="flex items-center justify-between">
-			<div class="text-sm">
+		<!-- No plan: route + centers + action bar -->
+		<div class="text-center">
+			<div class="text-lg">
 				<span class="font-bold text-blue-300">{departureIcao}</span>
-				<span class="text-gray-500 mx-1">→</span>
+				<span class="text-gray-500 mx-2">→</span>
 				<span class="font-bold text-green-400">{arrivalIcao}</span>
 			</div>
-			<SimBriefButton {departureIcao} {arrivalIcao} onPlanLoaded={onPlanLoaded} />
 		</div>
 
 		<!-- Enroute centers -->
@@ -167,5 +196,30 @@
 				{/each}
 			</div>
 		{/if}
+
+		<!-- Action bar -->
+		<div class="flex items-center justify-center gap-4 pt-1 border-t border-gray-700/50">
+			{#if isConfigured}
+				<button
+					onclick={openSimBrief}
+					disabled={isLoadingPlan}
+					class="text-xs text-blue-400 hover:text-blue-300 font-medium py-1 flex items-center gap-1"
+				>
+					📋 File
+				</button>
+				<div class="w-px h-4 bg-gray-700"></div>
+				<button
+					onclick={loadPlan}
+					disabled={isLoadingPlan}
+					class="text-xs text-gray-400 hover:text-gray-300 font-medium py-1 flex items-center gap-1"
+				>
+					📥 Load
+				</button>
+			{:else}
+				<a href="/settings" class="text-xs text-blue-400 hover:text-blue-300 font-medium py-1">
+					Set up SimBrief →
+				</a>
+			{/if}
+		</div>
 	{/if}
 </div>
