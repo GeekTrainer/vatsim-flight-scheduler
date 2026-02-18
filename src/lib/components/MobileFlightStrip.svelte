@@ -37,8 +37,9 @@
 		<!-- With plan: header row -->
 		<button
 			onclick={() => isExpanded = !isExpanded}
-			class="w-full text-left"
+			class="w-full"
 		>
+			<!-- Callsign + Route -->
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-2 text-sm">
 					<span class="font-bold text-white">{simbriefPlan.general.icao_airline}{simbriefPlan.general.flight_number}</span>
@@ -57,11 +58,13 @@
 					</svg>
 				</div>
 			</div>
-			<!-- Key stats line -->
-			<div class="flex items-center gap-3 text-xs text-gray-300 mt-1">
-				<span class="font-semibold">{formatAltitude(simbriefPlan.general.initial_altitude)}</span>
-				<span>M{simbriefPlan.general.cruise_mach}</span>
-				<span>{formatFlightTime(simbriefPlan.times.est_time_enroute)}</span>
+			<!-- Key stats + alternate -->
+			<div class="flex items-center justify-between mt-1">
+				<div class="flex items-center gap-3 text-xs text-gray-300">
+					<span class="font-semibold">{formatAltitude(simbriefPlan.general.initial_altitude)}</span>
+					<span>M{simbriefPlan.general.cruise_mach}</span>
+					<span>{formatFlightTime(simbriefPlan.times.est_time_enroute)}</span>
+				</div>
 				{#if simbriefPlan.alternate?.icao_code}
 					<span class="text-yellow-400/70 text-[10px]">ALTN: {simbriefPlan.alternate.icao_code}</span>
 				{/if}
@@ -84,7 +87,7 @@
 		{#if isExpanded}
 			<div class="pt-2 border-t border-gray-700/50 space-y-2">
 				<!-- Route -->
-				<div class="font-mono text-[10px] text-gray-400 leading-relaxed break-all">
+				<div class="font-mono text-[10px] text-gray-400 leading-relaxed break-all text-center">
 					{simbriefPlan.general.route}
 				</div>
 
@@ -123,7 +126,7 @@
 				{/if}
 
 				<!-- Actions -->
-				<div class="flex items-center gap-2 pt-1">
+				<div class="flex items-center justify-center gap-2 pt-1">
 					{#if vatsimFlightStatus === 'connected'}
 						<span class="px-3 py-1.5 text-xs font-semibold bg-green-600/30 text-green-300 border border-green-700 rounded">✓ Connected</span>
 					{:else if vatsimFlightStatus === 'prefiled'}
