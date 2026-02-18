@@ -64,7 +64,7 @@ await setupMocks(page);
 await page.goto('/flight/KPHX-KLAS');
 await page.evaluate(() => localStorage.removeItem('simbrief_username'));
 await page.reload();
-await expect(page.getByTestId('simbrief-settings-link')).toBeVisible();
+await expect(page.getByTestId('simbrief-settings-link').first()).toBeVisible();
 });
 
 test('should show File button when username is configured', async ({ page }) => {
@@ -72,7 +72,7 @@ await setupMocks(page);
 await page.goto('/flight/KPHX-KLAS');
 await page.evaluate(() => localStorage.setItem('simbrief_username', 'testpilot'));
 await page.reload();
-await expect(page.getByTestId('simbrief-file-button')).toBeVisible();
+await expect(page.getByTestId('simbrief-file-button').first()).toBeVisible();
 });
 
 test('should show gear icon in flight page header', async ({ page }) => {

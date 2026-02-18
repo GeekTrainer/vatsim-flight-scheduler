@@ -5,6 +5,7 @@
 	import SimBriefButton from '$lib/components/SimBriefButton.svelte';
 	import SimBriefPlanDisplay from '$lib/components/SimBriefPlanDisplay.svelte';
 	import CenterTooltip from '$lib/components/CenterTooltip.svelte';
+	import MobileFlightStrip from '$lib/components/MobileFlightStrip.svelte';
 	import { fetchVatsimData, getLocationControllers, getVatsimATIS } from '$lib/vatsim';
 	import { fetchFAADatis } from '$lib/atis';
 	import { formatFlightTime, formatFuel, formatAltitude, validatePlanMatchesRoute, buildVatsimPrefileUrl, getStoredVatsimCid, checkVatsimFlightStatus } from '$lib/simbrief';
@@ -284,6 +285,17 @@
 
 			<!-- Mobile: Stacked collapsible cards -->
 			<div class="md:hidden space-y-3">
+				<MobileFlightStrip
+					departureIcao={data.departure.icao}
+					arrivalIcao={data.arrival.icao}
+					{simbriefPlan}
+					{enrouteCenters}
+					{locationControllers}
+					{vatsimFlightStatus}
+					onPlanLoaded={handlePlanLoaded}
+					onRefile={handleRefile}
+					onClear={handleClearPlan}
+				/>
 				<FlightAirportCard
 					airport={data.departure}
 					role="departure"
