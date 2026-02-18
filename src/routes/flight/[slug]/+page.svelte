@@ -4,6 +4,7 @@
 	import FlightAirportCard from '$lib/components/FlightAirportCard.svelte';
 	import SimBriefButton from '$lib/components/SimBriefButton.svelte';
 	import SimBriefPlanDisplay from '$lib/components/SimBriefPlanDisplay.svelte';
+	import CenterTooltip from '$lib/components/CenterTooltip.svelte';
 	import { fetchVatsimData, getLocationControllers, getVatsimATIS } from '$lib/vatsim';
 	import { fetchFAADatis } from '$lib/atis';
 	import { formatFlightTime, formatFuel, formatAltitude, validatePlanMatchesRoute, buildVatsimPrefileUrl, getStoredVatsimCid, checkVatsimFlightStatus } from '$lib/simbrief';
@@ -189,13 +190,7 @@
 												{#if i > 0}
 													<div class="flex-1 border-t {center.online || enrouteCenters[i-1].online ? 'border-green-600/40' : 'border-gray-700/50'} min-w-[12px]"></div>
 												{/if}
-												<div class="flex items-center gap-1 shrink-0">
-													<span class="w-1.5 h-1.5 rounded-full {center.online ? 'bg-green-400' : 'bg-gray-600'}"></span>
-													<span class="text-[10px] font-semibold {center.online ? 'text-green-300' : 'text-gray-500'}">{center.artcc}</span>
-													{#if center.controllerCount > 1}
-														<span class="text-[9px] text-gray-400">({center.controllerCount})</span>
-													{/if}
-												</div>
+												<CenterTooltip {center} {locationControllers} />
 											{/each}
 										</div>
 									{/if}
