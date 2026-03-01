@@ -135,8 +135,9 @@
 	}
 	.header {
 		display: flex;
-		justify-content: space-between;
+		flex-direction: column;
 		align-items: center;
+		gap: 0.125rem;
 		margin-bottom: 0.5rem;
 	}
 	.label {

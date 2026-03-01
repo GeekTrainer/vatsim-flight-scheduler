@@ -115,12 +115,16 @@
 	</div>
 
 	<!-- Flight Time Range Slider -->
-	<FlightTimeRangeSlider
-		min={flightTimeMin}
-		max={flightTimeMax}
-		bind:currentMin={minFlightTime}
-		bind:currentMax={maxFlightTime}
-	/>
+	<div class="flex justify-center">
+		<div class="w-full max-w-md">
+			<FlightTimeRangeSlider
+				min={flightTimeMin}
+				max={flightTimeMax}
+				bind:currentMin={minFlightTime}
+				bind:currentMax={maxFlightTime}
+			/>
+		</div>
+	</div>
 
 	<!-- Clear Filters Button (shown when filters are active) -->
 	{#if hasActiveFilters}
