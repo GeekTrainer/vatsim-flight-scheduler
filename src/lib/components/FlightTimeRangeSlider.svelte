@@ -57,6 +57,16 @@
 
 	const isFiltering = $derived(currentMin != null || currentMax != null);
 
+	// Friendly display of current range for the header
+	const rangeDescription = $derived.by(() => {
+		const hasMin = currentMin != null;
+		const hasMax = currentMax != null;
+		if (!hasMin && !hasMax) return '';
+		if (hasMin && !hasMax) return `${formatTime(internalMin)}+`;
+		if (!hasMin && hasMax) return `Under ${formatTime(internalMax)}`;
+		return `${formatTime(internalMin)} – ${formatTime(internalMax)}`;
+	});
+
 	// Generate tick marks for the track
 	const ticks = $derived.by(() => {
 		const result = [];
@@ -76,7 +86,7 @@
 		<span class="label">Flight Time</span>
 		{#if isFiltering}
 			<span class="range-label" data-testid="flight-time-range-label">
-				{formatTime(internalMin)} – {formatTime(internalMax)}
+				{rangeDescription}
 			</span>
 		{/if}
 	</div>
@@ -114,8 +124,8 @@
 	</div>
 
 	<div class="labels">
-		<span>{formatTime(min)}</span>
-		<span>{formatTime(max)}</span>
+		<span>&lt; {formatTime(min)}</span>
+		<span>&gt; {formatTime(max)}</span>
 	</div>
 </div>
 
