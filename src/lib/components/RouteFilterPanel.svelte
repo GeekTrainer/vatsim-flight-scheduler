@@ -34,9 +34,9 @@
 
 	const allRoutes = loadAllRoutes();
 
-	// Compute flight time slider bounds (≤90min min, ≥360min max)
-	const flightTimeMin = $derived(Math.min(90, ...allRoutes.map(r => r.flight_time_minutes)));
-	const flightTimeMax = $derived(Math.max(360, ...allRoutes.map(r => r.flight_time_minutes)));
+	// Fixed slider bounds: < 90min on the low end, > 6h on the high end
+	const flightTimeMin = 90;
+	const flightTimeMax = 360;
 
 	const availableDepartureAirports = $derived(
 		getAvailableAirports(allRoutes, airports, 'departure', {
