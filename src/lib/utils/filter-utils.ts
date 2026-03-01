@@ -21,6 +21,8 @@ export function hasActiveFilters(filters: {
 	onlyArrivalWithATC?: boolean;
 	departureATCLevels?: ControllerPosition[];
 	arrivalATCLevels?: ControllerPosition[];
+	minFlightTime?: number | null;
+	maxFlightTime?: number | null;
 }): boolean {
 	return !!(
 		filters.selectedDeparture ||
@@ -28,7 +30,9 @@ export function hasActiveFilters(filters: {
 		filters.onlyDepartureWithATC ||
 		filters.onlyArrivalWithATC ||
 		(filters.departureATCLevels && filters.departureATCLevels.length > 0) ||
-		(filters.arrivalATCLevels && filters.arrivalATCLevels.length > 0)
+		(filters.arrivalATCLevels && filters.arrivalATCLevels.length > 0) ||
+		filters.minFlightTime != null ||
+		filters.maxFlightTime != null
 	);
 }
 
@@ -45,4 +49,6 @@ export interface FilterState {
 	onlyArrivalWithATC: boolean;
 	departureATCLevels: ControllerPosition[];
 	arrivalATCLevels: ControllerPosition[];
+	minFlightTime: number | null;
+	maxFlightTime: number | null;
 }

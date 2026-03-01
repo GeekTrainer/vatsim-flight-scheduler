@@ -26,6 +26,8 @@
 	let onlyArrivalWithATC = $state(false);
 	let departureATCLevels = $state<ControllerPosition[]>([]);
 	let arrivalATCLevels = $state<ControllerPosition[]>([]);
+	let minFlightTime = $state<number | null>(null);
+	let maxFlightTime = $state<number | null>(null);
 	let filtersExpanded = $state(true);
 
 	async function loadVatsimData() {
@@ -74,7 +76,9 @@
 		onlyDepartureWithATC,
 		onlyArrivalWithATC,
 		departureATCLevels,
-		arrivalATCLevels
+		arrivalATCLevels,
+		minFlightTime,
+		maxFlightTime
 	});
 
 	// Check if any filters are active
@@ -89,6 +93,7 @@
 		if (onlyArrivalWithATC) count++;
 		if (departureATCLevels.length > 0) count++;
 		if (arrivalATCLevels.length > 0) count++;
+		if (minFlightTime != null || maxFlightTime != null) count++;
 		return count;
 	});
 
@@ -100,6 +105,7 @@
 		if (onlyArrivalWithATC) parts.push('Arr ATC');
 		if (departureATCLevels.length > 0) parts.push(`Dep: ${departureATCLevels.join(', ')}`);
 		if (arrivalATCLevels.length > 0) parts.push(`Arr: ${arrivalATCLevels.join(', ')}`);
+		if (minFlightTime != null || maxFlightTime != null) parts.push('Time filter');
 		return parts.join(' • ');
 	});
 
@@ -200,6 +206,8 @@
 							bind:onlyArrivalWithATC
 							bind:departureATCLevels
 							bind:arrivalATCLevels
+							bind:minFlightTime
+							bind:maxFlightTime
 							{locationControllers}
 						/>
 					</div>

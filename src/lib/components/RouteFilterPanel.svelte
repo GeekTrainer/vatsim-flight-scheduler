@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { loadAllRoutes, airports } from '$lib/routes';
 	import AirportFilterSelect from './AirportFilterSelect.svelte';
+	import FlightTimeRangeSlider from './FlightTimeRangeSlider.svelte';
 	import { getAvailableAirports } from '$lib/utils/filter-airports';
 	import { hasActiveFilters as checkActiveFilters } from '$lib/utils/filter-utils';
 	import type { Airport, LocationControllers } from '$lib/types';
@@ -14,6 +15,8 @@
 		onlyArrivalWithATC: boolean;
 		departureATCLevels: ControllerPosition[];
 		arrivalATCLevels: ControllerPosition[];
+		minFlightTime: number | null;
+		maxFlightTime: number | null;
 		locationControllers: LocationControllers;
 	}
 
@@ -24,10 +27,16 @@
 		onlyArrivalWithATC = $bindable(),
 		departureATCLevels = $bindable(),
 		arrivalATCLevels = $bindable(),
+		minFlightTime = $bindable(),
+		maxFlightTime = $bindable(),
 		locationControllers
 	}: Props = $props();
 
 	const allRoutes = loadAllRoutes();
+
+	// Compute flight time slider bounds (≤90min min, ≥360min max)
+	const flightTimeMin = $derived(Math.min(90, ...allRoutes.map(r => r.flight_time_minutes)));
+	const flightTimeMax = $derived(Math.max(360, ...allRoutes.map(r => r.flight_time_minutes)));
 
 	const availableDepartureAirports = $derived(
 		getAvailableAirports(allRoutes, airports, 'departure', {
@@ -60,6 +69,8 @@
 		onlyArrivalWithATC = false;
 		departureATCLevels = [];
 		arrivalATCLevels = [];
+		minFlightTime = null;
+		maxFlightTime = null;
 	}
 
 	// Computed filter state object for hasActiveFilters check
@@ -69,7 +80,9 @@
 		onlyDepartureWithATC,
 		onlyArrivalWithATC,
 		departureATCLevels,
-		arrivalATCLevels
+		arrivalATCLevels,
+		minFlightTime,
+		maxFlightTime
 	});
 
 	const hasActiveFilters = $derived(checkActiveFilters(filterState));
@@ -100,6 +113,14 @@
 			onAirportChange={(value) => selectedArrival = value || null}
 		/>
 	</div>
+
+	<!-- Flight Time Range Slider -->
+	<FlightTimeRangeSlider
+		min={flightTimeMin}
+		max={flightTimeMax}
+		bind:currentMin={minFlightTime}
+		bind:currentMax={maxFlightTime}
+	/>
 
 	<!-- Clear Filters Button (shown when filters are active) -->
 	{#if hasActiveFilters}

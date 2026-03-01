@@ -24,7 +24,9 @@ export function loadAllRoutes(): Route[] {
 			routes.push({
 				id: `${routeData.origin}-${routeData.destination}`,
 				departure,
-				arrival
+				arrival,
+				distance_nm: routeData.distance_nm,
+				flight_time_minutes: routeData.flight_time_minutes
 			});
 		} else {
 			console.warn(`Missing airport data for route: ${routeData.origin}-${routeData.destination}`);

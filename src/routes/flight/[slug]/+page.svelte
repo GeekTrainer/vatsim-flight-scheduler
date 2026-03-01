@@ -197,7 +197,12 @@
 									{/if}
 								</div>
 							{:else}
-								<div class="flex-1 border-t border-dashed border-gray-700"></div>
+								<div class="flex-1 flex flex-col items-center gap-1">
+									<div class="w-full border-t border-dashed border-gray-700"></div>
+									{#if data.flight_time_minutes}
+										<span class="text-xs text-gray-400 font-medium" data-testid="estimated-flight-time">~{Math.floor(data.flight_time_minutes / 60)}h {data.flight_time_minutes % 60 ? `${data.flight_time_minutes % 60}m` : ''} · {data.distance_nm} nm</span>
+									{/if}
+								</div>
 							{/if}
 						</div>
 
@@ -288,6 +293,8 @@
 				<MobileFlightStrip
 					departureIcao={data.departure.icao}
 					arrivalIcao={data.arrival.icao}
+					flightTimeMinutes={data.flight_time_minutes}
+					distanceNm={data.distance_nm}
 					{simbriefPlan}
 					{enrouteCenters}
 					{locationControllers}

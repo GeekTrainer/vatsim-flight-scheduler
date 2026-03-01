@@ -1,5 +1,6 @@
 <script lang="ts">
 	import ATCStatusDisplay from './ATCStatusDisplay.svelte';
+	import FlightTimeDisplay from './FlightTimeDisplay.svelte';
 	import type { Airport, Route, LocationControllers } from '$lib/types';
 	import type { ATCController } from '$lib/types/vatsim';
 	import { ControllerPosition } from '$lib/types/vatsim';
@@ -91,7 +92,13 @@
 									<span class="text-base font-semibold text-green-400">{route.arrival.icao}</span>
 									<span class="text-xs text-gray-500">({route.arrival.vatsim_code})</span>
 								</div>
-								<div class="text-sm text-gray-400">{route.arrival.city}</div>
+								<div class="flex items-center gap-2">
+									<span class="text-sm text-gray-400">{route.arrival.city}</span>
+									{#if route.flight_time_minutes}
+										<span class="text-xs text-gray-500">·</span>
+										<FlightTimeDisplay minutes={route.flight_time_minutes} compact />
+									{/if}
+								</div>
 							</div>
 
 							<!-- Arrival ATC Status -->

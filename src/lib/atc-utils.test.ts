@@ -31,9 +31,9 @@ const mockAirport3 = {
 };
 
 const mockRoutes: Route[] = [
-	{ id: 'KBOS-KLAX', departure: mockAirport1, arrival: mockAirport2 },
-	{ id: 'KLAX-KSEA', departure: mockAirport2, arrival: mockAirport3 },
-	{ id: 'KSEA-KBOS', departure: mockAirport3, arrival: mockAirport1 }
+	{ id: 'KBOS-KLAX', departure: mockAirport1, arrival: mockAirport2, distance_nm: 2200, flight_time_minutes: 370 },
+	{ id: 'KLAX-KSEA', departure: mockAirport2, arrival: mockAirport3, distance_nm: 800, flight_time_minutes: 160 },
+	{ id: 'KSEA-KBOS', departure: mockAirport3, arrival: mockAirport1, distance_nm: 2100, flight_time_minutes: 355 }
 ];
 
 const mockController: ATCController = {
@@ -110,7 +110,9 @@ describe('atc-utils', () => {
 				onlyDepartureWithATC: false,
 				onlyArrivalWithATC: false,
 				departureATCLevels: [],
-				arrivalATCLevels: []
+				arrivalATCLevels: [],
+				minFlightTime: null,
+				maxFlightTime: null
 			}, locationControllers);
 			
 			expect(filtered).toHaveLength(3);
@@ -129,7 +131,9 @@ describe('atc-utils', () => {
 				onlyDepartureWithATC: true,
 				onlyArrivalWithATC: false,
 				departureATCLevels: [],
-				arrivalATCLevels: []
+				arrivalATCLevels: [],
+				minFlightTime: null,
+				maxFlightTime: null
 			}, locationControllers);
 			
 			// Only route with KBOS departure should be included
@@ -149,7 +153,9 @@ describe('atc-utils', () => {
 				onlyDepartureWithATC: false,
 				onlyArrivalWithATC: true,
 				departureATCLevels: [],
-				arrivalATCLevels: []
+				arrivalATCLevels: [],
+				minFlightTime: null,
+				maxFlightTime: null
 			}, locationControllers);
 			
 			// Only route with KLAX arrival should be included
@@ -173,7 +179,9 @@ describe('atc-utils', () => {
 				onlyDepartureWithATC: true,
 				onlyArrivalWithATC: true,
 				departureATCLevels: [],
-				arrivalATCLevels: []
+				arrivalATCLevels: [],
+				minFlightTime: null,
+				maxFlightTime: null
 			}, locationControllers);
 			
 			// Only route with both endpoints having ATC
@@ -190,7 +198,9 @@ describe('atc-utils', () => {
 				onlyDepartureWithATC: false,
 				onlyArrivalWithATC: false,
 				departureATCLevels: [],
-				arrivalATCLevels: []
+				arrivalATCLevels: [],
+				minFlightTime: null,
+				maxFlightTime: null
 			}, locationControllers);
 			
 			expect(filtered).toHaveLength(1);
@@ -206,7 +216,9 @@ describe('atc-utils', () => {
 				onlyDepartureWithATC: false,
 				onlyArrivalWithATC: false,
 				departureATCLevels: [],
-				arrivalATCLevels: []
+				arrivalATCLevels: [],
+				minFlightTime: null,
+				maxFlightTime: null
 			}, locationControllers);
 			
 			expect(filtered).toHaveLength(1);
@@ -225,7 +237,9 @@ describe('atc-utils', () => {
 				onlyDepartureWithATC: false,
 				onlyArrivalWithATC: false,
 				departureATCLevels: [],
-				arrivalATCLevels: []
+				arrivalATCLevels: [],
+				minFlightTime: null,
+				maxFlightTime: null
 			}, locationControllers);
 			
 			expect(filtered).toHaveLength(1);
@@ -241,7 +255,9 @@ describe('atc-utils', () => {
 				onlyDepartureWithATC: false,
 				onlyArrivalWithATC: false,
 				departureATCLevels: [],
-				arrivalATCLevels: []
+				arrivalATCLevels: [],
+				minFlightTime: null,
+				maxFlightTime: null
 			}, locationControllers);
 			
 			expect(filtered).toHaveLength(0);
@@ -364,7 +380,9 @@ describe('atc-utils', () => {
 					onlyDepartureWithATC: false,
 					onlyArrivalWithATC: false,
 					departureATCLevels: [ControllerPosition.TWR],
-					arrivalATCLevels: []
+					arrivalATCLevels: [],
+				minFlightTime: null,
+				maxFlightTime: null
 				}, locationControllers);
 
 				// Only route with KBOS departure should be included
@@ -388,7 +406,9 @@ describe('atc-utils', () => {
 					onlyDepartureWithATC: false,
 					onlyArrivalWithATC: false,
 					departureATCLevels: [],
-					arrivalATCLevels: [ControllerPosition.APP]
+					arrivalATCLevels: [ControllerPosition.APP],
+				minFlightTime: null,
+				maxFlightTime: null
 				}, locationControllers);
 
 				// Only route with KLAX arrival should be included
@@ -416,7 +436,9 @@ describe('atc-utils', () => {
 					onlyDepartureWithATC: false,
 					onlyArrivalWithATC: false,
 					departureATCLevels: [ControllerPosition.TWR, ControllerPosition.GND],
-					arrivalATCLevels: []
+					arrivalATCLevels: [],
+				minFlightTime: null,
+				maxFlightTime: null
 				}, locationControllers);
 
 				// Both KBOS (TWR) and KSEA (GND) should match
@@ -436,7 +458,9 @@ describe('atc-utils', () => {
 					onlyDepartureWithATC: false,
 					onlyArrivalWithATC: false,
 					departureATCLevels: [ControllerPosition.TWR],
-					arrivalATCLevels: []
+					arrivalATCLevels: [],
+				minFlightTime: null,
+				maxFlightTime: null
 				}, locationControllers);
 
 				expect(filtered).toHaveLength(1);
@@ -452,7 +476,9 @@ describe('atc-utils', () => {
 					onlyDepartureWithATC: false,
 					onlyArrivalWithATC: false,
 					departureATCLevels: [ControllerPosition.TWR, ControllerPosition.APP],
-					arrivalATCLevels: []
+					arrivalATCLevels: [],
+				minFlightTime: null,
+				maxFlightTime: null
 				}, locationControllers);
 
 				expect(filtered).toHaveLength(0);
@@ -467,7 +493,9 @@ describe('atc-utils', () => {
 					onlyDepartureWithATC: false,
 					onlyArrivalWithATC: false,
 					departureATCLevels: [],
-					arrivalATCLevels: []
+					arrivalATCLevels: [],
+				minFlightTime: null,
+				maxFlightTime: null
 				}, locationControllers);
 
 				// Should return all routes when levels array is empty

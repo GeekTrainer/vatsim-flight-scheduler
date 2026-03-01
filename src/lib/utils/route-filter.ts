@@ -57,6 +57,14 @@ export function filterRoutes(
 			return false;
 		}
 
+		// Flight time range filter
+		if (filters.minFlightTime != null && route.flight_time_minutes < filters.minFlightTime) {
+			return false;
+		}
+		if (filters.maxFlightTime != null && route.flight_time_minutes > filters.maxFlightTime) {
+			return false;
+		}
+
 		return true;
 	});
 }
