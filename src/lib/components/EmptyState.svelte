@@ -18,7 +18,7 @@
 	} = $props();
 </script>
 
-<div class="flex items-center justify-center py-12">
+<div class="flex items-center justify-center py-12" data-testid="empty-state">
 	<div class="text-center">
 		<p class="text-gray-400 text-lg">{title}</p>
 		{#if subtitle}

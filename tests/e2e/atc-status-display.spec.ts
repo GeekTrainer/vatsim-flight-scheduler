@@ -1,19 +1,9 @@
 import { test, expect } from '@playwright/test';
-import { mockVatsimDataEmpty, mockVatsimDataWithControllers } from './fixtures/vatsim-data';
+import { setupWithEmptyVatsimData, setupWithControllers } from './helpers/setup';
 
 test.describe('ATC Status Display', () => {
-	test.beforeEach(async ({ page }) => {
-		await page.goto('/');
-	});
-
 	test('should show all ATC positions as offline when no controllers online', async ({ page }) => {
-		// Mock VATSIM API with no controllers
-		await page.route('https://data.vatsim.net/v3/vatsim-data.json', async (route) => {
-			await route.fulfill({ status: 200, body: JSON.stringify(mockVatsimDataEmpty) });
-		});
-		
-		// Wait for user guide to be visible (observable result that loading is complete)
-		await expect(page.getByTestId('user-guide')).toBeVisible();
+		await setupWithEmptyVatsimData(page);
 
 		// Select any departure to show a route
 		const departureSelect = page.getByTestId('departure-airport-select');
@@ -32,13 +22,7 @@ test.describe('ATC Status Display', () => {
 	});
 
 	test('should show specific positions as online when controllers are active', async ({ page }) => {
-		// Mock VATSIM API with controllers
-		await page.route('https://data.vatsim.net/v3/vatsim-data.json', async (route) => {
-			await route.fulfill({ status: 200, body: JSON.stringify(mockVatsimDataWithControllers) });
-		});
-		
-		// Wait for user guide to be visible (observable result that loading is complete)
-		await expect(page.getByTestId('user-guide')).toBeVisible();
+		await setupWithControllers(page);
 
 		// Select PHX departure (has TWR and GND online)
 		const departureSelect = page.getByTestId('departure-airport-select');
@@ -57,13 +41,7 @@ test.describe('ATC Status Display', () => {
 	});
 
 	test('should display controller callsign, frequency, and time for online positions', async ({ page }) => {
-		// Mock VATSIM API with controllers
-		await page.route('https://data.vatsim.net/v3/vatsim-data.json', async (route) => {
-			await route.fulfill({ status: 200, body: JSON.stringify(mockVatsimDataWithControllers) });
-		});
-		
-		// Wait for user guide to be visible (observable result that loading is complete)
-		await expect(page.getByTestId('user-guide')).toBeVisible();
+		await setupWithControllers(page);
 
 		// Select PHX departure
 		const departureSelect = page.getByTestId('departure-airport-select');

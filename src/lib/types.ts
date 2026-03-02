@@ -10,6 +10,8 @@ export interface Route {
 	id: string;
 	departure: Airport;
 	arrival: Airport;
+	distance_nm: number;
+	flight_time_minutes: number;
 }
 
 export interface ATISInfo {

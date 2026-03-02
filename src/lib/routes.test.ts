@@ -6,7 +6,7 @@ describe('routes', () => {
 	describe('loadAllRoutes', () => {
 		it('should load all Virtual SWA routes', () => {
 			const routes = loadAllRoutes();
-			expect(routes.length).toBe(1219);
+			expect(routes.length).toBe(1327);
 		});
 
 		it('should generate routes with valid departure and arrival airports', () => {
@@ -57,12 +57,22 @@ describe('routes', () => {
 			expect(abqBwi?.departure.vatsim_code).toBe('ABQ');
 			expect(abqBwi?.arrival.vatsim_code).toBe('BWI');
 		});
+
+		it('should include distance and flight time for each route', () => {
+			const routes = loadAllRoutes();
+			
+			routes.slice(0, 10).forEach((route: Route) => {
+				expect(route.distance_nm).toBeGreaterThan(0);
+				expect(route.flight_time_minutes).toBeGreaterThan(0);
+				expect(route.flight_time_minutes % 5).toBe(0); // rounded to 5 min
+			});
+		});
 	});
 
 	describe('airports', () => {
 		it('should export an array of airports', () => {
 			expect(Array.isArray(airports)).toBe(true);
-			expect(airports.length).toBe(109);
+			expect(airports.length).toBe(111);
 		});
 
 		it('should have valid airport structure', () => {

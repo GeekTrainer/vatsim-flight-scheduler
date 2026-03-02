@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { loadAllRoutes, airports } from '$lib/routes';
 	import AirportFilterSelect from './AirportFilterSelect.svelte';
+	import FlightTimeRangeSlider from './FlightTimeRangeSlider.svelte';
 	import { getAvailableAirports } from '$lib/utils/filter-airports';
 	import { hasActiveFilters as checkActiveFilters } from '$lib/utils/filter-utils';
 	import type { Airport, LocationControllers } from '$lib/types';
@@ -14,6 +15,8 @@
 		onlyArrivalWithATC: boolean;
 		departureATCLevels: ControllerPosition[];
 		arrivalATCLevels: ControllerPosition[];
+		minFlightTime: number | null;
+		maxFlightTime: number | null;
 		locationControllers: LocationControllers;
 	}
 
@@ -24,10 +27,16 @@
 		onlyArrivalWithATC = $bindable(),
 		departureATCLevels = $bindable(),
 		arrivalATCLevels = $bindable(),
+		minFlightTime = $bindable(),
+		maxFlightTime = $bindable(),
 		locationControllers
 	}: Props = $props();
 
 	const allRoutes = loadAllRoutes();
+
+	// Fixed slider bounds: < 90min on the low end, > 6h on the high end
+	const flightTimeMin = 90;
+	const flightTimeMax = 360;
 
 	const availableDepartureAirports = $derived(
 		getAvailableAirports(allRoutes, airports, 'departure', {
@@ -60,6 +69,8 @@
 		onlyArrivalWithATC = false;
 		departureATCLevels = [];
 		arrivalATCLevels = [];
+		minFlightTime = null;
+		maxFlightTime = null;
 	}
 
 	// Computed filter state object for hasActiveFilters check
@@ -69,7 +80,9 @@
 		onlyDepartureWithATC,
 		onlyArrivalWithATC,
 		departureATCLevels,
-		arrivalATCLevels
+		arrivalATCLevels,
+		minFlightTime,
+		maxFlightTime
 	});
 
 	const hasActiveFilters = $derived(checkActiveFilters(filterState));
@@ -99,6 +112,18 @@
 			showNoMatchMessage={availableArrivalAirports.length === 0 && (onlyArrivalWithATC || arrivalATCLevels.length > 0 || selectedDeparture !== null)}
 			onAirportChange={(value) => selectedArrival = value || null}
 		/>
+	</div>
+
+	<!-- Flight Time Range Slider -->
+	<div class="flex justify-center">
+		<div class="w-full max-w-md">
+			<FlightTimeRangeSlider
+				min={flightTimeMin}
+				max={flightTimeMax}
+				bind:currentMin={minFlightTime}
+				bind:currentMax={maxFlightTime}
+			/>
+		</div>
 	</div>
 
 	<!-- Clear Filters Button (shown when filters are active) -->

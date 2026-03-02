@@ -10,6 +10,8 @@
 	interface Props {
 		departureIcao: string;
 		arrivalIcao: string;
+		flightTimeMinutes?: number;
+		distanceNm?: number;
 		simbriefPlan: SimBriefPlan | null;
 		enrouteCenters: EnrouteCenter[];
 		locationControllers: LocationControllers;
@@ -20,7 +22,8 @@
 	}
 
 	let {
-		departureIcao, arrivalIcao, simbriefPlan, enrouteCenters,
+		departureIcao, arrivalIcao, flightTimeMinutes = 0, distanceNm = 0,
+		simbriefPlan, enrouteCenters,
 		locationControllers, vatsimFlightStatus,
 		onPlanLoaded, onRefile, onClear
 	}: Props = $props();
@@ -183,6 +186,11 @@
 				<span class="text-gray-500 mx-2">→</span>
 				<span class="font-bold text-green-400">{arrivalIcao}</span>
 			</div>
+			{#if flightTimeMinutes}
+				<div class="text-xs text-gray-400 mt-0.5" data-testid="mobile-estimated-flight-time">
+					~{Math.floor(flightTimeMinutes / 60)}h{flightTimeMinutes % 60 ? ` ${flightTimeMinutes % 60}m` : ''} · {distanceNm} nm
+				</div>
+			{/if}
 		</div>
 
 		<!-- Enroute centers -->

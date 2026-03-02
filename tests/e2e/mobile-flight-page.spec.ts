@@ -1,53 +1,9 @@
 import { test, expect } from '@playwright/test';
-import { mockVatsimDataWithControllers } from './fixtures/vatsim-data';
-
-const mockFaaDatisPhx = [
-	{
-		airport: 'KPHX',
-		type: 'combined',
-		code: 'R',
-		datis: 'PHX ATIS INFO R 2350Z. 24010KT 10SM FEW250 35/12 A2990. VISUAL APPROACHES IN USE. LANDING AND DEPARTING RWY 25L AND 25R. ADVS YOU HAVE INFO R.'
-	}
-];
-
-const mockFaaDatisLas = [
-	{
-		airport: 'KLAS',
-		type: 'combined',
-		code: 'B',
-		datis: 'LAS ATIS INFO B 2345Z. 21008KT 10SM CLR 30/08 A2985. ILS APPROACHES IN USE. LANDING RWY 26L AND 26R. ADVS YOU HAVE INFO B.'
-	}
-];
-
-function setupMocks(page: import('@playwright/test').Page) {
-	return Promise.all([
-		page.route('https://data.vatsim.net/v3/vatsim-data.json', async (route) => {
-			await route.fulfill({
-				status: 200,
-				contentType: 'application/json',
-				body: JSON.stringify(mockVatsimDataWithControllers)
-			});
-		}),
-		page.route('https://atis.info/api/KPHX', async (route) => {
-			await route.fulfill({
-				status: 200,
-				contentType: 'application/json',
-				body: JSON.stringify(mockFaaDatisPhx)
-			});
-		}),
-		page.route('https://atis.info/api/KLAS', async (route) => {
-			await route.fulfill({
-				status: 200,
-				contentType: 'application/json',
-				body: JSON.stringify(mockFaaDatisLas)
-			});
-		})
-	]);
-}
+import { setupWithFlightPageMocks } from './helpers/setup';
 
 test.describe('Flight Page - Mobile Layout', () => {
 	test('should show collapsible cards on mobile', async ({ page }) => {
-		await setupMocks(page);
+		await setupWithFlightPageMocks(page);
 		await page.goto('/flight/KPHX-KLAS');
 
 		// Both cards should be visible
@@ -56,7 +12,7 @@ test.describe('Flight Page - Mobile Layout', () => {
 	});
 
 	test('should have both cards collapsed by default', async ({ page }) => {
-		await setupMocks(page);
+		await setupWithFlightPageMocks(page);
 		await page.goto('/flight/KPHX-KLAS');
 
 		// Both cards should NOT show ATIS content (collapsed)
@@ -68,7 +24,7 @@ test.describe('Flight Page - Mobile Layout', () => {
 	});
 
 	test('should show compact summary on collapsed card', async ({ page }) => {
-		await setupMocks(page);
+		await setupWithFlightPageMocks(page);
 		await page.goto('/flight/KPHX-KLAS');
 
 		// Both collapsed - should show compact summary
@@ -78,7 +34,7 @@ test.describe('Flight Page - Mobile Layout', () => {
 	});
 
 	test('should expand and collapse cards independently', async ({ page }) => {
-		await setupMocks(page);
+		await setupWithFlightPageMocks(page);
 		await page.goto('/flight/KPHX-KLAS');
 
 		const depCard = page.getByTestId('flight-card-departure');
@@ -101,7 +57,7 @@ test.describe('Flight Page - Mobile Layout', () => {
 	});
 
 	test('should show ATC dots on collapsed card', async ({ page }) => {
-		await setupMocks(page);
+		await setupWithFlightPageMocks(page);
 		await page.goto('/flight/KPHX-KLAS');
 
 		// Arrival card is collapsed but should show ATC dot indicators

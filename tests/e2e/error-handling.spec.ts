@@ -1,9 +1,10 @@
 import { test, expect } from '@playwright/test';
+import { VATSIM_API_URL } from './fixtures/test-constants';
 
 test.describe('Error Handling', () => {
 	test('should handle API 500 error gracefully', async ({ page }) => {
 		// Mock VATSIM API returning 500
-		await page.route('https://data.vatsim.net/v3/vatsim-data.json', async (route) => {
+		await page.route(VATSIM_API_URL, async (route) => {
 			await route.fulfill({ 
 				status: 500, 
 				body: 'Internal Server Error',
@@ -27,7 +28,7 @@ test.describe('Error Handling', () => {
 
 	test('should handle network timeout gracefully', async ({ page }) => {
 		// Mock VATSIM API with long delay (simulating timeout)
-		await page.route('https://data.vatsim.net/v3/vatsim-data.json', async (route) => {
+		await page.route(VATSIM_API_URL, async (route) => {
 			// Don't fulfill the route - let it timeout
 			// In a real timeout scenario, Playwright will eventually fail the request
 			await new Promise(resolve => setTimeout(resolve, 100));
@@ -48,7 +49,7 @@ test.describe('Error Handling', () => {
 
 	test('should handle malformed JSON response gracefully', async ({ page }) => {
 		// Mock VATSIM API returning invalid JSON
-		await page.route('https://data.vatsim.net/v3/vatsim-data.json', async (route) => {
+		await page.route(VATSIM_API_URL, async (route) => {
 			await route.fulfill({ 
 				status: 200, 
 				body: '{ invalid json here }',
