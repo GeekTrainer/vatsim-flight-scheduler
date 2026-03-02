@@ -6,7 +6,7 @@ describe('routes', () => {
 	describe('loadAllRoutes', () => {
 		it('should load all Virtual SWA routes', () => {
 			const routes = loadAllRoutes();
-			expect(routes.length).toBe(1251);
+			expect(routes.length).toBe(1327);
 		});
 
 		it('should generate routes with valid departure and arrival airports', () => {

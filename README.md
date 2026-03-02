@@ -6,7 +6,7 @@ A web application that helps virtual pilots on the VATSIM network find Virtual S
 
 ## ✨ Features
 
-- **1,219 Routes**: Browse Virtual SWA routes from 109 airports
+- **1,327 Routes**: Browse Virtual SWA routes from 109 airports
 - **Advanced Filtering**: Filter by departure/arrival airports and specific ATC positions
 - **Granular ATC Level Selection**: Choose specific positions (Center, Approach, Tower, Ground, Delivery)
 - **Real-Time Controller Data**: Live updates every 30 seconds from VATSIM API
@@ -87,6 +87,42 @@ npm run check         # TypeScript validation
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - Component architecture and design patterns
 - **[PRD.md](PRD.md)** - Product requirements and features
 - **[TESTING.md](TESTING.md)** - Testing strategy and guidelines
+
+## 🐳 Docker Sandbox (Copilot Environment)
+
+When developing inside a GitHub Copilot Docker Sandbox, native Node.js binaries (esbuild, lightningcss, rollup) crash on the virtiofs shared filesystem due to mmap/FUSE issues on aarch64. The workaround is to install `node_modules` on the sandbox's local ext4 filesystem and symlink it into the workspace.
+
+### Sandbox Setup
+
+```bash
+# 1. Create local deps directory and copy package files
+DEPS_DIR="/home/agent/project-deps"
+mkdir -p "$DEPS_DIR"
+cp package.json package-lock.json "$DEPS_DIR/"
+
+# 2. Install on local ext4 filesystem
+cd "$DEPS_DIR" && npm ci
+
+# 3. Symlink node_modules into the workspace
+cd /Users/geektrainer/repos/vatsim-flight-scheduler
+rm -rf node_modules
+ln -s "$DEPS_DIR/node_modules" node_modules
+
+# 4. Install Playwright browsers for E2E tests
+npx playwright install --with-deps chromium
+```
+
+### Why This Works
+
+- The workspace is mounted via **virtiofs** (bidirectional file sync between macOS host and Linux VM)
+- Native Go/Rust binaries crash with mmap alignment failures on virtiofs
+- `/home/agent/` is local ext4 inside the sandbox — native binaries run correctly there
+- `vite.config.ts` dynamically detects the symlink and adds the target to Vite's `server.fs.allow` list
+- On macOS, `npm ci` naturally replaces the (broken) symlink with a real `node_modules` directory — no manual steps needed
+
+### After Dependency Changes
+
+If `package.json` or `package-lock.json` changes, repeat the setup steps above to reinstall.
 
 ## 🤝 Contributing
 
