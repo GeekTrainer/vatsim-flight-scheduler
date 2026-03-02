@@ -37,13 +37,13 @@
 
 	function handleMinChange(e: Event) {
 		const val = parseInt((e.target as HTMLInputElement).value);
-		internalMin = Math.min(val, internalMax - step);
+		internalMin = Math.max(Math.min(val, internalMax - step), min);
 		emitChange();
 	}
 
 	function handleMaxChange(e: Event) {
 		const val = parseInt((e.target as HTMLInputElement).value);
-		internalMax = Math.max(val, internalMin + step);
+		internalMax = Math.min(Math.max(val, internalMin + step), max);
 		emitChange();
 	}
 

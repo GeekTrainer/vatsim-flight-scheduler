@@ -33,7 +33,7 @@
 	});
 </script>
 
-<div class="space-y-4">
+<div class="space-y-4" data-testid="route-results" data-route-count={routes.length}>
 	{#each groupedByDeparture as group}
 		<DepartureAirportGroup
 			departureAirport={group.airport}
