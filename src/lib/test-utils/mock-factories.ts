@@ -15,8 +15,7 @@ export function createMockController(
 		name: overrides.name ?? 'Test Controller',
 		frequency: overrides.frequency ?? '118.000',
 		position: overrides.position ?? ControllerPosition.TWR,
-		onlineTimeMinutes: overrides.onlineTimeMinutes ?? 60,
-		...overrides
+		onlineTimeMinutes: overrides.onlineTimeMinutes ?? 60
 	};
 }
 
@@ -28,8 +27,7 @@ export function createMockAirport(
 		name: overrides.name ?? `${overrides.icao} Airport`,
 		city: overrides.city ?? overrides.icao,
 		vatsim_code: overrides.vatsim_code,
-		artcc: overrides.artcc ?? 'ZZZ',
-		...overrides
+		artcc: overrides.artcc ?? 'ZZZ'
 	};
 }
 
@@ -43,8 +41,7 @@ export function createMockRoute(
 		departure,
 		arrival,
 		distance_nm: overrides?.distance_nm ?? 500,
-		flight_time_minutes: overrides?.flight_time_minutes ?? 120,
-		...overrides
+		flight_time_minutes: overrides?.flight_time_minutes ?? 120
 	};
 }
 

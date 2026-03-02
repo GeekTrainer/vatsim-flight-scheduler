@@ -1,8 +1,21 @@
 import { describe, it, expect } from 'vitest';
 import { getArtccName, getCenterControllers, detectEnrouteCenters, getBasicEnrouteCenters } from './enroute';
 import type { LocationControllers } from './types';
+import type { SimBriefNavlogFix } from './types/simbrief';
 import { ControllerPosition } from './types/vatsim';
 import { createMockController, createMockLocationControllers } from './test-utils/mock-factories';
+
+function createMockFix(lat: string, lon: string, ident: string): SimBriefNavlogFix {
+	return {
+		pos_lat: lat, pos_long: lon, ident, name: '', type: 'wpt', frequency: '',
+		via_airway: '', is_sid_star: '0', stage: '', distance: '', track_true: '',
+		track_mag: '', heading_true: '', heading_mag: '', altitude_feet: '',
+		ind_airspeed: '', true_airspeed: '', mach: '', groundspeed: '',
+		wind_component: '', wind_dir: '', wind_spd: '', oat: '',
+		time_leg: '', time_total: '', fuel_flow: '', fuel_leg: '',
+		fuel_totalused: '', fuel_plan_onboard: ''
+	};
+}
 
 describe('enroute', () => {
 	describe('getArtccName', () => {
@@ -90,7 +103,7 @@ describe('enroute', () => {
 			const lc: LocationControllers = new Map();
 			// Waypoint near LA center
 			const fixes = [
-				{ pos_lat: '34.0', pos_long: '-117.0', ident: 'FIX1', name: 'Test', type: 'wpt', frequency: '', via_airway: '', is_sid_star: '0' }
+				createMockFix('34.0', '-117.0', 'FIX1')
 			];
 			const result = detectEnrouteCenters(fixes, 'ZLA', 'ZDV', lc);
 			const zlaCount = result.filter(c => c.artcc === 'ZLA').length;
@@ -101,9 +114,9 @@ describe('enroute', () => {
 			const lc: LocationControllers = new Map();
 			// Waypoints: LA area → Albuquerque area → Denver area
 			const fixes = [
-				{ pos_lat: '34.0', pos_long: '-117.0', ident: 'FIX1', name: '', type: 'wpt', frequency: '', via_airway: '', is_sid_star: '0' },
-				{ pos_lat: '33.5', pos_long: '-109.0', ident: 'FIX2', name: '', type: 'wpt', frequency: '', via_airway: '', is_sid_star: '0' },
-				{ pos_lat: '39.5', pos_long: '-105.0', ident: 'FIX3', name: '', type: 'wpt', frequency: '', via_airway: '', is_sid_star: '0' },
+				createMockFix('34.0', '-117.0', 'FIX1'),
+				createMockFix('33.5', '-109.0', 'FIX2'),
+				createMockFix('39.5', '-105.0', 'FIX3'),
 			];
 			const result = detectEnrouteCenters(fixes, 'ZLA', 'ZDV', lc);
 			const artccs = result.map(c => c.artcc);
@@ -113,7 +126,7 @@ describe('enroute', () => {
 		it('should skip waypoints with invalid coordinates', () => {
 			const lc: LocationControllers = new Map();
 			const fixes = [
-				{ pos_lat: 'invalid', pos_long: 'bad', ident: 'BAD', name: '', type: 'wpt', frequency: '', via_airway: '', is_sid_star: '0' },
+				createMockFix('invalid', 'bad', 'BAD'),
 			];
 			const result = detectEnrouteCenters(fixes, 'ZLA', 'ZDV', lc);
 			// Should still have at least dep and arr
@@ -127,7 +140,7 @@ describe('enroute', () => {
 				['ZAB', [[ControllerPosition.CTR, [createMockController({ callsign: 'ZAB_CTR', frequency: '132.200', position: ControllerPosition.CTR }), createMockController({ callsign: 'ZAB_25_CTR', frequency: '128.100', position: ControllerPosition.CTR })]]]]
 			]);
 			const fixes = [
-				{ pos_lat: '33.5', pos_long: '-109.0', ident: 'ABQ', name: '', type: 'wpt', frequency: '', via_airway: '', is_sid_star: '0' },
+				createMockFix('33.5', '-109.0', 'ABQ'),
 			];
 			const result = detectEnrouteCenters(fixes, 'ZLA', 'ZDV', lc);
 			const zla = result.find(c => c.artcc === 'ZLA');
