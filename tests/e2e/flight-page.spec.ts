@@ -1,53 +1,11 @@
 import { test, expect } from '@playwright/test';
 import { mockVatsimDataWithControllers, mockVatsimDataEmpty } from './fixtures/vatsim-data';
-
-const mockFaaDatisPhx = [
-	{
-		airport: 'KPHX',
-		type: 'combined',
-		code: 'R',
-		datis: 'PHX ATIS INFO R 2350Z. 24010KT 10SM FEW250 35/12 A2990. VISUAL APPROACHES IN USE. LANDING AND DEPARTING RWY 25L AND 25R. ADVS YOU HAVE INFO R.'
-	}
-];
-
-const mockFaaDatisLas = [
-	{
-		airport: 'KLAS',
-		type: 'combined',
-		code: 'B',
-		datis: 'LAS ATIS INFO B 2345Z. 21008KT 10SM CLR 30/08 A2985. ILS APPROACHES IN USE. LANDING RWY 26L AND 26R. ADVS YOU HAVE INFO B.'
-	}
-];
-
-function setupMocks(page: import('@playwright/test').Page) {
-	return Promise.all([
-		page.route('https://data.vatsim.net/v3/vatsim-data.json', async (route) => {
-			await route.fulfill({
-				status: 200,
-				contentType: 'application/json',
-				body: JSON.stringify(mockVatsimDataWithControllers)
-			});
-		}),
-		page.route('https://atis.info/api/KPHX', async (route) => {
-			await route.fulfill({
-				status: 200,
-				contentType: 'application/json',
-				body: JSON.stringify(mockFaaDatisPhx)
-			});
-		}),
-		page.route('https://atis.info/api/KLAS', async (route) => {
-			await route.fulfill({
-				status: 200,
-				contentType: 'application/json',
-				body: JSON.stringify(mockFaaDatisLas)
-			});
-		})
-	]);
-}
+import { mockFaaDatisPhx, mockFaaDatisLas } from './fixtures/faa-datis';
+import { setupWithFlightPageMocks } from './helpers/setup';
 
 test.describe('Flight Detail Page', () => {
 	test('should navigate to flight page when clicking arrival airport', async ({ page }) => {
-		await setupMocks(page);
+		await setupWithFlightPageMocks(page);
 		await page.goto('/');
 
 		// Wait for page to finish loading (user guide appears when no filters active)
@@ -75,7 +33,7 @@ test.describe('Flight Detail Page', () => {
 	});
 
 	test('should display both airports on flight page', async ({ page }) => {
-		await setupMocks(page);
+		await setupWithFlightPageMocks(page);
 		await page.goto('/flight/KPHX-KLAS');
 
 		await expect(page.getByTestId('flight-page')).toBeVisible();
@@ -84,7 +42,7 @@ test.describe('Flight Detail Page', () => {
 	});
 
 	test('should display ATC status for both airports', async ({ page }) => {
-		await setupMocks(page);
+		await setupWithFlightPageMocks(page);
 		await page.goto('/flight/KPHX-KLAS');
 
 		// Departure section should have ATC display
@@ -97,7 +55,7 @@ test.describe('Flight Detail Page', () => {
 	});
 
 	test('should show VATSIM ATIS by default', async ({ page }) => {
-		await setupMocks(page);
+		await setupWithFlightPageMocks(page);
 		await page.goto('/flight/KPHX-KLAS');
 
 		// VATSIM tab should be active by default for departure
@@ -113,7 +71,7 @@ test.describe('Flight Detail Page', () => {
 	});
 
 	test('should show arrival VATSIM ATIS', async ({ page }) => {
-		await setupMocks(page);
+		await setupWithFlightPageMocks(page);
 		await page.goto('/flight/KPHX-KLAS');
 
 		const arrAtis = page.getByTestId('desktop-layout').getByTestId('atis-display-KLAS');
@@ -124,7 +82,7 @@ test.describe('Flight Detail Page', () => {
 	});
 
 	test('should switch to Real World ATIS tab', async ({ page }) => {
-		await setupMocks(page);
+		await setupWithFlightPageMocks(page);
 		await page.goto('/flight/KPHX-KLAS');
 
 		const depAtis = page.getByTestId('desktop-layout').getByTestId('atis-display-KPHX');
@@ -144,7 +102,7 @@ test.describe('Flight Detail Page', () => {
 	});
 
 	test('should switch tabs back to VATSIM', async ({ page }) => {
-		await setupMocks(page);
+		await setupWithFlightPageMocks(page);
 		await page.goto('/flight/KPHX-KLAS');
 
 		const depAtis = page.getByTestId('desktop-layout').getByTestId('atis-display-KPHX');
@@ -158,7 +116,7 @@ test.describe('Flight Detail Page', () => {
 	});
 
 	test('should navigate back to routes page', async ({ page }) => {
-		await setupMocks(page);
+		await setupWithFlightPageMocks(page);
 		await page.goto('/flight/KPHX-KLAS');
 
 		const backLink = page.getByTestId('flight-back-link');
@@ -207,14 +165,14 @@ test.describe('Flight Detail Page', () => {
 	});
 
 	test('should have correct page title', async ({ page }) => {
-		await setupMocks(page);
+		await setupWithFlightPageMocks(page);
 		await page.goto('/flight/KPHX-KLAS');
 
 		await expect(page).toHaveTitle(/KPHX.*KLAS.*VATSIM Flight Scheduler/);
 	});
 
 	test('should display ATIS summary with wind and altimeter', async ({ page }) => {
-		await setupMocks(page);
+		await setupWithFlightPageMocks(page);
 		await page.goto('/flight/KPHX-KLAS');
 
 		const depAtis = page.getByTestId('desktop-layout').getByTestId('atis-display-KPHX');
@@ -229,7 +187,7 @@ test.describe('Flight Detail Page', () => {
 	});
 
 	test('should display runway info in ATIS summary', async ({ page }) => {
-		await setupMocks(page);
+		await setupWithFlightPageMocks(page);
 		await page.goto('/flight/KPHX-KLAS');
 
 		const depAtis = page.getByTestId('desktop-layout').getByTestId('atis-display-KPHX');
@@ -241,7 +199,7 @@ test.describe('Flight Detail Page', () => {
 	});
 
 	test('should show arrival runway info with approach type', async ({ page }) => {
-		await setupMocks(page);
+		await setupWithFlightPageMocks(page);
 		await page.goto('/flight/KPHX-KLAS');
 
 		const arrAtis = page.getByTestId('desktop-layout').getByTestId('atis-display-KLAS');
@@ -252,7 +210,7 @@ test.describe('Flight Detail Page', () => {
 	});
 
 	test('should show summary on Real World tab too', async ({ page }) => {
-		await setupMocks(page);
+		await setupWithFlightPageMocks(page);
 		await page.goto('/flight/KPHX-KLAS');
 
 		const depAtis = page.getByTestId('desktop-layout').getByTestId('atis-display-KPHX');
@@ -262,5 +220,52 @@ test.describe('Flight Detail Page', () => {
 		await expect(depAtis.getByTestId('atis-content-realworld')).toBeVisible();
 		await expect(depAtis.getByTestId('atis-summary')).toBeVisible();
 		await expect(depAtis.getByTestId('atis-summary-altimeter')).toBeVisible();
+	});
+
+	test('should handle atis.info API failure gracefully', async ({ page }) => {
+		await page.route('https://data.vatsim.net/v3/vatsim-data.json', async (route) => {
+			await route.fulfill({
+				status: 200,
+				contentType: 'application/json',
+				body: JSON.stringify(mockVatsimDataWithControllers)
+			});
+		});
+		await page.route('https://atis.info/api/*', async (route) => {
+			await route.fulfill({ status: 500 });
+		});
+
+		await page.goto('/flight/KPHX-KLAS');
+
+		// Page should still load and show flight info
+		await expect(page.getByTestId('flight-page')).toBeVisible();
+		await expect(page.getByTestId('flight-departure-code')).toContainText('KPHX');
+		await expect(page.getByTestId('flight-arrival-code')).toContainText('KLAS');
+	});
+
+	test('should show error page for invalid flight route', async ({ page }) => {
+		await page.route('https://data.vatsim.net/v3/vatsim-data.json', async (route) => {
+			await route.fulfill({
+				status: 200,
+				contentType: 'application/json',
+				body: JSON.stringify(mockVatsimDataEmpty)
+			});
+		});
+
+		const response = await page.goto('/flight/INVALID');
+		// SvelteKit should show an error (404)
+		expect(response?.status()).toBe(404);
+	});
+
+	test('should show error for unknown airport in route', async ({ page }) => {
+		await page.route('https://data.vatsim.net/v3/vatsim-data.json', async (route) => {
+			await route.fulfill({
+				status: 200,
+				contentType: 'application/json',
+				body: JSON.stringify(mockVatsimDataEmpty)
+			});
+		});
+
+		const response = await page.goto('/flight/KZZZ-KYYY');
+		expect(response?.status()).toBe(404);
 	});
 });
