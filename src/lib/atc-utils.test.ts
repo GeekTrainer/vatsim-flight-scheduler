@@ -3,54 +3,53 @@ import { hasATCCoverage, hasSpecificATCLevel } from './atc-utils';
 import { filterRoutes } from './utils/route-filter';
 import { ControllerPosition } from './types/vatsim';
 import type { Route } from './types';
-import type { ATCController } from './types/vatsim';
+import { createMockController, createMockAirport, createMockRoute, createMockLocationControllers } from './test-utils/mock-factories';
 
 // Test data
-const mockAirport1 = {
+const mockAirport1 = createMockAirport({
 	icao: 'KBOS',
 	name: 'Boston Logan International Airport',
 	city: 'Boston',
 	vatsim_code: 'BOS',
 	artcc: 'ZBW'
-};
+});
 
-const mockAirport2 = {
+const mockAirport2 = createMockAirport({
 	icao: 'KLAX',
 	name: 'Los Angeles International Airport',
 	city: 'Los Angeles',
 	vatsim_code: 'LAX',
 	artcc: 'ZLA'
-};
+});
 
-const mockAirport3 = {
+const mockAirport3 = createMockAirport({
 	icao: 'KSEA',
 	name: 'Seattle-Tacoma International Airport',
 	city: 'Seattle',
 	vatsim_code: 'SEA',
 	artcc: 'ZSE'
-};
+});
 
 const mockRoutes: Route[] = [
-	{ id: 'KBOS-KLAX', departure: mockAirport1, arrival: mockAirport2, distance_nm: 2200, flight_time_minutes: 370 },
-	{ id: 'KLAX-KSEA', departure: mockAirport2, arrival: mockAirport3, distance_nm: 800, flight_time_minutes: 160 },
-	{ id: 'KSEA-KBOS', departure: mockAirport3, arrival: mockAirport1, distance_nm: 2100, flight_time_minutes: 355 }
+	createMockRoute(mockAirport1, mockAirport2, { distance_nm: 2200, flight_time_minutes: 370 }),
+	createMockRoute(mockAirport2, mockAirport3, { distance_nm: 800, flight_time_minutes: 160 }),
+	createMockRoute(mockAirport3, mockAirport1, { distance_nm: 2100, flight_time_minutes: 355 })
 ];
 
-const mockController: ATCController = {
+const mockController = createMockController({
 	callsign: 'BOS_TWR',
 	name: 'John Doe',
 	frequency: '118.200',
 	onlineTimeMinutes: 60,
 	position: ControllerPosition.TWR
-};
+});
 
 describe('atc-utils', () => {
 	describe('hasATCCoverage', () => {
 		it('should return true when airport has tower controller using VATSIM code', () => {
-			const locationControllers = new Map<string, Map<ControllerPosition, ATCController[]>>();
-			const bosControllers = new Map<ControllerPosition, ATCController[]>();
-			bosControllers.set(ControllerPosition.TWR, [mockController]);
-			locationControllers.set('KBOS', bosControllers);
+			const locationControllers = createMockLocationControllers([
+				['KBOS', [[ControllerPosition.TWR, [mockController]]]]
+			]);
 
 			// Test with VATSIM/IATA code
 			const result = hasATCCoverage('BOS', 'ZBW', locationControllers);
@@ -58,10 +57,9 @@ describe('atc-utils', () => {
 		});
 
 		it('should return true when airport has tower controller using ICAO code', () => {
-			const locationControllers = new Map<string, Map<ControllerPosition, ATCController[]>>();
-			const bosControllers = new Map<ControllerPosition, ATCController[]>();
-			bosControllers.set(ControllerPosition.TWR, [mockController]);
-			locationControllers.set('KBOS', bosControllers);
+			const locationControllers = createMockLocationControllers([
+				['KBOS', [[ControllerPosition.TWR, [mockController]]]]
+			]);
 
 			// Test with ICAO code directly
 			const result = hasATCCoverage('KBOS', 'ZBW', locationControllers);
@@ -69,31 +67,25 @@ describe('atc-utils', () => {
 		});
 
 		it('should return true when ARTCC has center controller', () => {
-			const locationControllers = new Map<string, Map<ControllerPosition, ATCController[]>>();
-			const zbwControllers = new Map<ControllerPosition, ATCController[]>();
-			zbwControllers.set(ControllerPosition.CTR, [{
-				...mockController,
-				callsign: 'ZBW_CTR',
-				position: ControllerPosition.CTR
-			}]);
-			locationControllers.set('ZBW', zbwControllers);
+			const locationControllers = createMockLocationControllers([
+				['ZBW', [[ControllerPosition.CTR, [createMockController({ callsign: 'ZBW_CTR', position: ControllerPosition.CTR })]]]]
+			]);
 
 			const result = hasATCCoverage('BOS', 'ZBW', locationControllers);
 			expect(result).toBe(true);
 		});
 
 		it('should return false when no controllers are active', () => {
-			const locationControllers = new Map<string, Map<ControllerPosition, ATCController[]>>();
+			const locationControllers = createMockLocationControllers([]);
 
 			const result = hasATCCoverage('BOS', 'ZBW', locationControllers);
 			expect(result).toBe(false);
 		});
 
 		it('should return false for unknown airport code', () => {
-			const locationControllers = new Map<string, Map<ControllerPosition, ATCController[]>>();
-			const bosControllers = new Map<ControllerPosition, ATCController[]>();
-			bosControllers.set(ControllerPosition.TWR, [mockController]);
-			locationControllers.set('KBOS', bosControllers);
+			const locationControllers = createMockLocationControllers([
+				['KBOS', [[ControllerPosition.TWR, [mockController]]]]
+			]);
 
 			const result = hasATCCoverage('INVALID', 'ZBW', locationControllers);
 			expect(result).toBe(false);
@@ -102,7 +94,7 @@ describe('atc-utils', () => {
 
 	describe('filterRoutes', () => {
 		it('should return all routes when no filters applied', () => {
-			const locationControllers = new Map<string, Map<ControllerPosition, ATCController[]>>();
+			const locationControllers = createMockLocationControllers([]);
 			
 			const filtered = filterRoutes(mockRoutes, {
 				selectedDeparture: null,
@@ -120,10 +112,9 @@ describe('atc-utils', () => {
 		});
 
 		it('should filter by departure ATC availability', () => {
-			const locationControllers = new Map<string, Map<ControllerPosition, ATCController[]>>();
-			const bosControllers = new Map<ControllerPosition, ATCController[]>();
-			bosControllers.set(ControllerPosition.TWR, [mockController]);
-			locationControllers.set('KBOS', bosControllers);
+			const locationControllers = createMockLocationControllers([
+				['KBOS', [[ControllerPosition.TWR, [mockController]]]]
+			]);
 
 			const filtered = filterRoutes(mockRoutes, {
 				selectedDeparture: null,
@@ -142,10 +133,9 @@ describe('atc-utils', () => {
 		});
 
 		it('should filter by arrival ATC availability', () => {
-			const locationControllers = new Map<string, Map<ControllerPosition, ATCController[]>>();
-			const laxControllers = new Map<ControllerPosition, ATCController[]>();
-			laxControllers.set(ControllerPosition.TWR, [mockController]);
-			locationControllers.set('KLAX', laxControllers);
+			const locationControllers = createMockLocationControllers([
+				['KLAX', [[ControllerPosition.TWR, [mockController]]]]
+			]);
 
 			const filtered = filterRoutes(mockRoutes, {
 				selectedDeparture: null,
@@ -164,14 +154,10 @@ describe('atc-utils', () => {
 		});
 
 		it('should filter by both departure and arrival ATC', () => {
-			const locationControllers = new Map<string, Map<ControllerPosition, ATCController[]>>();
-			const bosControllers = new Map<ControllerPosition, ATCController[]>();
-			bosControllers.set(ControllerPosition.TWR, [mockController]);
-			locationControllers.set('KBOS', bosControllers);
-			
-			const laxControllers = new Map<ControllerPosition, ATCController[]>();
-			laxControllers.set(ControllerPosition.TWR, [mockController]);
-			locationControllers.set('KLAX', laxControllers);
+			const locationControllers = createMockLocationControllers([
+				['KBOS', [[ControllerPosition.TWR, [mockController]]]],
+				['KLAX', [[ControllerPosition.TWR, [mockController]]]]
+			]);
 
 			const filtered = filterRoutes(mockRoutes, {
 				selectedDeparture: null,
@@ -190,7 +176,7 @@ describe('atc-utils', () => {
 		});
 
 		it('should filter by selected departure airport', () => {
-			const locationControllers = new Map<string, Map<ControllerPosition, ATCController[]>>();
+			const locationControllers = createMockLocationControllers([]);
 			
 			const filtered = filterRoutes(mockRoutes, {
 				selectedDeparture: 'SEA',
@@ -208,7 +194,7 @@ describe('atc-utils', () => {
 		});
 
 		it('should filter by selected arrival airport', () => {
-			const locationControllers = new Map<string, Map<ControllerPosition, ATCController[]>>();
+			const locationControllers = createMockLocationControllers([]);
 			
 			const filtered = filterRoutes(mockRoutes, {
 				selectedDeparture: null,
@@ -226,10 +212,9 @@ describe('atc-utils', () => {
 		});
 
 		it('should apply multiple filters together', () => {
-			const locationControllers = new Map<string, Map<ControllerPosition, ATCController[]>>();
-			const bosControllers = new Map<ControllerPosition, ATCController[]>();
-			bosControllers.set(ControllerPosition.TWR, [mockController]);
-			locationControllers.set('KBOS', bosControllers);
+			const locationControllers = createMockLocationControllers([
+				['KBOS', [[ControllerPosition.TWR, [mockController]]]]
+			]);
 
 			const filtered = filterRoutes(mockRoutes, {
 				selectedDeparture: 'BOS',
@@ -247,7 +232,7 @@ describe('atc-utils', () => {
 		});
 
 		it('should return empty array when no routes match filters', () => {
-			const locationControllers = new Map<string, Map<ControllerPosition, ATCController[]>>();
+			const locationControllers = createMockLocationControllers([]);
 			
 			const filtered = filterRoutes(mockRoutes, {
 				selectedDeparture: 'ORD',
@@ -267,24 +252,18 @@ describe('atc-utils', () => {
 	describe('ATC Level Filtering (TDD)', () => {
 		describe('hasSpecificATCLevel', () => {
 			it('should return true when airport has requested DEL controller', () => {
-				const locationControllers = new Map<string, Map<ControllerPosition, ATCController[]>>();
-				const bosControllers = new Map<ControllerPosition, ATCController[]>();
-				bosControllers.set(ControllerPosition.DEL, [{
-					...mockController,
-					callsign: 'BOS_DEL',
-					position: ControllerPosition.DEL
-				}]);
-				locationControllers.set('KBOS', bosControllers);
+				const locationControllers = createMockLocationControllers([
+					['KBOS', [[ControllerPosition.DEL, [createMockController({ callsign: 'BOS_DEL', position: ControllerPosition.DEL })]]]]
+				]);
 
 				const result = hasSpecificATCLevel('BOS', 'ZBW', [ControllerPosition.DEL], locationControllers);
 				expect(result).toBe(true);
 			});
 
 			it('should return true when airport has any of multiple requested levels (OR logic)', () => {
-				const locationControllers = new Map<string, Map<ControllerPosition, ATCController[]>>();
-				const bosControllers = new Map<ControllerPosition, ATCController[]>();
-				bosControllers.set(ControllerPosition.TWR, [mockController]);
-				locationControllers.set('KBOS', bosControllers);
+				const locationControllers = createMockLocationControllers([
+					['KBOS', [[ControllerPosition.TWR, [mockController]]]]
+				]);
 
 				// Requesting TWR OR APP - should match TWR
 				const result = hasSpecificATCLevel('BOS', 'ZBW', [ControllerPosition.TWR, ControllerPosition.APP], locationControllers);
@@ -292,24 +271,18 @@ describe('atc-utils', () => {
 			});
 
 			it('should return true when center is requested and online', () => {
-				const locationControllers = new Map<string, Map<ControllerPosition, ATCController[]>>();
-				const zbwControllers = new Map<ControllerPosition, ATCController[]>();
-				zbwControllers.set(ControllerPosition.CTR, [{
-					...mockController,
-					callsign: 'ZBW_CTR',
-					position: ControllerPosition.CTR
-				}]);
-				locationControllers.set('ZBW', zbwControllers);
+				const locationControllers = createMockLocationControllers([
+					['ZBW', [[ControllerPosition.CTR, [createMockController({ callsign: 'ZBW_CTR', position: ControllerPosition.CTR })]]]]
+				]);
 
 				const result = hasSpecificATCLevel('BOS', 'ZBW', [ControllerPosition.CTR], locationControllers);
 				expect(result).toBe(true);
 			});
 
 			it('should return false when none of the requested levels are online', () => {
-				const locationControllers = new Map<string, Map<ControllerPosition, ATCController[]>>();
-				const bosControllers = new Map<ControllerPosition, ATCController[]>();
-				bosControllers.set(ControllerPosition.TWR, [mockController]);
-				locationControllers.set('KBOS', bosControllers);
+				const locationControllers = createMockLocationControllers([
+					['KBOS', [[ControllerPosition.TWR, [mockController]]]]
+				]);
 
 				// Requesting GND OR DEL, but only TWR is online
 				const result = hasSpecificATCLevel('BOS', 'ZBW', [ControllerPosition.GND, ControllerPosition.DEL], locationControllers);
@@ -317,24 +290,18 @@ describe('atc-utils', () => {
 			});
 
 			it('should return false when empty levels array is provided', () => {
-				const locationControllers = new Map<string, Map<ControllerPosition, ATCController[]>>();
-				const bosControllers = new Map<ControllerPosition, ATCController[]>();
-				bosControllers.set(ControllerPosition.TWR, [mockController]);
-				locationControllers.set('KBOS', bosControllers);
+				const locationControllers = createMockLocationControllers([
+					['KBOS', [[ControllerPosition.TWR, [mockController]]]]
+				]);
 
 				const result = hasSpecificATCLevel('BOS', 'ZBW', [], locationControllers);
 				expect(result).toBe(false);
 			});
 
 			it('should work with both VATSIM and ICAO codes', () => {
-				const locationControllers = new Map<string, Map<ControllerPosition, ATCController[]>>();
-				const bosControllers = new Map<ControllerPosition, ATCController[]>();
-				bosControllers.set(ControllerPosition.APP, [{
-					...mockController,
-					callsign: 'BOS_APP',
-					position: ControllerPosition.APP
-				}]);
-				locationControllers.set('KBOS', bosControllers);
+				const locationControllers = createMockLocationControllers([
+					['KBOS', [[ControllerPosition.APP, [createMockController({ callsign: 'BOS_APP', position: ControllerPosition.APP })]]]]
+				]);
 
 				const resultVatsim = hasSpecificATCLevel('BOS', 'ZBW', [ControllerPosition.APP], locationControllers);
 				const resultIcao = hasSpecificATCLevel('KBOS', 'ZBW', [ControllerPosition.APP], locationControllers);
@@ -344,19 +311,15 @@ describe('atc-utils', () => {
 			});
 
 			it('should handle all 5 position types correctly', () => {
-				const locationControllers = new Map<string, Map<ControllerPosition, ATCController[]>>();
-				const bosControllers = new Map<ControllerPosition, ATCController[]>();
-				
-				// Add all 5 positions
-				bosControllers.set(ControllerPosition.DEL, [{ ...mockController, position: ControllerPosition.DEL }]);
-				bosControllers.set(ControllerPosition.GND, [{ ...mockController, position: ControllerPosition.GND }]);
-				bosControllers.set(ControllerPosition.TWR, [{ ...mockController, position: ControllerPosition.TWR }]);
-				bosControllers.set(ControllerPosition.APP, [{ ...mockController, position: ControllerPosition.APP }]);
-				locationControllers.set('KBOS', bosControllers);
-				
-				const zbwControllers = new Map<ControllerPosition, ATCController[]>();
-				zbwControllers.set(ControllerPosition.CTR, [{ ...mockController, position: ControllerPosition.CTR }]);
-				locationControllers.set('ZBW', zbwControllers);
+				const locationControllers = createMockLocationControllers([
+					['KBOS', [
+						[ControllerPosition.DEL, [createMockController({ callsign: 'BOS_DEL', position: ControllerPosition.DEL })]],
+						[ControllerPosition.GND, [createMockController({ callsign: 'BOS_GND', position: ControllerPosition.GND })]],
+						[ControllerPosition.TWR, [mockController]],
+						[ControllerPosition.APP, [createMockController({ callsign: 'BOS_APP', position: ControllerPosition.APP })]]
+					]],
+					['ZBW', [[ControllerPosition.CTR, [createMockController({ callsign: 'ZBW_CTR', position: ControllerPosition.CTR })]]]]
+				]);
 
 				// Test each position individually
 				expect(hasSpecificATCLevel('BOS', 'ZBW', [ControllerPosition.DEL], locationControllers)).toBe(true);
@@ -369,10 +332,9 @@ describe('atc-utils', () => {
 
 		describe('filterRoutes with ATC level filtering', () => {
 			it('should filter by specific departure ATC levels', () => {
-				const locationControllers = new Map<string, Map<ControllerPosition, ATCController[]>>();
-				const bosControllers = new Map<ControllerPosition, ATCController[]>();
-				bosControllers.set(ControllerPosition.TWR, [mockController]);
-				locationControllers.set('KBOS', bosControllers);
+				const locationControllers = createMockLocationControllers([
+					['KBOS', [[ControllerPosition.TWR, [mockController]]]]
+				]);
 
 				const filtered = filterRoutes(mockRoutes, {
 					selectedDeparture: null,
@@ -391,14 +353,9 @@ describe('atc-utils', () => {
 			});
 
 			it('should filter by specific arrival ATC levels', () => {
-				const locationControllers = new Map<string, Map<ControllerPosition, ATCController[]>>();
-				const laxControllers = new Map<ControllerPosition, ATCController[]>();
-				laxControllers.set(ControllerPosition.APP, [{
-					...mockController,
-					callsign: 'SOCAL_APP',
-					position: ControllerPosition.APP
-				}]);
-				locationControllers.set('KLAX', laxControllers);
+				const locationControllers = createMockLocationControllers([
+					['KLAX', [[ControllerPosition.APP, [createMockController({ callsign: 'SOCAL_APP', position: ControllerPosition.APP })]]]]
+				]);
 
 				const filtered = filterRoutes(mockRoutes, {
 					selectedDeparture: null,
@@ -417,18 +374,10 @@ describe('atc-utils', () => {
 			});
 
 			it('should filter by multiple ATC levels using OR logic', () => {
-				const locationControllers = new Map<string, Map<ControllerPosition, ATCController[]>>();
-				const bosControllers = new Map<ControllerPosition, ATCController[]>();
-				bosControllers.set(ControllerPosition.TWR, [mockController]);
-				locationControllers.set('KBOS', bosControllers);
-
-				const seaControllers = new Map<ControllerPosition, ATCController[]>();
-				seaControllers.set(ControllerPosition.GND, [{
-					...mockController,
-					callsign: 'SEA_GND',
-					position: ControllerPosition.GND
-				}]);
-				locationControllers.set('KSEA', seaControllers);
+				const locationControllers = createMockLocationControllers([
+					['KBOS', [[ControllerPosition.TWR, [mockController]]]],
+					['KSEA', [[ControllerPosition.GND, [createMockController({ callsign: 'SEA_GND', position: ControllerPosition.GND })]]]]
+				]);
 
 				const filtered = filterRoutes(mockRoutes, {
 					selectedDeparture: null,
@@ -447,10 +396,9 @@ describe('atc-utils', () => {
 			});
 
 			it('should combine ATC level filtering with airport selection', () => {
-				const locationControllers = new Map<string, Map<ControllerPosition, ATCController[]>>();
-				const bosControllers = new Map<ControllerPosition, ATCController[]>();
-				bosControllers.set(ControllerPosition.TWR, [mockController]);
-				locationControllers.set('KBOS', bosControllers);
+				const locationControllers = createMockLocationControllers([
+					['KBOS', [[ControllerPosition.TWR, [mockController]]]]
+				]);
 
 				const filtered = filterRoutes(mockRoutes, {
 					selectedDeparture: 'BOS',
@@ -468,7 +416,7 @@ describe('atc-utils', () => {
 			});
 
 			it('should return empty when ATC levels specified but none online', () => {
-				const locationControllers = new Map<string, Map<ControllerPosition, ATCController[]>>();
+				const locationControllers = createMockLocationControllers([]);
 
 				const filtered = filterRoutes(mockRoutes, {
 					selectedDeparture: null,
@@ -485,7 +433,7 @@ describe('atc-utils', () => {
 			});
 
 			it('should allow empty ATC levels array (no filtering)', () => {
-				const locationControllers = new Map<string, Map<ControllerPosition, ATCController[]>>();
+				const locationControllers = createMockLocationControllers([]);
 
 				const filtered = filterRoutes(mockRoutes, {
 					selectedDeparture: null,

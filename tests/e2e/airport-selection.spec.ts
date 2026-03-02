@@ -1,17 +1,9 @@
 import { test, expect } from '@playwright/test';
-import { mockVatsimDataEmpty, mockVatsimDataWithControllers } from './fixtures/vatsim-data';
+import { setupWithControllers } from './helpers/setup';
 
 test.describe('Airport Selection', () => {
 	test.beforeEach(async ({ page }) => {
-		// Mock VATSIM API with controllers
-		await page.route('https://data.vatsim.net/v3/vatsim-data.json', async (route) => {
-			await route.fulfill({ status: 200, body: JSON.stringify(mockVatsimDataWithControllers) });
-		});
-		
-		await page.goto('/');
-		
-		// Wait for user guide to be visible (observable result that loading is complete)
-		await expect(page.getByTestId('user-guide')).toBeVisible();
+		await setupWithControllers(page);
 	});
 
 	test('should show departure group when selecting a departure airport', async ({ page }) => {

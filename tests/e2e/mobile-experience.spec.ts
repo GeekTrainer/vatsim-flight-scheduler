@@ -1,14 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { setupWithControllers, setupWithEmptyVatsimData } from './helpers/setup';
-
-/**
- * Collapse the filter panel on mobile (it starts expanded)
- */
-async function collapseFilters(page: import('@playwright/test').Page) {
-	const toggle = page.getByTestId('filter-toggle');
-	await toggle.click();
-	await expect(page.getByTestId('filter-panel-content')).not.toBeVisible();
-}
+import { collapseFilters } from './helpers/mobile';
 
 test.describe('Mobile Experience', () => {
 	test('page loads without horizontal overflow', async ({ page }) => {
