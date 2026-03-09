@@ -4,7 +4,7 @@
  */
 
 interface CTAFCacheEntry {
-	frequency: number;
+	frequency: number | null;
 	fetchedAt: string;
 }
 
@@ -19,9 +19,9 @@ function isNetlifyEnvironment(): boolean {
 
 /**
  * Get a cached CTAF frequency for an airport.
- * Returns the frequency in MHz or null if not cached.
+ * Returns the frequency in MHz, null if cached as not found, or undefined if not cached.
  */
-export async function getCTAF(icao: string): Promise<number | null> {
+export async function getCTAF(icao: string): Promise<number | null | undefined> {
 	const key = `ctaf:${icao}`;
 
 	if (isNetlifyEnvironment()) {
@@ -29,22 +29,24 @@ export async function getCTAF(icao: string): Promise<number | null> {
 			const { getStore } = await import('@netlify/blobs');
 			const store = getStore(STORE_NAME);
 			const entry = await store.get(key, { type: 'json' }) as CTAFCacheEntry | null;
-			return entry?.frequency ?? null;
+			if (entry === null) return undefined;
+			return entry.frequency;
 		} catch (err) {
 			console.warn(`Netlify Blobs read failed for ${icao}:`, err);
-			return null;
+			return undefined;
 		}
 	}
 
 	// Development fallback: in-memory cache
 	const entry = memoryCache.get(key);
-	return entry?.frequency ?? null;
+	if (entry === undefined) return undefined;
+	return entry.frequency;
 }
 
 /**
  * Store a CTAF frequency in the cache.
  */
-export async function setCTAF(icao: string, frequency: number): Promise<void> {
+export async function setCTAF(icao: string, frequency: number | null): Promise<void> {
 	const key = `ctaf:${icao}`;
 	const entry: CTAFCacheEntry = {
 		frequency,

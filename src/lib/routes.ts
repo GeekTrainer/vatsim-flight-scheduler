@@ -12,8 +12,13 @@ const airportsByIATA = new Map<string, Airport>(
 /**
  * Loads all Virtual SWA routes from route data
  * Returns array of Route objects with departure and arrival airport details
+ * Results are memoized since route data is static
  */
+let cachedRoutes: Route[] | null = null;
+
 export function loadAllRoutes(): Route[] {
+	if (cachedRoutes) return cachedRoutes;
+
 	const routes: Route[] = [];
 	
 	for (const routeData of routesData) {
@@ -33,5 +38,6 @@ export function loadAllRoutes(): Route[] {
 		}
 	}
 	
+	cachedRoutes = routes;
 	return routes;
 }

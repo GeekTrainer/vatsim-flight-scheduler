@@ -13,7 +13,7 @@ export const GET: RequestHandler = async ({ params }) => {
 
 	// Check cache first
 	const cached = await getCTAF(icao);
-	if (cached !== null) {
+	if (cached !== undefined) {
 		return json({ frequency: cached, source: 'cache' });
 	}
 
@@ -21,14 +21,9 @@ export const GET: RequestHandler = async ({ params }) => {
 	try {
 		const frequency = await fetchCTAFFromOurAirports(icao);
 
-		if (frequency !== null) {
-			// Cache the result
-			await setCTAF(icao, frequency);
-			return json({ frequency, source: 'ourairports' });
-		}
-
-		// No frequency found — return null but don't cache (might be temporary)
-		return json({ frequency: null, source: 'ourairports' });
+		// Cache the result (including null for negative caching)
+		await setCTAF(icao, frequency);
+		return json({ frequency, source: 'ourairports' });
 	} catch (err) {
 		console.error(`Failed to fetch CTAF for ${icao}:`, err);
 		return json({ frequency: null, error: 'Fetch failed' }, { status: 502 });

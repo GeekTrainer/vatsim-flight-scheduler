@@ -6,9 +6,9 @@ describe('CTAF Cache (in-memory fallback)', () => {
 		clearMemoryCache();
 	});
 
-	it('should return null for uncached airport', async () => {
+	it('should return undefined for uncached airport', async () => {
 		const result = await getCTAF('KPHX');
-		expect(result).toBeNull();
+		expect(result).toBeUndefined();
 	});
 
 	it('should return cached frequency after storing', async () => {
@@ -28,7 +28,13 @@ describe('CTAF Cache (in-memory fallback)', () => {
 	it('should clear cache correctly', async () => {
 		await setCTAF('KPHX', 118.7);
 		clearMemoryCache();
-		expect(await getCTAF('KPHX')).toBeNull();
+		expect(await getCTAF('KPHX')).toBeUndefined();
+	});
+
+	it('should cache null frequency for negative caching', async () => {
+		await setCTAF('KXYZ', null);
+		const result = await getCTAF('KXYZ');
+		expect(result).toBeNull();
 	});
 
 	it('should overwrite existing cache entry', async () => {
