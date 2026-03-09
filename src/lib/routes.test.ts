@@ -9,6 +9,12 @@ describe('routes', () => {
 			expect(routes.length).toBe(1327);
 		});
 
+		it('should return the same cached reference on subsequent calls', () => {
+			const routes1 = loadAllRoutes();
+			const routes2 = loadAllRoutes();
+			expect(routes1).toBe(routes2); // same reference, not just equal
+		});
+
 		it('should generate routes with valid departure and arrival airports', () => {
 			const routes = loadAllRoutes();
 			
