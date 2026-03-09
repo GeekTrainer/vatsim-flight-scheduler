@@ -33,20 +33,20 @@ test.describe('CTAF Frequency Display', () => {
 		});
 	});
 
-	test('should show CTAF badge when tower is offline and CTAF is available', async ({ page }) => {
-		// BWI has only DEL controller in the fixture - no TWR
+	test('should show CTAF badge when no upper coverage and CTAF is available', async ({ page }) => {
+		// BWI has only DEL controller - no CTR (ZDC), no APP, no TWR
 		await mockCTAFEndpoint(page, { 'KBWI': 119.4 });
 
 		await page.goto('/flight/KBWI-KPHX');
 
-		// The departure airport (BWI) has no tower - should show CTAF
-		const depSection = page.locator('[data-testid="flight-departure-section"]');
+		// BWI has no upper ATC coverage (no CTR, no APP, no TWR) - should show CTAF
+		const depSection = page.getByTestId('flight-departure-section');
 		await expect(depSection).toBeVisible();
 
 		// Find the TWR badge in departure section - it should show CTAF
-		const twrBadge = depSection.locator('[data-testid="atc-badge-twr"]');
+		const twrBadge = depSection.getByTestId('atc-badge-twr');
 		await expect(twrBadge).toHaveAttribute('data-status', 'ctaf');
-		await expect(twrBadge.locator('[data-testid="ctaf-frequency"]')).toContainText('119.4');
+		await expect(twrBadge.getByTestId('ctaf-frequency')).toContainText('119.4');
 	});
 
 	test('should show normal TWR badge when tower is online (not CTAF)', async ({ page }) => {
@@ -56,25 +56,40 @@ test.describe('CTAF Frequency Display', () => {
 		await page.goto('/flight/KPHX-KLAS');
 
 		// PHX has tower online - should show normal TWR badge, not CTAF
-		const depSection = page.locator('[data-testid="flight-departure-section"]');
+		const depSection = page.getByTestId('flight-departure-section');
 		await expect(depSection).toBeVisible();
 
-		const twrBadge = depSection.locator('[data-testid="atc-badge-twr"]');
+		const twrBadge = depSection.getByTestId('atc-badge-twr');
 		await expect(twrBadge).toHaveAttribute('data-status', 'online');
 	});
 
-	test('should show CTAF even when GND/DEL are online', async ({ page }) => {
+	test('should show CTAF when no upper coverage (CTR/APP/TWR) even with GND/DEL online', async ({ page }) => {
 		// DEN has only GND in fixture - no TWR. Should still show CTAF
 		await mockCTAFEndpoint(page, { 'KDEN': 132.75 });
 
 		await page.goto('/flight/KDEN-KPHX');
 
-		const depSection = page.locator('[data-testid="flight-departure-section"]');
+		const depSection = page.getByTestId('flight-departure-section');
 		await expect(depSection).toBeVisible();
 
-		const twrBadge = depSection.locator('[data-testid="atc-badge-twr"]');
+		const twrBadge = depSection.getByTestId('atc-badge-twr');
 		await expect(twrBadge).toHaveAttribute('data-status', 'ctaf');
-		await expect(twrBadge.locator('[data-testid="ctaf-frequency"]')).toContainText('132.75');
+		await expect(twrBadge.getByTestId('ctaf-frequency')).toContainText('132.75');
+	});
+
+	test('should NOT show CTAF when center provides top-down coverage', async ({ page }) => {
+		// BUR has no TWR/GND/DEL controllers, but ZLA CTR and SOCAL APP are online
+		// With top-down coverage, CTR covers TWR responsibilities — no CTAF needed
+		await mockCTAFEndpoint(page, { 'KBUR': 121.9 });
+
+		await page.goto('/flight/KBUR-KPHX');
+
+		const depSection = page.getByTestId('flight-departure-section');
+		await expect(depSection).toBeVisible();
+
+		// BUR has ZLA CTR coverage — TWR badge should be offline, NOT CTAF
+		const twrBadge = depSection.getByTestId('atc-badge-twr');
+		await expect(twrBadge).toHaveAttribute('data-status', 'offline');
 	});
 
 	test('should show offline badge when CTAF API returns null', async ({ page }) => {
@@ -83,10 +98,10 @@ test.describe('CTAF Frequency Display', () => {
 
 		await page.goto('/flight/KBWI-KPHX');
 
-		const depSection = page.locator('[data-testid="flight-departure-section"]');
+		const depSection = page.getByTestId('flight-departure-section');
 		await expect(depSection).toBeVisible();
 
-		const twrBadge = depSection.locator('[data-testid="atc-badge-twr"]');
+		const twrBadge = depSection.getByTestId('atc-badge-twr');
 		await expect(twrBadge).toHaveAttribute('data-status', 'offline');
 	});
 
@@ -99,10 +114,10 @@ test.describe('CTAF Frequency Display', () => {
 		await page.goto('/flight/KBWI-KPHX');
 
 		// Should still show the page without crashing - TWR badge offline
-		const depSection = page.locator('[data-testid="flight-departure-section"]');
+		const depSection = page.getByTestId('flight-departure-section');
 		await expect(depSection).toBeVisible();
 
-		const twrBadge = depSection.locator('[data-testid="atc-badge-twr"]');
+		const twrBadge = depSection.getByTestId('atc-badge-twr');
 		await expect(twrBadge).toHaveAttribute('data-status', 'offline');
 	});
 });
