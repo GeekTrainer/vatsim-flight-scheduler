@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Airport, LocationControllers, ATISInfo } from '$lib/types';
+	import { ControllerPosition } from '$lib/types/vatsim';
 	import type { ParsedATIS } from '$lib/utils/atis-parser';
 	import { parseATIS } from '$lib/utils/atis-parser';
 	import ATCStatusDisplay from './ATCStatusDisplay.svelte';
@@ -52,15 +53,15 @@
 	});
 
 	// Compact ATC: check which positions are online
-	const positions = ['CTR', 'APP', 'TWR', 'GND', 'DEL'] as const;
-	const posColors: Record<string, string> = {
-		CTR: 'bg-green-400', APP: 'bg-blue-400', TWR: 'bg-red-400', GND: 'bg-yellow-400', DEL: 'bg-purple-400'
+	const positions = [ControllerPosition.CTR, ControllerPosition.APP, ControllerPosition.TWR, ControllerPosition.GND, ControllerPosition.DEL];
+	const posColors: Record<ControllerPosition, string> = {
+		[ControllerPosition.CTR]: 'bg-green-400', [ControllerPosition.APP]: 'bg-blue-400', [ControllerPosition.TWR]: 'bg-red-400', [ControllerPosition.GND]: 'bg-yellow-400', [ControllerPosition.DEL]: 'bg-purple-400'
 	};
 
-	function hasController(pos: string): boolean {
-		const code = pos === 'CTR' ? airport.artcc : airport.icao;
+	function hasController(pos: ControllerPosition): boolean {
+		const code = pos === ControllerPosition.CTR ? airport.artcc : airport.icao;
 		const posMap = locationControllers.get(code);
-		return posMap?.has(pos as any) && (posMap.get(pos as any)?.length ?? 0) > 0 || false;
+		return posMap?.has(pos) && (posMap.get(pos)?.length ?? 0) > 0 || false;
 	}
 </script>
 

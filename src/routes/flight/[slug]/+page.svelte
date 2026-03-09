@@ -19,7 +19,7 @@
 
 	let locationControllers = $state<LocationControllers>(new Map());
 	let atisStations = $state<VatsimATIS[]>([]);
-	let vatsimRawData = $state<{ pilots: any[]; prefiles: any[] }>({ pilots: [], prefiles: [] });
+	let vatsimRawData = $state<{ pilots: import('$lib/types/vatsim').VatsimPilot[]; prefiles: import('$lib/types/vatsim').VatsimPrefile[] }>({ pilots: [], prefiles: [] });
 	let departureFaaAtis = $state<ATISInfo | null>(null);
 	let arrivalFaaAtis = $state<ATISInfo | null>(null);
 	let departureOtherFaaAtis = $state<ATISInfo | null>(null);
