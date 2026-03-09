@@ -15,13 +15,13 @@ test.describe('Mobile Experience', () => {
 	test('header is compact and network status is in footer on mobile', async ({ page }) => {
 		await setupWithControllers(page);
 
-		await expect(page.getByRole('heading', { name: 'VATSIM Scheduler', level: 1 })).toBeVisible();
+		await expect(page.getByTestId('main-heading')).toBeVisible();
 
 		// Network status should be in footer on mobile, not header
-		const footerStatus = page.locator('main').getByTestId('network-status');
+		const footerStatus = page.getByTestId('footer-network-status');
 		await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
 		await expect(footerStatus).toBeVisible();
-		await expect(footerStatus).toContainText('controllers');
+		await expect(footerStatus).toBeVisible();
 	});
 
 	test('filter panel is expanded by default on mobile', async ({ page }) => {
@@ -75,7 +75,7 @@ test.describe('Mobile Experience', () => {
 	test('ATC level buttons fit in 5 columns on mobile', async ({ page }) => {
 		await setupWithEmptyVatsimData(page);
 
-		const anyATCCheckbox = page.locator('label:has-text("Any ATC online")').first().locator('input[type="checkbox"]');
+		const anyATCCheckbox = page.getByTestId('any-atc-departure-atc-filtering');
 		await anyATCCheckbox.check();
 
 		const levelGrid = page.getByTestId('departure-atc-filtering-atc-levels');

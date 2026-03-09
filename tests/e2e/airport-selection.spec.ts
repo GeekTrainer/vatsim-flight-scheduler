@@ -17,8 +17,8 @@ test.describe('Airport Selection', () => {
 		await expect(page.getByTestId('departure-group-PHX')).toBeVisible();
 		
 		// Should show airport info
-		await expect(page.getByTestId('departure-group-PHX').getByText('KPHX')).toBeVisible();
-		await expect(page.getByTestId('departure-group-PHX').getByText('Phoenix')).toBeVisible();
+		await expect(page.getByTestId('departure-group-PHX')).toContainText('KPHX');
+		await expect(page.getByTestId('departure-group-PHX')).toContainText('Phoenix');
 	});
 
 	test('should show only selected departure airport when filtering', async ({ page }) => {
@@ -49,7 +49,7 @@ test.describe('Airport Selection', () => {
 		await expect(page.getByTestId('arrivals-section-PHX')).toBeVisible();
 		
 		// Should show "Available Destinations" header
-		await expect(page.getByTestId('arrivals-section-PHX').getByText('Available Destinations')).toBeVisible();
+		await expect(page.getByTestId('arrivals-section-PHX').getByTestId('available-destinations-label')).toBeVisible();
 	});
 
 	test('should show correct route when selecting both departure and arrival', async ({ page }) => {
@@ -66,8 +66,8 @@ test.describe('Airport Selection', () => {
 		await page.getByTestId('departure-group-PHX').click();
 
 		// Should show LAS in the arrivals list
-		await expect(page.getByTestId('departure-group-PHX').getByText('KLAS')).toBeVisible();
-		await expect(page.getByTestId('departure-group-PHX').getByText('Las Vegas')).toBeVisible();
+		await expect(page.getByTestId('departure-group-PHX').locator('[data-testid="flight-link-KPHX-KLAS"]')).toBeVisible();
+		await expect(page.getByTestId('departure-group-PHX')).toContainText('Las Vegas');
 	});
 
 	test('should clear departure filter when selecting "Any airport"', async ({ page }) => {
@@ -154,7 +154,7 @@ test.describe('Airport Selection', () => {
 		await page.getByTestId("expand-button-PHX").click({ force: true });
 
 		await expect(arrivalsSection).toBeVisible();
-		await expect(arrivalsSection.getByText('Available Destinations')).toBeVisible();
+		await expect(arrivalsSection.getByTestId('available-destinations-label')).toBeVisible();
 	});
 
 	test('should collapse arrivals section when clicking expanded departure group header', async ({ page }) => {

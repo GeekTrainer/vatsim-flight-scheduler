@@ -174,8 +174,8 @@
 							Pre-file VATSIM
 						</a>
 					{/if}
-					<button onclick={onRefile} class="text-xs text-blue-400">Re-file</button>
-					<button onclick={onClear} class="text-xs text-gray-600">✕</button>
+					<button onclick={onRefile} data-testid="mobile-refile-button" class="text-xs text-blue-400">Re-file</button>
+					<button onclick={onClear} data-testid="mobile-clear-button" class="text-xs text-gray-600">✕</button>
 				</div>
 			</div>
 		{/if}

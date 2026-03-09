@@ -239,7 +239,7 @@ test.describe('ATC Filtering - Consolidated', () => {
 		const departureATCCheckbox = page.getByTestId('any-atc-departure-atc-filtering');
 		await departureATCCheckbox.check();
 
-		await expect(page.getByText('No airports match current filters')).toBeVisible();
+		await expect(page.getByTestId('no-airports-match').first()).toBeVisible();
 
 		const departureSelect = page.getByTestId('departure-airport-select');
 		const departureOptions = await departureSelect.locator('option').all();
@@ -252,7 +252,7 @@ test.describe('ATC Filtering - Consolidated', () => {
 		await page.getByTestId('departure-atc-level-twr').click({ force: true });
 		await expectATCLevelButtonActive(page, 'departure-atc-level-twr', true);
 
-		await expect(page.getByText('No airports match current filters')).toBeVisible();
+		await expect(page.getByTestId('no-airports-match').first()).toBeVisible();
 
 		const departureSelect = page.getByTestId('departure-airport-select');
 		const departureOptions = await departureSelect.locator('option').all();

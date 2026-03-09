@@ -57,6 +57,6 @@
 		{/each}
 	</select>
 	{#if showNoMatchMessage}
-		<p class="text-secondary mt-1">No airports match current filters</p>
+		<p data-testid="no-airports-match" class="text-secondary mt-1">No airports match current filters</p>
 	{/if}
 </div>

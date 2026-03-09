@@ -15,7 +15,7 @@ test.describe('Error Handling', () => {
 		await page.goto('/');
 
 		// Page should still load
-		await expect(page.getByRole('heading', { name: 'VATSIM Flight Scheduler', level: 1 })).toBeVisible();
+		await expect(page.getByTestId('main-heading')).toBeVisible();
 
 		// User guide should be visible
 		await expect(page.getByTestId('user-guide')).toBeVisible();
@@ -38,7 +38,7 @@ test.describe('Error Handling', () => {
 		await page.goto('/');
 
 		// Page should still load despite timeout
-		await expect(page.getByRole('heading', { name: 'VATSIM Flight Scheduler', level: 1 })).toBeVisible();
+		await expect(page.getByTestId('main-heading')).toBeVisible();
 
 		// User guide should be visible (no data loaded)
 		await expect(page.getByTestId('user-guide')).toBeVisible();
@@ -60,7 +60,7 @@ test.describe('Error Handling', () => {
 		await page.goto('/');
 
 		// Page should still load
-		await expect(page.getByRole('heading', { name: 'VATSIM Flight Scheduler', level: 1 })).toBeVisible();
+		await expect(page.getByTestId('main-heading')).toBeVisible();
 
 		// User guide should be visible (data failed to parse)
 		await expect(page.getByTestId('user-guide')).toBeVisible();

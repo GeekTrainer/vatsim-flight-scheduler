@@ -42,11 +42,11 @@ test.describe('Route Display', () => {
 		await loadButton.click();
 
 		// Wait for the route display to appear
-		const routeDisplay = page.getByTestId('route-display').first();
+		const routeDisplay = page.getByTestId('route-display');
 		await expect(routeDisplay).toBeVisible();
 
 		// Long route should show the abbreviation badge
-		const badge = page.getByTestId('route-badge').first();
+		const badge = page.getByTestId('route-badge');
 		await expect(badge).toBeVisible();
 
 		// Badge should show a positive count
@@ -63,11 +63,11 @@ test.describe('Route Display', () => {
 		await loadButton.click();
 
 		// Wait for the route display to appear
-		const routeDisplay = page.getByTestId('route-display').first();
+		const routeDisplay = page.getByTestId('route-display');
 		await expect(routeDisplay).toBeVisible();
 
 		// Short route should NOT show the badge
-		const badge = page.getByTestId('route-badge').first();
+		const badge = page.getByTestId('route-badge');
 		await expect(badge).not.toBeVisible();
 
 		// Should display the full route text
@@ -84,11 +84,11 @@ test.describe('Route Display', () => {
 		await loadButton.click();
 
 		// Wait for route display
-		const routeDisplay = page.getByTestId('route-display').first();
+		const routeDisplay = page.getByTestId('route-display');
 		await expect(routeDisplay).toBeVisible();
 
 		// Tooltip should not be visible initially
-		const tooltip = page.getByTestId('route-tooltip').first();
+		const tooltip = page.getByTestId('route-tooltip');
 		await expect(tooltip).not.toBeVisible();
 
 		// Hover over the route display

@@ -30,6 +30,10 @@
 	import { onMount } from 'svelte';
 	onMount(() => {
 		vatsimCid = getStoredVatsimCid() || '';
+		loadVatsimData();
+		loadFaaAtis();
+		const interval = setInterval(loadVatsimData, 30000);
+		return () => clearInterval(interval);
 	});
 
 	// Primary ATIS for each side (role-specific)
@@ -57,13 +61,6 @@
 			isLoading = false;
 		}
 	}
-
-	$effect(() => {
-		loadVatsimData();
-		loadFaaAtis();
-		const interval = setInterval(loadVatsimData, 30000);
-		return () => clearInterval(interval);
-	});
 
 	async function loadFaaAtis() {
 		const [depAtis, arrAtis, depOtherAtis, arrOtherAtis] = await Promise.all([
@@ -135,7 +132,7 @@
 					<span class="text-gray-500 mx-1">→</span>
 					{data.arrival.icao}
 				</h1>
-				<a href="/settings" class="text-gray-400 hover:text-gray-200 transition-colors shrink-0" title="Settings">
+				<a href="/settings" data-testid="settings-link" class="text-gray-400 hover:text-gray-200 transition-colors shrink-0" title="Settings">
 					<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -238,8 +235,8 @@
 											Pre-file VATSIM
 										</a>
 									{/if}
-									<button onclick={handleRefile} class="text-xs text-blue-400 hover:text-blue-300">Re-file</button>
-									<button onclick={handleClearPlan} class="text-xs text-gray-600 hover:text-gray-400">✕</button>
+									<button onclick={handleRefile} data-testid="refile-button" class="text-xs text-blue-400 hover:text-blue-300">Re-file</button>
+									<button onclick={handleClearPlan} data-testid="clear-plan-button" class="text-xs text-gray-600 hover:text-gray-400">✕</button>
 								</div>
 							{:else}
 								<SimBriefButton

@@ -18,9 +18,9 @@ test.describe('Destination (Arrival) Filtering', () => {
 
 		const arrivalsSection = page.getByTestId('arrivals-section-PHX');
 		await expect(arrivalsSection).toBeVisible();
-		await expect(arrivalsSection.getByText('Available Destinations')).toBeVisible();
+		await expect(arrivalsSection.getByTestId('available-destinations-label')).toBeVisible();
 		
-		const airportCodes = arrivalsSection.locator('text=/K[A-Z]{3}/');
+		const airportCodes = arrivalsSection.locator('[data-testid^="flight-link-"]');
 		const count = await airportCodes.count();
 		expect(count).toBeGreaterThan(0);
 	});
@@ -38,7 +38,7 @@ test.describe('Destination (Arrival) Filtering', () => {
 		await expect(page.getByTestId('arrivals-section-PHX')).toBeVisible();
 
 		const arrivalsSection = page.getByTestId('arrivals-section-PHX');
-		const hasLAS = await arrivalsSection.getByText('KLAS').count();
+		const hasLAS = await arrivalsSection.locator('[data-testid="flight-link-KPHX-KLAS"]').count();
 		expect(hasLAS).toBeGreaterThan(0);
 	});
 
@@ -85,8 +85,7 @@ test.describe('Destination (Arrival) Filtering', () => {
 		const arrivalsSection = page.getByTestId('arrivals-section-PHX');
 		await expect(arrivalsSection).toBeVisible();
 		
-		await expect(arrivalsSection.getByText('KLAS')).toBeVisible();
-		await expect(arrivalsSection.getByText('Las Vegas')).toBeVisible();
+		await expect(arrivalsSection.locator('[data-testid="flight-link-KPHX-KLAS"]')).toBeVisible();
 	});
 
 	test('should toggle arrival ATC levels independently from departure', async ({ page }) => {

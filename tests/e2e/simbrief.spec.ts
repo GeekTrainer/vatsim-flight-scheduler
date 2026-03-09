@@ -27,7 +27,7 @@ await expect(page.getByTestId('settings-simbrief-username')).toHaveValue('');
 test('should be accessible from main page gear icon', async ({ page }) => {
 await setupWithFlightPageMocks(page);
 await page.goto('/');
-await page.locator('a[href="/settings"]').first().click();
+await page.getByTestId('settings-link').click();
 await expect(page).toHaveURL('/settings');
 });
 
@@ -134,7 +134,7 @@ await setupWithFlightPageMocks(page);
 await page.goto('/flight/KPHX-KLAS');
 await page.evaluate(() => localStorage.removeItem('simbrief_username'));
 await page.reload();
-await expect(page.getByTestId('simbrief-settings-link').first()).toBeVisible();
+await expect(page.getByTestId('simbrief-settings-link')).toBeVisible();
 });
 
 test('should show File button when username is configured', async ({ page }) => {
@@ -142,13 +142,13 @@ await setupWithFlightPageMocks(page);
 await page.goto('/flight/KPHX-KLAS');
 await page.evaluate(() => localStorage.setItem('simbrief_username', 'testpilot'));
 await page.reload();
-await expect(page.getByTestId('simbrief-file-button').first()).toBeVisible();
+await expect(page.getByTestId('simbrief-file-button')).toBeVisible();
 });
 
 test('should show gear icon in flight page header', async ({ page }) => {
 await setupWithFlightPageMocks(page);
 await page.goto('/flight/KPHX-KLAS');
-await expect(page.locator('a[href="/settings"]')).toBeVisible();
+await expect(page.getByTestId('settings-link')).toBeVisible();
 });
 
 test('should load and display SimBrief plan when Load button is clicked', async ({ page }) => {
@@ -167,8 +167,8 @@ await page.route('https://www.simbrief.com/api/**', async (route) => {
 });
 
 await page.goto('/flight/KPHX-KLAS');
-await expect(page.getByTestId('simbrief-load-button').first()).toBeVisible();
-await page.getByTestId('simbrief-load-button').first().click();
+await expect(page.getByTestId('simbrief-load-button')).toBeVisible();
+await page.getByTestId('simbrief-load-button').click();
 
 // After loading, plan data should be displayed (route, fuel info)
 await expect(page.getByText('PXR J80 TBC')).toBeVisible();
@@ -190,7 +190,7 @@ await page.route('https://www.simbrief.com/api/**', async (route) => {
 });
 
 await page.goto('/flight/KPHX-KLAS');
-await page.getByTestId('simbrief-load-button').first().click();
+await page.getByTestId('simbrief-load-button').click();
 
 // Mismatch warning should appear since plan is JFK→LAX but route is PHX→LAS
 await expect(page.getByTestId('simbrief-route-mismatch')).toBeVisible();
@@ -215,7 +215,7 @@ await page.route('https://www.simbrief.com/api/**', async (route) => {
 });
 
 await page.goto('/flight/KPHX-KLAS');
-await page.getByTestId('simbrief-load-button').first().click();
+await page.getByTestId('simbrief-load-button').click();
 
 // Pre-file link should appear with correct VATSIM URL
 const prefileLink = page.getByTestId('vatsim-prefile-link');

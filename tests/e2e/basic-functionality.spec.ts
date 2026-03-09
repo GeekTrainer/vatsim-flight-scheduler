@@ -7,7 +7,7 @@ test.describe('VATSIM Flight Scheduler - Basic Functionality', () => {
 	});
 
 	test('Page loads and shows main heading', async ({ page }) => {
-		await expect(page.getByRole('heading', { name: 'VATSIM Flight Scheduler', level: 1 })).toBeVisible();
+		await expect(page.getByTestId('main-heading')).toBeVisible();
 	});
 
 	test('User guide is visible by default when no filters active', async ({ page }) => {
@@ -16,8 +16,8 @@ test.describe('VATSIM Flight Scheduler - Basic Functionality', () => {
 		await expect(userGuide).toBeVisible();
 		
 		// Check for heading and key content
-		await expect(page.getByRole('heading', { name: 'How to Use' })).toBeVisible();
-		await expect(page.getByText(/Select filters above/i)).toBeVisible();
+		await expect(page.getByTestId('user-guide-heading')).toBeVisible();
+		await expect(page.getByTestId('user-guide-text')).toBeVisible();
 	});
 
 	test('Filter panel is visible with all controls', async ({ page }) => {
@@ -29,7 +29,7 @@ test.describe('VATSIM Flight Scheduler - Basic Functionality', () => {
 	});
 
 	test('Departure "Any ATC online" checkbox can be checked', async ({ page }) => {
-		const anyATCCheckbox = page.locator('label:has-text("Any ATC online")').first().locator('input[type="checkbox"]');
+		const anyATCCheckbox = page.getByTestId('any-atc-departure-atc-filtering');
 		
 		// Initially unchecked
 		await expect(anyATCCheckbox).not.toBeChecked();
