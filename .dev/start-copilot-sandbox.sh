@@ -65,21 +65,22 @@ fi
 
 echo "Starting Copilot sandbox..."
 
-SANDBOX_EXISTS=false
-if docker sandbox ls 2>/dev/null | grep -q "copilot"; then
-  SANDBOX_EXISTS=true
-fi
+# Derive sandbox name from the repo directory (Docker uses "copilot-<dirname>")
+SANDBOX_NAME="copilot-$(basename "$REPO_ROOT")"
 
-# Remove existing sandbox if image was rebuilt, or if it exists and we need a fresh one
-if [ "$SANDBOX_EXISTS" = true ] && [ "$REBUILT" = true ]; then
+sandbox_exists() {
+  docker sandbox ls 2>/dev/null | awk '{print $1}' | grep -qx "$SANDBOX_NAME"
+}
+
+# Remove existing sandbox if image was rebuilt
+if sandbox_exists && [ "$REBUILT" = true ]; then
   echo "Removing old sandbox to apply new image..."
-  docker sandbox rm copilot 2>/dev/null || true
-  SANDBOX_EXISTS=false
+  docker sandbox rm "$SANDBOX_NAME" 2>/dev/null || true
 fi
 
-# Use --template only when creating a new sandbox
-if [ "$SANDBOX_EXISTS" = true ]; then
-  exec docker sandbox run copilot
+# Use --template with agent name "copilot" when creating; use sandbox name when reusing
+if sandbox_exists; then
+  exec docker sandbox run "$SANDBOX_NAME"
 else
   exec docker sandbox run --template "$IMAGE_NAME" copilot "$REPO_ROOT"
 fi
