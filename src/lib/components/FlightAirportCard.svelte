@@ -116,6 +116,7 @@
 					icao={airport.icao}
 					artcc={airport.artcc}
 					{locationControllers}
+					enableCtaf={true}
 				/>
 			</div>
 

@@ -337,6 +337,7 @@
 						icao={data.departure.icao}
 						artcc={data.departure.artcc}
 						{locationControllers}
+						enableCtaf={true}
 					/>
 				</div>
 				<div class="card-subtle p-4" data-testid="flight-arrival-section">
@@ -345,6 +346,7 @@
 						icao={data.arrival.icao}
 						artcc={data.arrival.artcc}
 						{locationControllers}
+						enableCtaf={true}
 					/>
 				</div>
 

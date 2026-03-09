@@ -23,11 +23,13 @@
 	let { 
 		icao, 
 		artcc, 
-		locationControllers
+		locationControllers,
+		enableCtaf = false
 	}: {
 		icao: string;
 		artcc: string;
 		locationControllers: LocationControllers;
+		enableCtaf?: boolean;
 	} = $props();
 
 	let ctafFrequency = $state<number | null>(null);
@@ -48,9 +50,9 @@
 	const towerControllers = $derived(getControllers(icao, ControllerPosition.TWR));
 	const towerOffline = $derived(towerControllers.length === 0);
 
-	// Fetch CTAF when tower is offline
+	// Fetch CTAF when tower is offline (only on flight details page)
 	$effect(() => {
-		if (towerOffline && icao) {
+		if (enableCtaf && towerOffline && icao) {
 			fetchCTAF(icao).then((freq) => {
 				ctafFrequency = freq;
 			});
