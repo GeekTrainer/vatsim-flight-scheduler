@@ -9,31 +9,24 @@
 import type { SimBriefNavlogFix } from './types/simbrief';
 import type { LocationControllers } from './types';
 import { ControllerPosition } from './types/vatsim';
+import artccCentersJson from './data/artcc-centers.json';
 
-// Known US ARTCC centers and their approximate center positions (lat/lon)
-// Used for distance-based matching when we have navlog waypoints
-const ARTCC_CENTERS: Record<string, { lat: number; lon: number; radius: number; name: string }> = {
-	ZAB: { lat: 33.5, lon: -109.0, radius: 400, name: 'Albuquerque Center' },
-	ZAU: { lat: 41.8, lon: -88.5, radius: 300, name: 'Chicago Center' },
-	ZBW: { lat: 42.5, lon: -71.5, radius: 300, name: 'Boston Center' },
-	ZDC: { lat: 39.0, lon: -77.5, radius: 300, name: 'Washington Center' },
-	ZDV: { lat: 39.5, lon: -105.0, radius: 350, name: 'Denver Center' },
-	ZFW: { lat: 31.5, lon: -98.5, radius: 350, name: 'Fort Worth Center' },
-	ZHU: { lat: 29.5, lon: -95.0, radius: 350, name: 'Houston Center' },
-	ZID: { lat: 39.5, lon: -84.5, radius: 300, name: 'Indianapolis Center' },
-	ZJX: { lat: 30.5, lon: -81.5, radius: 350, name: 'Jacksonville Center' },
-	ZKC: { lat: 38.5, lon: -95.5, radius: 350, name: 'Kansas City Center' },
-	ZLA: { lat: 34.0, lon: -117.0, radius: 350, name: 'Los Angeles Center' },
-	ZLC: { lat: 41.0, lon: -112.0, radius: 400, name: 'Salt Lake City Center' },
-	ZMA: { lat: 26.0, lon: -80.5, radius: 350, name: 'Miami Center' },
-	ZME: { lat: 35.0, lon: -90.0, radius: 350, name: 'Memphis Center' },
-	ZMP: { lat: 45.0, lon: -93.5, radius: 400, name: 'Minneapolis Center' },
-	ZNY: { lat: 40.7, lon: -74.0, radius: 250, name: 'New York Center' },
-	ZOA: { lat: 37.5, lon: -121.5, radius: 350, name: 'Oakland Center' },
-	ZOB: { lat: 41.0, lon: -82.0, radius: 300, name: 'Cleveland Center' },
-	ZSE: { lat: 47.5, lon: -122.0, radius: 400, name: 'Seattle Center' },
-	ZTL: { lat: 33.8, lon: -84.5, radius: 300, name: 'Atlanta Center' },
-};
+interface ArtccCenterEntry {
+	artcc: string;
+	name: string;
+	lat: number;
+	lon: number;
+	radius_nm: number;
+}
+
+// Build lookup from JSON config
+const ARTCC_CENTERS: Record<string, { lat: number; lon: number; radius: number; name: string }> =
+	Object.fromEntries(
+		(artccCentersJson as ArtccCenterEntry[]).map(c => [
+			c.artcc,
+			{ lat: c.lat, lon: c.lon, radius: c.radius_nm, name: c.name }
+		])
+	);
 
 export interface EnrouteCenter {
 	artcc: string;
