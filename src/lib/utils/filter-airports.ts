@@ -1,7 +1,8 @@
 import type { Airport, Route } from '$lib/types';
 import type { ATCController } from '$lib/types/vatsim';
 import { ControllerPosition } from '$lib/types/vatsim';
-import { hasATCCoverage, hasSpecificATCLevel } from '$lib/atc-utils';
+import { routeMatchesFilters } from './route-filter';
+import type { FilterState } from './filter-utils';
 
 interface FilterCriteria {
 	selectedAirport: string | null;
@@ -16,8 +17,42 @@ interface FilterCriteria {
 type AirportSelector = 'departure' | 'arrival';
 
 /**
+ * Converts relative this/other criteria into an absolute FilterState.
+ * Other-side ATC checks only apply when an other airport is selected,
+ * preserving the dropdown behavior of showing all options when no
+ * specific counterpart is chosen.
+ */
+function toFilterState(type: AirportSelector, criteria: FilterCriteria): FilterState {
+	const isDeparture = type === 'departure';
+	const hasOther = !!criteria.otherSelectedAirport;
+
+	return isDeparture
+		? {
+			selectedDeparture: null,
+			selectedArrival: criteria.otherSelectedAirport,
+			onlyDepartureWithATC: criteria.onlyThisWithATC,
+			departureATCLevels: criteria.thisATCLevels,
+			onlyArrivalWithATC: hasOther && criteria.onlyOtherWithATC,
+			arrivalATCLevels: hasOther ? criteria.otherATCLevels : [],
+			minFlightTime: null,
+			maxFlightTime: null,
+		}
+		: {
+			selectedDeparture: criteria.otherSelectedAirport,
+			selectedArrival: null,
+			onlyDepartureWithATC: hasOther && criteria.onlyOtherWithATC,
+			departureATCLevels: hasOther ? criteria.otherATCLevels : [],
+			onlyArrivalWithATC: criteria.onlyThisWithATC,
+			arrivalATCLevels: criteria.thisATCLevels,
+			minFlightTime: null,
+			maxFlightTime: null,
+		};
+}
+
+/**
  * Filters available airports based on ATC coverage and route availability.
- * 
+ * Delegates route matching to the shared routeMatchesFilters predicate.
+ *
  * @param routes - All available routes
  * @param airports - All airports
  * @param type - Whether filtering for departure or arrival airports
@@ -30,55 +65,15 @@ export function getAvailableAirports(
 	type: AirportSelector,
 	criteria: FilterCriteria
 ): Airport[] {
-	const {
-		selectedAirport,
-		otherSelectedAirport,
-		onlyThisWithATC,
-		onlyOtherWithATC,
-		thisATCLevels,
-		otherATCLevels,
-		locationControllers
-	} = criteria;
-
-	const airportSet = new Set<string>();
+	const filters = toFilterState(type, criteria);
 	const isDeparture = type === 'departure';
+	const airportSet = new Set<string>();
 
 	for (const route of routes) {
-		const thisAirport = isDeparture ? route.departure : route.arrival;
-		const otherAirport = isDeparture ? route.arrival : route.departure;
-
-		// If other side is selected, only show routes connected to it
-		if (otherSelectedAirport && otherAirport.vatsim_code !== otherSelectedAirport) {
-			continue;
+		if (routeMatchesFilters(route, filters, criteria.locationControllers)) {
+			const thisAirport = isDeparture ? route.departure : route.arrival;
+			airportSet.add(thisAirport.vatsim_code);
 		}
-
-		// If other side ATC filter is on and other side is selected, check if it has ATC
-		if (onlyOtherWithATC && otherSelectedAirport) {
-			const airport = airports.find(a => a.vatsim_code === otherSelectedAirport);
-			if (airport && !hasATCCoverage(airport.vatsim_code, airport.artcc, locationControllers)) {
-				continue;
-			}
-		}
-
-		// Check other side ATC levels if specified and other side is selected
-		if (otherATCLevels.length > 0 && otherSelectedAirport) {
-			const airport = airports.find(a => a.vatsim_code === otherSelectedAirport);
-			if (airport && !hasSpecificATCLevel(airport.vatsim_code, airport.artcc, otherATCLevels, locationControllers)) {
-				continue;
-			}
-		}
-
-		// If this side ATC filter is on, check if this airport has ATC
-		if (onlyThisWithATC && !hasATCCoverage(thisAirport.vatsim_code, thisAirport.artcc, locationControllers)) {
-			continue;
-		}
-
-		// Check this side ATC levels if specified
-		if (thisATCLevels.length > 0 && !hasSpecificATCLevel(thisAirport.vatsim_code, thisAirport.artcc, thisATCLevels, locationControllers)) {
-			continue;
-		}
-
-		airportSet.add(thisAirport.vatsim_code);
 	}
 
 	return airports
