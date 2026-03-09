@@ -1,0 +1,7 @@
+{
+  "image_name": "vatsim-flight-scheduler-sandbox",
+  "watch_files": [
+    "package.json",
+    "package-lock.json"
+  ]
+}
