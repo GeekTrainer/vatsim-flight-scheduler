@@ -3,6 +3,7 @@
 	
 	Displays ATC (Air Traffic Control) status for an airport location.
 	Shows position badges (DEL, GND, TWR, APP, CTR) with online/offline indicators.
+	When TWR is offline, fetches and displays the CTAF frequency.
 	
 	Props:
 	- icao: Airport ICAO code (e.g., "KSEA") - used for airport-based positions (DEL, GND, TWR, APP)
@@ -17,6 +18,7 @@
 	import type { LocationControllers } from '$lib/types';
 	import type { ATCController } from '$lib/types/vatsim';
 	import { ControllerPosition } from '$lib/types/vatsim';
+	import { fetchCTAF } from '$lib/ctaf';
 
 	let { 
 		icao, 
@@ -27,6 +29,8 @@
 		artcc: string;
 		locationControllers: LocationControllers;
 	} = $props();
+
+	let ctafFrequency = $state<number | null>(null);
 
 	const POSITIONS = [
 		{ type: ControllerPosition.CTR, label: 'CTR', color: 'green' },
@@ -40,6 +44,18 @@
 		const positions = locationControllers.get(locationCode);
 		return positions?.get(position) || [];
 	}
+
+	const towerControllers = $derived(getControllers(icao, ControllerPosition.TWR));
+	const towerOffline = $derived(towerControllers.length === 0);
+
+	// Fetch CTAF when tower is offline
+	$effect(() => {
+		if (towerOffline && icao) {
+			fetchCTAF(icao).then((freq) => {
+				ctafFrequency = freq;
+			});
+		}
+	});
 </script>
 
 <div>
@@ -54,6 +70,7 @@
 				label={pos.label}
 				color={pos.color}
 				{controllers}
+				ctafFrequency={pos.type === ControllerPosition.TWR ? ctafFrequency : null}
 			/>
 		{/each}
 	</div>
