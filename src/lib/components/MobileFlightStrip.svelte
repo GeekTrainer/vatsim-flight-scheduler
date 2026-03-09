@@ -6,7 +6,16 @@
 	import type { EnrouteCenter } from '$lib/enroute';
 	import type { LocationControllers } from '$lib/types';
 	import type { VatsimFlightStatus } from '$lib/simbrief';
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
+
+	let pollInterval: ReturnType<typeof setInterval> | null = null;
+	let pollTimeout: ReturnType<typeof setTimeout> | null = null;
+	let planLoadStarted = false;
+
+	onDestroy(() => {
+		if (pollInterval) clearInterval(pollInterval);
+		if (pollTimeout) clearTimeout(pollTimeout);
+	});
 
 	interface Props {
 		departureIcao: string;
@@ -51,8 +60,25 @@
 		const popup = window.open(url, 'simbrief', 'width=1000,height=750');
 		if (!popup) { error = 'Popup blocked!'; return; }
 		isLoadingPlan = true;
-		const poll = setInterval(async () => {
-			if (popup.closed) { clearInterval(poll); await loadPlan(); }
+		planLoadStarted = false;
+
+		pollTimeout = setTimeout(() => {
+			if (pollInterval) clearInterval(pollInterval);
+			pollInterval = null;
+			pollTimeout = null;
+			isLoadingPlan = false;
+			error = 'SimBrief session timed out. Try again.';
+		}, 10 * 60 * 1000);
+
+		pollInterval = setInterval(async () => {
+			if (popup.closed && !planLoadStarted) {
+				planLoadStarted = true;
+				if (pollInterval) clearInterval(pollInterval);
+				if (pollTimeout) clearTimeout(pollTimeout);
+				pollInterval = null;
+				pollTimeout = null;
+				await loadPlan();
+			}
 		}, 2000);
 	}
 

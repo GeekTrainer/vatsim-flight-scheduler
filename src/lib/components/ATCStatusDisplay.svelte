@@ -33,6 +33,7 @@
 	} = $props();
 
 	let ctafFrequency = $state<number | null>(null);
+	let ctafRequestVersion = 0;
 
 	const POSITIONS = [
 		{ type: ControllerPosition.CTR, label: 'CTR', color: 'green' },
@@ -60,9 +61,12 @@
 
 	// Fetch CTAF when no upper coverage is online (only on flight details page)
 	$effect(() => {
+		const version = ++ctafRequestVersion;
 		if (enableCtaf && noUpperCoverage && icao) {
 			fetchCTAF(icao).then((freq) => {
-				ctafFrequency = freq;
+				if (version === ctafRequestVersion) {
+					ctafFrequency = freq;
+				}
 			});
 		} else {
 			ctafFrequency = null;

@@ -1,4 +1,5 @@
 <script lang="ts">
+import { onMount } from 'svelte';
 import {
 buildDispatchUrl,
 fetchSimBriefPlan,
@@ -14,9 +15,14 @@ onPlanLoaded: (plan: SimBriefPlan) => void;
 
 let { departureIcao, arrivalIcao, onPlanLoaded }: Props = $props();
 
-let username = $state(getStoredUsername() || '');
+let username = $state('');
+
+onMount(() => {
+username = getStoredUsername() || '';
+});
 let isLoading = $state(false);
 let error = $state<string | null>(null);
+let planLoadStarted = false;
 
 const isConfigured = $derived(username.length > 0);
 
@@ -45,6 +51,8 @@ if (popup.closed) {
 clearInterval(pollInterval);
 clearTimeout(timeout);
 window.removeEventListener('message', handler);
+if (planLoadStarted) return;
+planLoadStarted = true;
 await loadPlan();
 }
 }, 2000);
@@ -55,6 +63,8 @@ if (event.data?.type === 'simbrief-plan-ready') {
 window.removeEventListener('message', handler);
 clearInterval(pollInterval);
 clearTimeout(timeout);
+if (planLoadStarted) return;
+planLoadStarted = true;
 await loadPlan();
 }
 };
@@ -67,6 +77,7 @@ error = null;
 
 const plan = await fetchSimBriefPlan(username);
 isLoading = false;
+planLoadStarted = false;
 
 if (!plan) {
 error = 'Could not fetch your SimBrief plan. Check your username in Settings.';
