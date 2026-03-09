@@ -51,21 +51,22 @@ export function parseCTAFFromHTML(html: string): number | null {
  * Extract the frequency for a given type (CTAF, TWR, etc.) from the HTML.
  */
 function extractFrequencyForType(html: string, type: string): number | null {
-	// OurAirports HTML structure has <td> cells with type and frequency
-	// Pattern: the type appears in bold/strong, followed by the frequency value
-	// We look for patterns like: >TYPE</...> followed by a number ending in MHz
+	// OurAirports HTML structure uses <section> blocks with:
+	//   <div><p><b>TYPE</b></p></div>
+	//   <div><p>FREQ MHz</p></div>
+	// We need a pattern that finds the type in a <b> tag, then locates
+	// the frequency in the next sibling <div>.
 
-	// Approach: find the type label, then look for a frequency number nearby
-	// The HTML has table rows with: type cell | frequency cell | description cell
 	const patterns = [
-		// Pattern 1: HTML table - type in one cell, freq in next
-		new RegExp(`<td[^>]*>\\s*${type}\\s*</td>\\s*<td[^>]*>\\s*([\\d.]+)\\s*(?:MHz)?`, 'i'),
-		// Pattern 2: Strong/bold tag followed by frequency
-		new RegExp(`<strong>${type}</strong>[^\\d]*?([\\d.]+)\\s*MHz`, 'i'),
-		// Pattern 3: Plain text pattern (from markdown conversion)
+		// Pattern 1: OurAirports actual structure - <b>TYPE</b> ... MHz in next div's <p>
+		// Use a multiline approach: find <b>TYPE</b>, skip tags until we find a frequency
+		new RegExp(`<b>${type}</b>[\\s\\S]*?</div>\\s*<div[^>]*>\\s*<p>\\s*([\\d.]+)\\s*MHz`, 'i'),
+		// Pattern 2: HTML table - type in one cell (possibly with nested tags), freq in next
+		new RegExp(`<td[^>]*>[\\s\\S]*?${type}[\\s\\S]*?</td>\\s*<td[^>]*>\\s*([\\d.]+)\\s*(?:MHz)?`, 'i'),
+		// Pattern 3: Strong tag followed by frequency
+		new RegExp(`<strong>${type}</strong>[\\s\\S]*?([\\d.]+)\\s*MHz`, 'i'),
+		// Pattern 4: Plain text pattern (from markdown conversion)
 		new RegExp(`\\*\\*${type}\\*\\*[^\\d]*?([\\d.]+)\\s*MHz`, 'i'),
-		// Pattern 4: Type text followed by frequency on next line/nearby
-		new RegExp(`>${type}<[^>]*>[^\\d]*?([\\d.]+)`, 'i')
 	];
 
 	for (const pattern of patterns) {

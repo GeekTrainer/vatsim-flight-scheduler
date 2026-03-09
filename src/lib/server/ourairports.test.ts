@@ -4,10 +4,14 @@ import { parseCTAFFromHTML } from './ourairports';
 describe('parseCTAFFromHTML', () => {
 	it('should extract CTAF frequency from explicit CTAF entry', () => {
 		const html = `
-			<table>
-				<tr><td>CTAF</td><td>122.9 MHz</td><td>CTAF</td></tr>
-				<tr><td>TWR</td><td>118.7 MHz</td><td>RWAY 08-26</td></tr>
-			</table>
+			<section class="frequency listing row">
+				<div class="col-xs-4 col-sm-2"><p><b>CTAF</b></p></div>
+				<div class="col-xs-8 col-sm-10"><p>122.9 MHz</p></div>
+			</section>
+			<section class="frequency listing row">
+				<div class="col-xs-4 col-sm-2"><p><b>TWR</b></p></div>
+				<div class="col-xs-8 col-sm-10"><p>118.7 MHz</p></div>
+			</section>
 		`;
 		// Should prefer CTAF over TWR
 		expect(parseCTAFFromHTML(html)).toBe(122.9);
@@ -15,16 +19,23 @@ describe('parseCTAFFromHTML', () => {
 
 	it('should fall back to TWR frequency when no CTAF entry', () => {
 		const html = `
-			<table>
-				<tr><td>A/D</td><td>119.2 MHz</td><td>APP/DEP</td></tr>
-				<tr><td>TWR</td><td>118.7 MHz</td><td>RWAY 08-26</td></tr>
-				<tr><td>GND</td><td>121.9 MHz</td><td>Ground</td></tr>
-			</table>
+			<section class="frequency listing row">
+				<div class="col-xs-4 col-sm-2"><p><b>A/D</b></p></div>
+				<div class="col-xs-8 col-sm-10"><p>119.2 MHz</p></div>
+			</section>
+			<section class="frequency listing row">
+				<div class="col-xs-4 col-sm-2"><p><b>TWR</b></p></div>
+				<div class="col-xs-8 col-sm-10"><p>118.7 MHz</p></div>
+			</section>
+			<section class="frequency listing row">
+				<div class="col-xs-4 col-sm-2"><p><b>GND</b></p></div>
+				<div class="col-xs-8 col-sm-10"><p>121.9 MHz</p></div>
+			</section>
 		`;
 		expect(parseCTAFFromHTML(html)).toBe(118.7);
 	});
 
-	it('should handle bold/strong formatted type labels', () => {
+	it('should handle strong-formatted type labels', () => {
 		const html = `
 			<div><strong>TWR</strong> 119.9 MHz Tower</div>
 		`;
@@ -37,37 +48,55 @@ describe('parseCTAFFromHTML', () => {
 	});
 
 	it('should parse real KPHX-like HTML', () => {
-		// Simulating the OurAirports page structure
 		const html = `
-			<table class="table">
-				<tr><td>A/D</td><td>119.2</td><td>319-057° 7500' AND ABOVE</td></tr>
-				<tr><td>ATIS</td><td>127.575</td><td></td></tr>
-				<tr><td>CLD</td><td>118.1</td><td>CLNC DEL</td></tr>
-				<tr><td>GND</td><td>119.75</td><td>NORTH</td></tr>
-				<tr><td>TWR</td><td>118.7</td><td>RWAY 08-26</td></tr>
-				<tr><td>TWR</td><td>120.9</td><td>RWAY 07-25</td></tr>
-			</table>
+			<section class="frequency listing row">
+				<div class="col-xs-4 col-sm-2"><p><b>A/D</b></p></div>
+				<div class="col-xs-8 col-sm-10"><p>119.2 MHz</p><p class="text-muted">319-057</p></div>
+			</section>
+			<section class="frequency listing row">
+				<div class="col-xs-4 col-sm-2"><p><b>ATIS</b></p></div>
+				<div class="col-xs-8 col-sm-10"><p>127.575 MHz</p></div>
+			</section>
+			<section class="frequency listing row">
+				<div class="col-xs-4 col-sm-2"><p><b>TWR</b></p></div>
+				<div class="col-xs-8 col-sm-10"><p>118.7 MHz</p><p class="text-muted">RWAY 08-26</p></div>
+			</section>
+			<section class="frequency listing row">
+				<div class="col-xs-4 col-sm-2"><p><b>TWR</b></p></div>
+				<div class="col-xs-8 col-sm-10"><p>120.9 MHz</p><p class="text-muted">RWAY 07-25</p></div>
+			</section>
 		`;
 		expect(parseCTAFFromHTML(html)).toBe(118.7);
 	});
 
 	it('should parse real KLAS-like HTML', () => {
 		const html = `
-			<table class="table">
-				<tr><td>APP</td><td>125.025</td><td>LAS VEGAS APP</td></tr>
-				<tr><td>TWR</td><td>119.9</td><td>Tower</td></tr>
-				<tr><td>GND</td><td>121.1</td><td>Ground</td></tr>
-			</table>
+			<section class="frequency listing row">
+				<div class="col-xs-4 col-sm-2"><p><b>APP</b></p></div>
+				<div class="col-xs-8 col-sm-10"><p>125.025 MHz</p><p class="text-muted">LAS VEGAS APP</p></div>
+			</section>
+			<section class="frequency listing row">
+				<div class="col-xs-4 col-sm-2"><p><b>TWR</b></p></div>
+				<div class="col-xs-8 col-sm-10"><p>119.9 MHz</p><p class="text-muted">Tower</p></div>
+			</section>
+			<section class="frequency listing row">
+				<div class="col-xs-4 col-sm-2"><p><b>GND</b></p></div>
+				<div class="col-xs-8 col-sm-10"><p>121.1 MHz</p><p class="text-muted">Ground</p></div>
+			</section>
 		`;
 		expect(parseCTAFFromHTML(html)).toBe(119.9);
 	});
 
 	it('should return null when no TWR or CTAF entries exist', () => {
 		const html = `
-			<table>
-				<tr><td>GND</td><td>121.9</td><td>Ground</td></tr>
-				<tr><td>UNIC</td><td>122.95</td><td>UNICOM</td></tr>
-			</table>
+			<section class="frequency listing row">
+				<div class="col-xs-4 col-sm-2"><p><b>GND</b></p></div>
+				<div class="col-xs-8 col-sm-10"><p>121.9 MHz</p></div>
+			</section>
+			<section class="frequency listing row">
+				<div class="col-xs-4 col-sm-2"><p><b>UNIC</b></p></div>
+				<div class="col-xs-8 col-sm-10"><p>122.95 MHz</p></div>
+			</section>
 		`;
 		expect(parseCTAFFromHTML(html)).toBeNull();
 	});
@@ -78,9 +107,10 @@ describe('parseCTAFFromHTML', () => {
 
 	it('should reject frequencies outside aviation range', () => {
 		const html = `
-			<table>
-				<tr><td>TWR</td><td>44.0</td><td>Military</td></tr>
-			</table>
+			<section class="frequency listing row">
+				<div class="col-xs-4 col-sm-2"><p><b>TWR</b></p></div>
+				<div class="col-xs-8 col-sm-10"><p>44.0 MHz</p><p class="text-muted">Military</p></div>
+			</section>
 		`;
 		// 44 MHz is outside valid aviation comm range (108-137)
 		expect(parseCTAFFromHTML(html)).toBeNull();
@@ -88,19 +118,22 @@ describe('parseCTAFFromHTML', () => {
 
 	it('should prefer CTAF over TWR when both exist', () => {
 		const html = `
-			<table>
-				<tr><td>CTAF</td><td>122.9 MHz</td><td>CTAF</td></tr>
-				<tr><td>TWR</td><td>118.7 MHz</td><td>Tower</td></tr>
-			</table>
+			<section class="frequency listing row">
+				<div class="col-xs-4 col-sm-2"><p><b>CTAF</b></p></div>
+				<div class="col-xs-8 col-sm-10"><p>122.9 MHz</p></div>
+			</section>
+			<section class="frequency listing row">
+				<div class="col-xs-4 col-sm-2"><p><b>TWR</b></p></div>
+				<div class="col-xs-8 col-sm-10"><p>118.7 MHz</p></div>
+			</section>
 		`;
 		expect(parseCTAFFromHTML(html)).toBe(122.9);
 	});
 
 	it('should handle HTML with nested tags around type', () => {
 		const html = `
-			<tr><td><span>TWR</span></td><td>120.5</td></tr>
+			<td><span>TWR</span></td><td>120.5 MHz</td>
 		`;
-		// The >TWR< pattern should match
 		expect(parseCTAFFromHTML(html)).toBe(120.5);
 	});
 });
