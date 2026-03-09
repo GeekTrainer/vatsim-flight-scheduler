@@ -37,6 +37,8 @@
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
 	class="relative flex items-center gap-1 shrink-0 cursor-pointer select-none"
+	data-testid="enroute-center-{center.artcc}"
+	data-status={center.online ? 'online' : 'offline'}
 	onmouseenter={() => showTooltip = true}
 	onmouseleave={() => showTooltip = false}
 	onclick={handleClick}

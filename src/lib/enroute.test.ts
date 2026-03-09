@@ -84,6 +84,13 @@ describe('enroute', () => {
 			expect(result[1].online).toBe(false);
 			expect(result[1].controllerCount).toBe(0);
 		});
+
+		it('should use fallback name for unknown ARTCC', () => {
+			const lc: LocationControllers = new Map();
+			const result = getBasicEnrouteCenters('ZXX', 'ZYY', lc);
+			expect(result[0].name).toBe('ZXX Center');
+			expect(result[1].name).toBe('ZYY Center');
+		});
 	});
 
 	describe('detectEnrouteCenters', () => {
@@ -149,6 +156,40 @@ describe('enroute', () => {
 			expect(zla?.online).toBe(true);
 			expect(zab?.controllerCount).toBe(2);
 			expect(zab?.online).toBe(true);
+		});
+
+		it('should include dep and arr ARTCCs with a single waypoint', () => {
+			const lc: LocationControllers = new Map();
+			const fixes = [createMockFix('33.5', '-109.0', 'MID')];
+			const result = detectEnrouteCenters(fixes, 'ZLA', 'ZDV', lc);
+			expect(result[0].artcc).toBe('ZLA');
+			expect(result[result.length - 1].artcc).toBe('ZDV');
+			expect(result.length).toBeGreaterThanOrEqual(2);
+		});
+
+		it('should ignore waypoint at extreme coordinates outside any ARTCC radius', () => {
+			const lc: LocationControllers = new Map();
+			// lat=0, lon=0 is in the Gulf of Guinea — far from any US ARTCC
+			const fixes = [createMockFix('0.0', '0.0', 'OCEAN')];
+			const result = detectEnrouteCenters(fixes, 'ZLA', 'ZDV', lc);
+			const artccs = result.map(c => c.artcc);
+			expect(artccs).toEqual(['ZLA', 'ZDV']);
+		});
+
+		it('should detect ARTCC when waypoint is at its exact center', () => {
+			const lc: LocationControllers = new Map();
+			// ZAU (Chicago Center) exact center: lat 41.8, lon -88.5
+			const fixes = [createMockFix('41.8', '-88.5', 'CHIC')];
+			const result = detectEnrouteCenters(fixes, 'ZLA', 'ZNY', lc);
+			const artccs = result.map(c => c.artcc);
+			expect(artccs).toContain('ZAU');
+		});
+
+		it('should return single center when empty navlog and same dep/arr ARTCC', () => {
+			const lc: LocationControllers = new Map();
+			const result = detectEnrouteCenters([], 'ZLA', 'ZLA', lc);
+			expect(result).toHaveLength(1);
+			expect(result[0].artcc).toBe('ZLA');
 		});
 	});
 });

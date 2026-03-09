@@ -1,5 +1,6 @@
 <script lang="ts">
 	import CenterTooltip from './CenterTooltip.svelte';
+	import RouteDisplay from './RouteDisplay.svelte';
 	import { formatFlightTime, formatFuel, formatAltitude, validatePlanMatchesRoute, buildVatsimPrefileUrl, buildDispatchUrl, fetchSimBriefPlan, getStoredUsername } from '$lib/simbrief';
 	import type { SimBriefPlan } from '$lib/types/simbrief';
 	import type { EnrouteCenter } from '$lib/enroute';
@@ -120,8 +121,8 @@
 		{#if isExpanded}
 			<div class="pt-2 border-t border-gray-700/50 space-y-2">
 				<!-- Route -->
-				<div class="font-mono text-[10px] text-gray-400 leading-relaxed break-all text-center">
-					{simbriefPlan.general.route}
+				<div class="text-center">
+					<RouteDisplay route={simbriefPlan.general.route} alternate={simbriefPlan.alternate?.icao_code ?? ''} />
 				</div>
 
 				<!-- Fuel & Weights grid -->

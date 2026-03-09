@@ -6,6 +6,7 @@
 	import SimBriefPlanDisplay from '$lib/components/SimBriefPlanDisplay.svelte';
 	import CenterTooltip from '$lib/components/CenterTooltip.svelte';
 	import MobileFlightStrip from '$lib/components/MobileFlightStrip.svelte';
+	import RouteDisplay from '$lib/components/RouteDisplay.svelte';
 	import { fetchVatsimData, getLocationControllers, getVatsimATIS } from '$lib/vatsim';
 	import { fetchFAADatis } from '$lib/atis';
 	import { formatFlightTime, formatFuel, formatAltitude, validatePlanMatchesRoute, buildVatsimPrefileUrl, getStoredVatsimCid, checkVatsimFlightStatus } from '$lib/simbrief';
@@ -178,15 +179,15 @@
 							{#if simbriefPlan}
 								<div class="flex-1 min-w-0">
 									<div class="flex items-center gap-4 text-xs text-gray-300">
-										<span class="font-mono text-gray-400 truncate flex-1" title={simbriefPlan.general.route}>
-											{simbriefPlan.general.route}{#if simbriefPlan.alternate?.icao_code} &nbsp; <span class="text-yellow-400/70">(ALTN: {simbriefPlan.alternate.icao_code})</span>{/if}
-										</span>
+										<div class="flex-1 min-w-0">
+											<RouteDisplay route={simbriefPlan.general.route} alternate={simbriefPlan.alternate?.icao_code ?? ''} />
+										</div>
 										<span class="shrink-0 font-semibold">{formatAltitude(simbriefPlan.general.initial_altitude)}</span>
 										<span class="shrink-0">M{simbriefPlan.general.cruise_mach}</span>
 										<span class="shrink-0">{formatFlightTime(simbriefPlan.times.est_time_enroute)}</span>
 									</div>
 									{#if enrouteCenters.length > 0}
-										<div class="flex items-center gap-1 mt-1.5">
+										<div class="flex items-center gap-1 mt-1.5" data-testid="enroute-centers">
 											{#each enrouteCenters as center, i (center.artcc)}
 												{#if i > 0}
 													<div class="flex-1 border-t {center.online || enrouteCenters[i-1].online ? 'border-green-600/40' : 'border-gray-700/50'} min-w-[12px]"></div>

@@ -96,6 +96,7 @@
 						</button>
 						{#if username}
 							<button
+								data-testid="settings-clear"
 								onclick={clear}
 								class="px-4 py-2 text-sm font-semibold text-gray-500 hover:text-gray-300 transition-colors"
 							>
