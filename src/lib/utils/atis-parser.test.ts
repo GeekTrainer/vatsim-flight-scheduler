@@ -176,6 +176,26 @@ describe('ATIS Parser', () => {
 			expect(arrivals[1]).toEqual({ runway: '22R', approachType: 'ILS' });
 		});
 
+		it('should parse compound sentence with different approach types (ILS + VIS)', () => {
+			const text = 'ILS RWY 4R APCH AND VIS APCH TO RWY 4L IN USE, DEPTG RWY 9.';
+			const { arrivals, departures } = parseRunways(text);
+			expect(arrivals).toHaveLength(2);
+			expect(arrivals[0]).toEqual({ runway: '4R', approachType: 'ILS' });
+			expect(arrivals[1]).toEqual({ runway: '4L', approachType: 'Visual' });
+			expect(departures).toHaveLength(1);
+			expect(departures[0].runway).toBe('9');
+		});
+
+		it('should handle real BOS ATIS with mixed approach types', () => {
+			const text = 'BOSTON LOGAN AIRPORT ATIS INFORMATION B. 2154Z. 12011KT 10SM FEW250 03/M05 A3059 (THREE ZERO FIVE NINER). APCHS ARE BEING CONDUCTED TO PARALLEL RWYS. ILS RWY 4R APCH AND VIS APCH TO RWY 4L IN USE, DEPTG RWY 9. RWY 33R IS APPROVED FOR TURN OFF AFTER LDG. READBACK ALL HOLD SHORT INSTRUCTIONS AND ASSIGNED ALTITUDES. NUMEROUS CRANES IN BOSTON AREA AND IN THE VICINITY OF LOGAN AIRPORT. ...ADVS YOU HAVE INFO B';
+			const { arrivals, departures } = parseRunways(text);
+			expect(arrivals).toHaveLength(2);
+			expect(arrivals[0]).toEqual({ runway: '4R', approachType: 'ILS' });
+			expect(arrivals[1]).toEqual({ runway: '4L', approachType: 'Visual' });
+			expect(departures).toHaveLength(1);
+			expect(departures[0].runway).toBe('9');
+		});
+
 		it('should return empty arrays for unparseable text', () => {
 			const { arrivals, departures } = parseRunways('NOTAMS ONLY. BIRDS IN VICINITY.');
 			expect(arrivals).toHaveLength(0);
