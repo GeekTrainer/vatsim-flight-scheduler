@@ -30,9 +30,9 @@
 		"@vitest/ui": "^4.0.16",
 		"happy-dom": "^20.0.11",
 		"svelte": "^5.45.6",
-		"svelte-check": "^4.3.4",
+		"svelte-check": "^4.4.6",
 		"tailwindcss": "^4.1.17",
-		"typescript": "^5.9.3",
+		"typescript": "^6.0.2",
 		"vite": "^7.2.6",
 		"vitest": "^4.0.16"
 	}
