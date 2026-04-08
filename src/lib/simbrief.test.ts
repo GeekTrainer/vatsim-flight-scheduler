@@ -7,7 +7,13 @@ import {
 	formatFuel,
 	formatAltitude,
 	buildVatsimPrefileUrl,
-	checkVatsimFlightStatus
+	checkVatsimFlightStatus,
+	getStoredUsername,
+	storeUsername,
+	clearStoredUsername,
+	getStoredVatsimCid,
+	storeVatsimCid,
+	clearStoredVatsimCid
 } from './simbrief';
 import type { SimBriefPlan } from './types/simbrief';
 
@@ -225,6 +231,69 @@ describe('SimBrief Service', () => {
 			const planNoAlt = { ...mockPlan, alternate: undefined };
 			const url = buildVatsimPrefileUrl(planNoAlt);
 			expect(url).not.toContain('alternate');
+		});
+
+		it('should include /L equipment suffix in aircraft field', () => {
+			const url = buildVatsimPrefileUrl(mockPlan);
+			const params = new URLSearchParams(url.split('?')[1]);
+			expect(params.get('aircraft')).toBe('B738/L');
+		});
+
+		it('should include cruise_tas and cruise_level', () => {
+			const url = buildVatsimPrefileUrl(mockPlan);
+			const params = new URLSearchParams(url.split('?')[1]);
+			expect(params.get('cruise_tas')).toBe('450');
+			expect(params.get('cruise_level')).toBe('35000');
+		});
+	});
+
+	describe('localStorage helpers', () => {
+		beforeEach(() => {
+			localStorage.clear();
+		});
+
+		it('getStoredUsername returns null in SSR (no window)', () => {
+			const original = globalThis.window;
+			vi.stubGlobal('window', undefined);
+			expect(getStoredUsername()).toBeNull();
+			vi.stubGlobal('window', original);
+		});
+
+		it('getStoredVatsimCid returns null in SSR (no window)', () => {
+			const original = globalThis.window;
+			vi.stubGlobal('window', undefined);
+			expect(getStoredVatsimCid()).toBeNull();
+			vi.stubGlobal('window', original);
+		});
+
+		it('getStoredUsername returns null when nothing stored', () => {
+			expect(getStoredUsername()).toBeNull();
+		});
+
+		it('getStoredVatsimCid returns null when nothing stored', () => {
+			expect(getStoredVatsimCid()).toBeNull();
+		});
+
+		it('storeUsername stores value and getStoredUsername retrieves it', () => {
+			storeUsername('pilotjohn');
+			expect(getStoredUsername()).toBe('pilotjohn');
+		});
+
+		it('storeVatsimCid stores value and getStoredVatsimCid retrieves it', () => {
+			storeVatsimCid('1234567');
+			expect(getStoredVatsimCid()).toBe('1234567');
+		});
+
+		it('clearStoredUsername removes stored value', () => {
+			storeUsername('pilotjohn');
+			clearStoredUsername();
+			expect(getStoredUsername()).toBeNull();
+		});
+
+		it('clearStoredVatsimCid removes stored value', () => {
+			storeVatsimCid('1234567');
+			clearStoredVatsimCid();
+			expect(getStoredVatsimCid()).toBeNull();
 		});
 	});
 

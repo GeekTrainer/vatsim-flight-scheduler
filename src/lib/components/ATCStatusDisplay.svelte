@@ -3,6 +3,7 @@
 	
 	Displays ATC (Air Traffic Control) status for an airport location.
 	Shows position badges (DEL, GND, TWR, APP, CTR) with online/offline indicators.
+	When no upper ATC coverage (CTR, APP, TWR) is online, fetches and displays the CTAF frequency.
 	
 	Props:
 	- icao: Airport ICAO code (e.g., "KSEA") - used for airport-based positions (DEL, GND, TWR, APP)
@@ -17,16 +18,22 @@
 	import type { LocationControllers } from '$lib/types';
 	import type { ATCController } from '$lib/types/vatsim';
 	import { ControllerPosition } from '$lib/types/vatsim';
+	import { fetchCTAF } from '$lib/ctaf';
 
 	let { 
 		icao, 
 		artcc, 
-		locationControllers
+		locationControllers,
+		enableCtaf = false
 	}: {
 		icao: string;
 		artcc: string;
 		locationControllers: LocationControllers;
+		enableCtaf?: boolean;
 	} = $props();
+
+	let ctafFrequency = $state<number | null>(null);
+	let ctafRequestVersion = 0;
 
 	const POSITIONS = [
 		{ type: ControllerPosition.CTR, label: 'CTR', color: 'green' },
@@ -40,6 +47,31 @@
 		const positions = locationControllers.get(locationCode);
 		return positions?.get(position) || [];
 	}
+
+	const centerControllers = $derived(getControllers(artcc, ControllerPosition.CTR));
+	const approachControllers = $derived(getControllers(icao, ControllerPosition.APP));
+	const towerControllers = $derived(getControllers(icao, ControllerPosition.TWR));
+
+	// Top-down coverage: CTAF only needed when no CTR, APP, or TWR is online
+	const noUpperCoverage = $derived(
+		centerControllers.length === 0 &&
+		approachControllers.length === 0 &&
+		towerControllers.length === 0
+	);
+
+	// Fetch CTAF when no upper coverage is online (only on flight details page)
+	$effect(() => {
+		const version = ++ctafRequestVersion;
+		if (enableCtaf && noUpperCoverage && icao) {
+			fetchCTAF(icao).then((freq) => {
+				if (version === ctafRequestVersion) {
+					ctafFrequency = freq;
+				}
+			});
+		} else {
+			ctafFrequency = null;
+		}
+	});
 </script>
 
 <div>
@@ -54,6 +86,7 @@
 				label={pos.label}
 				color={pos.color}
 				{controllers}
+				ctafFrequency={pos.type === ControllerPosition.TWR ? ctafFrequency : null}
 			/>
 		{/each}
 	</div>

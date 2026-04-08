@@ -1,0 +1,20 @@
+# Custom sandbox image for VATSIM Flight Scheduler
+FROM docker/sandbox-templates:copilot
+
+USER root
+
+# Install Playwright system dependencies + Chromium for E2E tests
+RUN mkdir -p /usr/local/share/npm-global/lib && npx playwright install --with-deps chromium
+
+USER agent
+
+# Pre-install dependencies on ext4 so the sandbox-npm-install skill can
+# copy Linux ARM64 platform packages into the workspace's node_modules.
+# Also copy the esbuild binary to ext4 (avoids virtiofs SIGILL crash).
+COPY --chown=agent:agent package.json package-lock.json /home/agent/project-deps/
+RUN cd /home/agent/project-deps && npm ci --ignore-scripts \
+    && mkdir -p /home/agent/esbuild-bin-dir \
+    && cp /home/agent/project-deps/node_modules/@esbuild/linux-arm64/bin/esbuild /home/agent/esbuild-bin-dir/esbuild \
+    && chmod +x /home/agent/esbuild-bin-dir/esbuild
+
+ENV ESBUILD_BINARY_PATH=/home/agent/esbuild-bin-dir/esbuild

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { loadAllRoutes, airports } from '$lib/routes';
 	import { fetchVatsimData, getLocationControllers } from '$lib/vatsim';
 	import { filterRoutes } from '$lib/utils/route-filter';
@@ -58,13 +59,10 @@
 		}
 	}
 
-	/**
-	 * Auto-refresh VATSIM data every 30 seconds
-	 * Uses Svelte 5 $effect() for reactive side effects with proper cleanup
-	 */
-	$effect(() => {
+	// Auto-refresh VATSIM data every 30 seconds
+	// Uses onMount to avoid calling fetch during SSR
+	onMount(() => {
 		loadVatsimData();
-		// Refresh data every 30 seconds
 		const interval = setInterval(loadVatsimData, 30000);
 		return () => clearInterval(interval);
 	});
@@ -136,7 +134,7 @@
 	<header class="border-b border-gray-800 bg-gray-900/50 backdrop-blur-sm sticky top-0 z-10">
 		<div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-1.5 sm:py-3">
 			<div class="flex items-center justify-between gap-4">
-				<h1 class="text-base sm:text-2xl font-bold text-white">
+				<h1 data-testid="main-heading" class="text-base sm:text-2xl font-bold text-white">
 					<span class="sm:hidden">VATSIM Scheduler</span>
 					<span class="hidden sm:inline">VATSIM Flight Scheduler</span>
 				</h1>
@@ -147,7 +145,7 @@
 						{lastUpdate}
 						{isLoading}
 					/>
-					<a href="/settings" class="text-gray-400 hover:text-gray-200 transition-colors" title="Settings">
+					<a href="/settings" data-testid="settings-link" class="text-gray-400 hover:text-gray-200 transition-colors" title="Settings">
 						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -220,14 +218,14 @@
 				{:else if !hasActiveFilters}
 					<!-- User Guide - Default View -->
 					<div class="bg-blue-950/30 border border-blue-800/50 rounded-lg p-3 sm:p-6" data-testid="user-guide">
-						<h2 class="text-base sm:text-lg font-semibold text-blue-300 mb-2 sm:mb-3 flex items-center gap-2">
+						<h2 data-testid="user-guide-heading" class="text-base sm:text-lg font-semibold text-blue-300 mb-2 sm:mb-3 flex items-center gap-2">
 							<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
 								<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
 							</svg>
 							How to Use
 						</h2>
 						<div class="text-xs sm:text-sm text-gray-300 space-y-2 sm:space-y-3">
-							<p>
+							<p data-testid="user-guide-text">
 								<strong class="text-white">Select filters above</strong> to find Virtual SWA routes with active VATSIM ATC coverage:
 							</p>
 							<ul class="list-disc list-inside space-y-0.5 sm:space-y-1 sm:ml-4 text-gray-400">
@@ -258,7 +256,7 @@
 		<!-- Footer Note -->
 		<div class="mt-8 text-center text-sm text-gray-500">
 			<!-- Network status on mobile -->
-			<div class="sm:hidden flex justify-center mb-3">
+			<div data-testid="footer-network-status" class="sm:hidden flex justify-center mb-3">
 				<NetworkStatus 
 					{onlineControllers}
 					{lastUpdate}

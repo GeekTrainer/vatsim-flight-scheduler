@@ -160,6 +160,33 @@ describe('vatsim', () => {
 
 			vi.useRealTimers();
 		});
+
+		it('should deduplicate concurrent fetches into a single request', async () => {
+			vi.clearAllMocks();
+			vi.useFakeTimers();
+			// Set time far ahead to expire any prior cache
+			vi.setSystemTime(Date.now() + 120000);
+
+			let resolveResponse!: (value: any) => void;
+			(global.fetch as any).mockReturnValueOnce(
+				new Promise(resolve => { resolveResponse = resolve; })
+			);
+
+			// Launch two concurrent fetches before the first resolves
+			const promise1 = fetchVatsimData();
+			const promise2 = fetchVatsimData();
+
+			// Resolve the single in-flight request
+			resolveResponse({ ok: true, json: async () => mockVatsimData });
+
+			const [result1, result2] = await Promise.all([promise1, promise2]);
+
+			expect(global.fetch).toHaveBeenCalledTimes(1);
+			expect(result1).toEqual(mockVatsimData);
+			expect(result2).toEqual(mockVatsimData);
+
+			vi.useRealTimers();
+		});
 	});
 
 	describe('getLocationControllers', () => {

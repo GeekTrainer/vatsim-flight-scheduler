@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { loadAllRoutes, airports } from './routes';
 import type { Route } from './types';
 
@@ -7,6 +7,12 @@ describe('routes', () => {
 		it('should load all Virtual SWA routes', () => {
 			const routes = loadAllRoutes();
 			expect(routes.length).toBe(1327);
+		});
+
+		it('should return the same cached reference on subsequent calls', () => {
+			const routes1 = loadAllRoutes();
+			const routes2 = loadAllRoutes();
+			expect(routes1).toBe(routes2); // same reference, not just equal
 		});
 
 		it('should generate routes with valid departure and arrival airports', () => {
@@ -66,6 +72,46 @@ describe('routes', () => {
 				expect(route.flight_time_minutes).toBeGreaterThan(0);
 				expect(route.flight_time_minutes % 5).toBe(0); // rounded to 5 min
 			});
+		});
+
+		it('should have positive distance and flight time for ALL routes', () => {
+			const routes = loadAllRoutes();
+
+			for (const route of routes) {
+				expect(route.distance_nm).toBeGreaterThan(0);
+				expect(route.flight_time_minutes).toBeGreaterThan(0);
+			}
+		});
+
+		it('should generate route IDs in CODE-CODE format', () => {
+			const routes = loadAllRoutes();
+			const pattern = /^[A-Z]{3}-[A-Z]{3}$/;
+
+			for (const route of routes) {
+				expect(route.id).toMatch(pattern);
+			}
+		});
+
+		it('should warn on missing airport data', async () => {
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+			vi.resetModules();
+			vi.doMock('./data/routes.json', () => ({
+				default: [
+					{ origin: 'PHX', destination: 'FAKE', distance_nm: 100, flight_time_minutes: 30 }
+				]
+			}));
+
+			const { loadAllRoutes: loadFresh } = await import('./routes');
+			const routes = loadFresh();
+
+			expect(routes).toHaveLength(0);
+			expect(warnSpy).toHaveBeenCalledWith(
+				expect.stringContaining('Missing airport data for route: PHX-FAKE')
+			);
+
+			warnSpy.mockRestore();
+			vi.doUnmock('./data/routes.json');
 		});
 	});
 

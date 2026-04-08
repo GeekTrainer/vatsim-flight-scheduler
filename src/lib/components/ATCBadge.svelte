@@ -3,12 +3,14 @@
 	
 	Displays a single ATC position badge with online/offline status and controller details.
 	Supports both online (with controller data) and offline (empty badge) states.
+	When the position is TWR and no controllers are online, can show CTAF frequency instead.
 	
 	Props:
 	- position: Type of ATC position (DEL, GND, TWR, APP, CTR)
 	- label: Display label for the position
 	- color: Color theme key (purple, yellow, red, blue, green)
 	- controllers: Array of controllers at this position (empty for offline)
+	- ctafFrequency: Optional CTAF frequency to show when TWR is offline
 -->
 <script lang="ts">
 	import type { ATCController } from '$lib/types/vatsim';
@@ -18,15 +20,18 @@
 		position,
 		label,
 		color,
-		controllers = []
+		controllers = [],
+		ctafFrequency = null
 	}: {
 		position: string;
 		label: string;
 		color: string;
 		controllers: ATCController[];
+		ctafFrequency?: number | null;
 	} = $props();
 
 	const online = $derived(controllers.length > 0);
+	const showCTAF = $derived(!online && ctafFrequency !== null && ctafFrequency !== undefined);
 
 	function formatOnlineTime(minutes: number): string {
 		const hours = Math.floor(minutes / 60);
@@ -36,6 +41,7 @@
 
 	function getBadgeClasses(): string {
 		if (!online) {
+			if (showCTAF) return 'atc-ctaf';
 			return 'atc-inactive';
 		}
 		// Map color prop to ATC class
@@ -83,6 +89,18 @@
 					{formatOnlineTime(controller.onlineTimeMinutes)}
 				</div>
 			{/each}
+		</div>
+	</div>
+{:else if showCTAF}
+	<!-- CTAF mode - Tower offline but CTAF frequency available -->
+	<div 
+		data-testid="atc-badge-{position.toLowerCase()}"
+		data-status="ctaf"
+		class="badge-interactive text-center min-w-0 {getBadgeClasses()}"
+	>
+		<div class="flex flex-col gap-0.5">
+			<div class="text-[10px] sm:text-xs font-bold whitespace-nowrap">CTAF</div>
+			<div class="text-xs font-bold opacity-90 leading-tight" data-testid="ctaf-frequency">{ctafFrequency}</div>
 		</div>
 	</div>
 {:else}

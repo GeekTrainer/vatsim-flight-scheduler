@@ -1,4 +1,5 @@
 <script lang="ts">
+import { onMount } from 'svelte';
 import {
 buildDispatchUrl,
 fetchSimBriefPlan,
@@ -14,9 +15,14 @@ onPlanLoaded: (plan: SimBriefPlan) => void;
 
 let { departureIcao, arrivalIcao, onPlanLoaded }: Props = $props();
 
-let username = $state(getStoredUsername() || '');
+let username = $state('');
+
+onMount(() => {
+username = getStoredUsername() || '';
+});
 let isLoading = $state(false);
 let error = $state<string | null>(null);
+let planLoadStarted = false;
 
 const isConfigured = $derived(username.length > 0);
 
@@ -45,6 +51,8 @@ if (popup.closed) {
 clearInterval(pollInterval);
 clearTimeout(timeout);
 window.removeEventListener('message', handler);
+if (planLoadStarted) return;
+planLoadStarted = true;
 await loadPlan();
 }
 }, 2000);
@@ -55,6 +63,8 @@ if (event.data?.type === 'simbrief-plan-ready') {
 window.removeEventListener('message', handler);
 clearInterval(pollInterval);
 clearTimeout(timeout);
+if (planLoadStarted) return;
+planLoadStarted = true;
 await loadPlan();
 }
 };
@@ -67,6 +77,7 @@ error = null;
 
 const plan = await fetchSimBriefPlan(username);
 isLoading = false;
+planLoadStarted = false;
 
 if (!plan) {
 error = 'Could not fetch your SimBrief plan. Check your username in Settings.';
@@ -107,16 +118,13 @@ class="px-2.5 py-1.5 md:px-4 md:py-2 bg-gray-700 hover:bg-gray-600 disabled:bg-g
 </button>
 </div>
 {:else}
-<div class="card-subtle p-3 flex items-center justify-between">
-<span class="text-sm text-gray-400">Connect SimBrief to generate flight plans</span>
 <a
 href="/settings"
 data-testid="simbrief-settings-link"
-class="px-2.5 py-1 md:px-3 md:py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-[10px] md:text-xs font-semibold rounded-lg transition-colors"
+class="px-2.5 py-1.5 md:px-4 md:py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs md:text-sm font-semibold rounded-lg transition-colors inline-flex items-center gap-1.5"
 >
-Set up in Settings
+📋 Connect SimBrief
 </a>
-</div>
 {/if}
 
 {#if error}

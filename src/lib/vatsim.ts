@@ -19,6 +19,7 @@ interface CachedData {
 }
 
 let cache: CachedData | null = null;
+let pendingFetch: Promise<VatsimData> | null = null;
 
 /**
  * Fetches VATSIM network data with 30-second caching
@@ -32,21 +33,26 @@ export async function fetchVatsimData(): Promise<VatsimData> {
 		return cache.data;
 	}
 
-	// Fetch fresh data
-	const response = await fetch(VATSIM_API_URL);
-	if (!response.ok) {
-		throw new Error(`Failed to fetch VATSIM data: ${response.statusText}`);
+	// Return existing in-flight request to avoid duplicate fetches
+	if (pendingFetch) {
+		return pendingFetch;
 	}
 
-	const data: VatsimData = await response.json();
+	// Fetch fresh data
+	pendingFetch = fetch(VATSIM_API_URL)
+		.then(async (response) => {
+			if (!response.ok) {
+				throw new Error(`Failed to fetch VATSIM data: ${response.statusText}`);
+			}
+			const data: VatsimData = await response.json();
+			cache = { data, timestamp: Date.now() };
+			return data;
+		})
+		.finally(() => {
+			pendingFetch = null;
+		});
 
-	// Update cache
-	cache = {
-		data,
-		timestamp: now
-	};
-
-	return data;
+	return pendingFetch;
 }
 
 /**

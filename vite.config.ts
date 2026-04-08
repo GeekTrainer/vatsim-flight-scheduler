@@ -1,29 +1,30 @@
-import { readlinkSync } from 'fs';
-import { dirname, resolve } from 'path';
-import { fileURLToPath } from 'url';
 import tailwindcss from '@tailwindcss/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vitest/config';
+import { realpathSync, lstatSync } from 'fs';
+import { dirname, resolve } from 'path';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-
-// If node_modules is a symlink (e.g. Docker Sandbox), allow Vite to serve from the target
+// When node_modules is a symlink (sandbox env), Vite's fs security blocks
+// serving files from outside the project root. Detect and allow the target.
 function getSymlinkAllowPaths(): string[] {
+	const nmPath = resolve('node_modules');
 	try {
-		const target = readlinkSync(resolve(__dirname, 'node_modules'));
-		return [resolve(target, '..')];
+		if (lstatSync(nmPath).isSymbolicLink()) {
+			return [dirname(realpathSync(nmPath))];
+		}
 	} catch {
-		return [];
+		// node_modules doesn't exist yet
 	}
+	return [];
 }
 
 export default defineConfig({
+	plugins: [tailwindcss(), sveltekit()],
 	server: {
 		fs: {
-			allow: [...getSymlinkAllowPaths()]
+			allow: getSymlinkAllowPaths()
 		}
 	},
-	plugins: [tailwindcss(), sveltekit()],
 	test: {
 		globals: true,
 		environment: 'happy-dom',

@@ -165,6 +165,45 @@ export function parseRunways(text: string): { arrivals: RunwayInfo[]; departures
  * Parse approach-related sentences for arrival runways
  */
 function parseApproachSentence(sentence: string, arrivals: RunwayInfo[], seen: Set<string>): void {
+	// Early scan: find ALL individual approach+runway pairs in compound sentences
+	// Handles "ILS RWY 4R APCH AND VIS APCH TO RWY 4L IN USE" where different
+	// approach types apply to different runways in the same sentence
+	const individualPairs: RunwayInfo[] = [];
+
+	// Pattern A: "ILS RWY 4R APCH", "RNAV RWY 19 APCH"
+	for (const m of sentence.matchAll(
+		/\b(ILS|VISUAL|VIS|RNAV|GPS|RNP|LDA)\s+(?:RWY|RY)\s+(\d{1,2}[LRC]?)\s+APCH\b/g
+	)) {
+		const rwy = m[2];
+		const num = parseInt(rwy, 10);
+		if (num >= 1 && num <= 36) {
+			individualPairs.push({ runway: rwy, approachType: normalizeApproachType(m[1]) });
+		}
+	}
+
+	// Pattern B: "VIS APCH TO RWY 4L", "ILS APPROACH RWY 22L"
+	for (const m of sentence.matchAll(
+		/\b(ILS|VISUAL|VIS|RNAV|GPS|RNP|LDA)\s+(?:APCHS?|APPROACH(?:ES)?)\s+(?:TO\s+)?(?:RWY|RY)\s+(\d{1,2}[LRC]?)\b/g
+	)) {
+		const rwy = m[2];
+		const num = parseInt(rwy, 10);
+		if (num >= 1 && num <= 36) {
+			individualPairs.push({ runway: rwy, approachType: normalizeApproachType(m[1]) });
+		}
+	}
+
+	// If we found multiple independent pairs, use them (handles compound sentences)
+	// Only trigger for 2+ to avoid overriding combined approach types like "ILS OR VIS"
+	if (individualPairs.length >= 2) {
+		for (const pair of individualPairs) {
+			if (!seen.has(pair.runway)) {
+				arrivals.push(pair);
+				seen.add(pair.runway);
+			}
+		}
+		return;
+	}
+
 	// Detect approach types present in the sentence
 	const approachTypes: { pattern: RegExp; label: string }[] = [
 		{ pattern: /\bILS\b/, label: 'ILS' },

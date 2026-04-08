@@ -11,7 +11,7 @@
 	let { center, locationControllers }: Props = $props();
 
 	let showTooltip = $state(false);
-	let tooltipEl: HTMLDivElement | undefined = $state();
+	let tooltipEl: HTMLButtonElement | undefined = $state();
 
 	const controllers = $derived(getCenterControllers(center.artcc, locationControllers));
 
@@ -34,9 +34,11 @@
 	});
 </script>
 
-<!-- svelte-ignore a11y_no_static_element_interactions -->
-<div
-	class="relative flex items-center gap-1 shrink-0 cursor-pointer select-none"
+<button
+	type="button"
+	class="relative flex items-center gap-1 shrink-0 cursor-pointer select-none bg-transparent border-none p-0"
+	data-testid="enroute-center-{center.artcc}"
+	data-status={center.online ? 'online' : 'offline'}
 	onmouseenter={() => showTooltip = true}
 	onmouseleave={() => showTooltip = false}
 	onclick={handleClick}
@@ -51,7 +53,7 @@
 
 	<!-- Tooltip -->
 	{#if showTooltip}
-		<div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 pointer-events-none">
+		<div data-testid="center-tooltip-{center.artcc}" class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 pointer-events-none">
 			<div class="bg-gray-800 border border-gray-600 rounded-lg shadow-xl px-3 py-2 min-w-[180px] pointer-events-auto">
 				<!-- Center name -->
 				<div class="text-xs font-bold text-gray-100">{center.name}</div>
@@ -82,4 +84,4 @@
 			<div class="w-2 h-2 bg-gray-800 border-r border-b border-gray-600 rotate-45 absolute left-1/2 -translate-x-1/2 -bottom-1"></div>
 		</div>
 	{/if}
-</div>
+</button>

@@ -1,11 +1,21 @@
 <script lang="ts">
 	import CenterTooltip from './CenterTooltip.svelte';
+	import RouteDisplay from './RouteDisplay.svelte';
 	import { formatFlightTime, formatFuel, formatAltitude, validatePlanMatchesRoute, buildVatsimPrefileUrl, buildDispatchUrl, fetchSimBriefPlan, getStoredUsername } from '$lib/simbrief';
 	import type { SimBriefPlan } from '$lib/types/simbrief';
 	import type { EnrouteCenter } from '$lib/enroute';
 	import type { LocationControllers } from '$lib/types';
 	import type { VatsimFlightStatus } from '$lib/simbrief';
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
+
+	let pollInterval: ReturnType<typeof setInterval> | null = null;
+	let pollTimeout: ReturnType<typeof setTimeout> | null = null;
+	let planLoadStarted = false;
+
+	onDestroy(() => {
+		if (pollInterval) clearInterval(pollInterval);
+		if (pollTimeout) clearTimeout(pollTimeout);
+	});
 
 	interface Props {
 		departureIcao: string;
@@ -50,8 +60,25 @@
 		const popup = window.open(url, 'simbrief', 'width=1000,height=750');
 		if (!popup) { error = 'Popup blocked!'; return; }
 		isLoadingPlan = true;
-		const poll = setInterval(async () => {
-			if (popup.closed) { clearInterval(poll); await loadPlan(); }
+		planLoadStarted = false;
+
+		pollTimeout = setTimeout(() => {
+			if (pollInterval) clearInterval(pollInterval);
+			pollInterval = null;
+			pollTimeout = null;
+			isLoadingPlan = false;
+			error = 'SimBrief session timed out. Try again.';
+		}, 10 * 60 * 1000);
+
+		pollInterval = setInterval(async () => {
+			if (popup.closed && !planLoadStarted) {
+				planLoadStarted = true;
+				if (pollInterval) clearInterval(pollInterval);
+				if (pollTimeout) clearTimeout(pollTimeout);
+				pollInterval = null;
+				pollTimeout = null;
+				await loadPlan();
+			}
 		}, 2000);
 	}
 
@@ -120,8 +147,8 @@
 		{#if isExpanded}
 			<div class="pt-2 border-t border-gray-700/50 space-y-2">
 				<!-- Route -->
-				<div class="font-mono text-[10px] text-gray-400 leading-relaxed break-all text-center">
-					{simbriefPlan.general.route}
+				<div class="text-center">
+					<RouteDisplay route={simbriefPlan.general.route} alternate={simbriefPlan.alternate?.icao_code ?? ''} />
 				</div>
 
 				<!-- Fuel & Weights grid -->
@@ -173,8 +200,8 @@
 							Pre-file VATSIM
 						</a>
 					{/if}
-					<button onclick={onRefile} class="text-xs text-blue-400">Re-file</button>
-					<button onclick={onClear} class="text-xs text-gray-600">✕</button>
+					<button onclick={onRefile} data-testid="mobile-refile-button" class="text-xs text-blue-400">Re-file</button>
+					<button onclick={onClear} data-testid="mobile-clear-button" class="text-xs text-gray-600">✕</button>
 				</div>
 			</div>
 		{/if}

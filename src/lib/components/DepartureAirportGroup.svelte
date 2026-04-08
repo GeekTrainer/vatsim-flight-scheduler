@@ -76,7 +76,7 @@
 			data-testid="arrivals-section-{departureAirport.vatsim_code}"
 		>
 			<div class="px-3 sm:px-6 py-4 bg-gray-800/30">
-				<h4 class="text-base font-bold text-gray-200">Available Destinations</h4>
+				<h4 data-testid="available-destinations-label" class="text-base font-bold text-gray-200">Available Destinations</h4>
 			</div>
 			<div class="divide-y divide-gray-800">
 				{#each routes as route}

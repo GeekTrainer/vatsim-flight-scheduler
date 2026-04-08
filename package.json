@@ -18,9 +18,11 @@
 		"test:e2e:ui": "playwright test --ui",
 		"test:e2e:debug": "playwright test --debug"
 	},
+	"dependencies": {
+		"@netlify/blobs": "^8.1.0"
+	},
 	"devDependencies": {
 		"@playwright/test": "^1.57.0",
-		"@sveltejs/adapter-auto": "^7.0.0",
 		"@sveltejs/adapter-netlify": "^5.2.4",
 		"@sveltejs/kit": "^2.49.1",
 		"@sveltejs/vite-plugin-svelte": "^6.2.1",
@@ -28,9 +30,9 @@
 		"@vitest/ui": "^4.0.16",
 		"happy-dom": "^20.0.11",
 		"svelte": "^5.45.6",
-		"svelte-check": "^4.3.4",
+		"svelte-check": "^4.4.6",
 		"tailwindcss": "^4.1.17",
-		"typescript": "^5.9.3",
+		"typescript": "^6.0.2",
 		"vite": "^7.2.6",
 		"vitest": "^4.0.16"
 	}

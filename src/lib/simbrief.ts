@@ -5,6 +5,7 @@
  */
 
 import type { SimBriefPlan } from './types/simbrief';
+import type { VatsimPilot, VatsimPrefile } from './types/vatsim';
 
 const SIMBRIEF_DISPATCH_URL = 'https://www.simbrief.com/system/dispatch.php';
 const SIMBRIEF_FETCHER_URL = 'https://www.simbrief.com/api/xml.fetcher.php';
@@ -157,16 +158,16 @@ export function clearStoredVatsimCid(): void {
 export type VatsimFlightStatus = 'not-filed' | 'prefiled' | 'connected';
 
 export function checkVatsimFlightStatus(
-	vatsimData: { pilots: any[]; prefiles: any[] },
+	vatsimData: { pilots: Pick<VatsimPilot, 'cid'>[]; prefiles: Pick<VatsimPrefile, 'cid'>[] },
 	cid: string
 ): VatsimFlightStatus {
 	const cidNum = parseInt(cid, 10);
 	if (isNaN(cidNum)) return 'not-filed';
 
-	if (vatsimData.pilots?.some((p: any) => p.cid === cidNum)) {
+	if (vatsimData.pilots?.some((p) => p.cid === cidNum)) {
 		return 'connected';
 	}
-	if (vatsimData.prefiles?.some((p: any) => p.cid === cidNum)) {
+	if (vatsimData.prefiles?.some((p) => p.cid === cidNum)) {
 		return 'prefiled';
 	}
 	return 'not-filed';
