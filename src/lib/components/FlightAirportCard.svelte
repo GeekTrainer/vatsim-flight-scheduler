@@ -2,7 +2,7 @@
 	import type { Airport, LocationControllers, ATISInfo } from '$lib/types';
 	import { ControllerPosition } from '$lib/types/vatsim';
 	import type { ParsedATIS } from '$lib/utils/atis-parser';
-	import { parseATIS } from '$lib/utils/atis-parser';
+	import { mergeSplitAtis } from '$lib/utils/atis-parser';
 	import ATCStatusDisplay from './ATCStatusDisplay.svelte';
 	import ATISDisplay from './ATISDisplay.svelte';
 	import CompactATISSummary from './CompactATISSummary.svelte';
@@ -37,19 +37,12 @@
 	);
 	let parsedAtis = $derived.by((): ParsedATIS | null => {
 		if (!activeAtis) return null;
-		const primary = parseATIS(activeAtis.text);
-		if (otherAtis && otherAtis.atisType !== 'combined' && otherAtis.text !== activeAtis.text) {
-			const other = parseATIS(otherAtis.text);
-			const seenArr = new Set(primary.arrivalRunways.map(r => r.runway));
-			const seenDep = new Set(primary.departureRunways.map(r => r.runway));
-			for (const rwy of other.arrivalRunways) {
-				if (!seenArr.has(rwy.runway)) primary.arrivalRunways.push(rwy);
-			}
-			for (const rwy of other.departureRunways) {
-				if (!seenDep.has(rwy.runway)) primary.departureRunways.push(rwy);
-			}
-		}
-		return primary;
+		return mergeSplitAtis(
+			activeAtis.text,
+			activeAtis.atisType,
+			otherAtis?.text ?? null,
+			otherAtis?.atisType
+		);
 	});
 
 	// Compact ATC: check which positions are online

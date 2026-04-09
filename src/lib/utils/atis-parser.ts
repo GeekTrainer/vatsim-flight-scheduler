@@ -112,8 +112,13 @@ export function parseRunways(text: string): { arrivals: RunwayInfo[]; departures
 	const seenArrival = new Set<string>();
 	const seenDeparture = new Set<string>();
 
+	// Truncate at NOTAM section — runway references in NOTAMs (closed, OTS, etc.)
+	// are not operationally relevant for the summary display
+	const notamIndex = text.search(/\bNOTICE\s+TO\s+AIR(?:MEN|MAN)\b|\bNOTAMS?\b/i);
+	const operationalText = notamIndex >= 0 ? text.substring(0, notamIndex) : text;
+
 	// Split into sentences for analysis
-	const sentences = text.split(/\.\s*/);
+	const sentences = operationalText.split(/\.\s*/);
 
 	for (const sentence of sentences) {
 		const upper = sentence.toUpperCase();
@@ -148,8 +153,9 @@ export function parseRunways(text: string): { arrivals: RunwayInfo[]; departures
 			}
 		}
 
-		// Departure patterns — capture everything after DEPG/DEPARTING up to sentence end
-		const depMatch = upper.match(/(?:DEPG|DEPARTING|DEPART|DEPTG)\s+(?:RWY|RY|RWYS|RUNWAY|RUNWAYS)?\s*([\d\w\s,AND&]+?)(?:\.|$)/);
+		// Departure patterns — capture everything after DEPG/DEPARTING/DEPS up to sentence end
+		// Allow optional EXP/EXPECT between keyword and runway list (e.g., "DEPS EXP RWYS 22L 27L")
+		const depMatch = upper.match(/(?:DEPG|DEPARTING|DEPART|DEPTG|DEPS)\s+(?:(?:EXP(?:ECT)?)\s+)?(?:RWY|RY|RWYS|RUNWAY|RUNWAYS)?\s*([\d\w\s,AND&]+?)(?:\.|$)/);
 		if (depMatch && !comboMatch) {
 			const rwys = extractRunwayNumbers(depMatch[1]);
 			for (const rwy of rwys) {
@@ -323,12 +329,24 @@ function normalizeApproachType(str: string): string {
 /**
  * Extract runway numbers from a text fragment
  * Handles: "25L AND 25R", "8R, RWY 9, RWY 12", "17L & RWY 17R", "24 AND 25"
+ * Also handles FAA D-ATIS spaced designators: "3 4 LEFT" → "34L", "RWY 3 4 RIGHT" → "34R"
  * Preserves order as listed.
  */
 function extractRunwayNumbers(text: string): string[] {
 	const runways: string[] = [];
+
+	// Normalize FAA D-ATIS spaced runway designators before extraction
+	// e.g., "RUNWAY 3 4 LEFT" → "RUNWAY 34L", "RWY 3 4 RIGHT" → "RWY 34R"
+	let normalized = text
+		.replace(/(\d)\s+(\d)\s*(?:LEFT|LFT)/gi, '$1$2L')
+		.replace(/(\d)\s+(\d)\s*(?:RIGHT|RGT)/gi, '$1$2R')
+		.replace(/(\d)\s+(\d)\s*(?:CENTER|CTR)/gi, '$1$2C')
+		.replace(/(\d{1,2})\s+(?:LEFT|LFT)/gi, '$1L')
+		.replace(/(\d{1,2})\s+(?:RIGHT|RGT)/gi, '$1R')
+		.replace(/(\d{1,2})\s+(?:CENTER|CTR)/gi, '$1C');
+
 	// Match runway designators: 1-2 digits optionally followed by L, R, or C
-	const matches = text.matchAll(/\b(\d{1,2}[LRC]?)\b/g);
+	const matches = normalized.matchAll(/\b(\d{1,2}[LRC]?)\b/g);
 	for (const match of matches) {
 		const rwy = match[1];
 		// Filter out numbers that are clearly not runways (> 36)
@@ -358,4 +376,38 @@ export function formatWind(wind: ParsedWind): string {
 	}
 
 	return result;
+}
+
+/**
+ * Merge split ATIS data (separate arrival/departure) into a single ParsedATIS.
+ *
+ * For split ATIS airports (e.g., KDEN, KATL), each side is authoritative for its
+ * own runways: arrival ATIS owns arrivalRunways, departure ATIS owns departureRunways.
+ * Wind/altimeter come from the primary (displayed) ATIS text.
+ *
+ * For combined ATIS or when no other side exists, returns the primary parsed result as-is.
+ */
+export function mergeSplitAtis(
+	primaryText: string,
+	primaryAtisType: 'combined' | 'arrival' | 'departure' | undefined,
+	otherText: string | null,
+	otherAtisType: 'combined' | 'arrival' | 'departure' | undefined
+): ParsedATIS {
+	const primary = parseATIS(primaryText);
+
+	if (!otherText || otherAtisType === 'combined' || otherText === primaryText) {
+		return primary;
+	}
+
+	const other = parseATIS(otherText);
+
+	const arrSource = primaryAtisType === 'arrival' ? primary : other;
+	const depSource = primaryAtisType === 'departure' ? primary : other;
+
+	return {
+		wind: primary.wind,
+		altimeter: primary.altimeter,
+		arrivalRunways: arrSource.arrivalRunways,
+		departureRunways: depSource.departureRunways
+	};
 }

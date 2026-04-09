@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseATIS, parseWind, parseAltimeter, parseRunways, formatWind } from './atis-parser';
+import { parseATIS, parseWind, parseAltimeter, parseRunways, formatWind, mergeSplitAtis } from './atis-parser';
 import type { ParsedWind } from './atis-parser';
 
 describe('ATIS Parser', () => {
@@ -201,6 +201,41 @@ describe('ATIS Parser', () => {
 			expect(arrivals).toHaveLength(0);
 			expect(departures).toHaveLength(0);
 		});
+
+		it('should truncate at NOTICE TO AIRMEN and not parse NOTAM runway references', () => {
+			const text = 'LANDING RWYS 26L AND 19R. DEPG RWYS 26R, 19R AND 19L. NOTICE TO AIRMEN. CHECK DENSITY ALTITUDE. RWY 1L CLSD.';
+			const { arrivals, departures } = parseRunways(text);
+			expect(arrivals.map(r => r.runway)).toEqual(['26L', '19R']);
+			expect(departures.map(r => r.runway)).toEqual(['26R', '19R', '19L']);
+		});
+
+		it('should truncate at NOTAMS abbreviation', () => {
+			const text = 'ILS APCH RWY 34L. DEPG RWY 34R. NOTAMS... RY 34C CLSD. TWY P CLSD.';
+			const { arrivals, departures } = parseRunways(text);
+			expect(arrivals.map(r => r.runway)).toEqual(['34L']);
+			expect(departures.map(r => r.runway)).toEqual(['34R']);
+		});
+
+		it('should parse DEPS EXP RWYS pattern (KORD style)', () => {
+			const text = 'ARR EXP VECTORS ILS RWY 27C APCH, VISUAL APCH RWY 27R. DEPS EXP RWYS 22L 27L FROM T T 9960 FT AVL.';
+			const { arrivals, departures } = parseRunways(text);
+			expect(arrivals.map(r => r.runway)).toContain('27C');
+			expect(arrivals.map(r => r.runway)).toContain('27R');
+			expect(departures.map(r => r.runway)).toContain('22L');
+			expect(departures.map(r => r.runway)).toContain('27L');
+		});
+
+		it('should normalize FAA D-ATIS spaced runway designators (KDEN style)', () => {
+			const text = 'DEPG RWY8, RUNWAY 3 4 LEFT. NOTICE TO AIRMEN.';
+			const { departures } = parseRunways(text);
+			expect(departures.map(r => r.runway)).toEqual(['8', '34L']);
+		});
+
+		it('should normalize both spaced LEFT and RIGHT designators', () => {
+			const text = 'DEPG RWY 3 4 RIGHT, RUNWAY 3 4 LEFT.';
+			const { departures } = parseRunways(text);
+			expect(departures.map(r => r.runway)).toEqual(['34R', '34L']);
+		});
 	});
 
 	describe('parseATIS (integration)', () => {
@@ -243,6 +278,29 @@ describe('ATIS Parser', () => {
 			expect(result.arrivalRunways).toHaveLength(2);
 			expect(result.arrivalRunways[0]).toEqual({ runway: '8R' });
 		});
+
+		it('should correctly parse KDEN split ATIS - arrival side', () => {
+			const arrText = 'DEN ARR INFO Z 2353Z. 05015KT 10SM SCT090 BKN150 BKN220 16/M01 A2999. EXPC ILS, RNAV, OR VISUAL APCH, SIMUL APCHS IN USE, RWY 34R, RWY 35L, RWY 35R. NOTICE TO AIRMEN. RWY 7/25 CLSD.';
+			const result = parseATIS(arrText);
+			// Arrival ATIS should find arrival runways with approach types
+			expect(result.arrivalRunways.map(r => r.runway)).toEqual(['34R', '35L', '35R']);
+			// NOTAM runways (7/25 CLSD) should NOT appear
+		});
+
+		it('should correctly parse KDEN split ATIS - departure side with spaced digits', () => {
+			const depText = 'DEN DEP INFO M 2353Z. 05015KT 10SM SCT090 16/M01 A2999. DEPG RWY8, RUNWAY 3 4 LEFT. NOTICE TO AIRMEN. RWY 7/25 CLSD.';
+			const result = parseATIS(depText);
+			// Departure ATIS should find departure runways, normalizing "3 4 LEFT" → "34L"
+			expect(result.departureRunways.map(r => r.runway)).toEqual(['8', '34L']);
+		});
+
+		it('should keep arrival and departure runways separate when both are explicit', () => {
+			// Simulates a combined ATIS that has both explicit arrival and departure info
+			const text = 'LAS ATIS INFO B 2356Z. 07010KT 10SM FEW140 A2979. LANDING RWYS 26L AND 19R. DEPG RWYS 26R, 19R AND 19L.';
+			const result = parseATIS(text);
+			expect(result.arrivalRunways.map(r => r.runway)).toEqual(['26L', '19R']);
+			expect(result.departureRunways.map(r => r.runway)).toEqual(['26R', '19R', '19L']);
+		});
 	});
 
 	describe('formatWind', () => {
@@ -269,6 +327,76 @@ describe('ATIS Parser', () => {
 		it('should format wind with variable direction', () => {
 			const wind: ParsedWind = { direction: 40, speed: 7, calm: false, variable: { from: 350, to: 80 }, raw: '04007KT' };
 			expect(formatWind(wind)).toBe('40° at 7kt (variable 350°–80°)');
+		});
+	});
+
+	describe('mergeSplitAtis', () => {
+		const arrAtisText = 'DEN ARR INFO Z 2353Z. 05015KT 10SM SCT090 BKN150 16/M01 A2999. EXPC ILS APCH, SIMUL APCHS IN USE, RWY 34R, RWY 35L, RWY 35R. NOTICE TO AIRMEN. RWY 7/25 CLSD.';
+		const depAtisText = 'DEN DEP INFO M 2353Z. 05015KT 10SM SCT090 16/M01 A2999. DEPG RWY8, RUNWAY 3 4 LEFT. NOTICE TO AIRMEN. RWY 7/25 CLSD.';
+
+		it('should use arrival ATIS for arrival runways when primary is arrival', () => {
+			const result = mergeSplitAtis(arrAtisText, 'arrival', depAtisText, 'departure');
+			expect(result.arrivalRunways.map(r => r.runway)).toEqual(['34R', '35L', '35R']);
+		});
+
+		it('should use departure ATIS for departure runways when primary is arrival', () => {
+			const result = mergeSplitAtis(arrAtisText, 'arrival', depAtisText, 'departure');
+			expect(result.departureRunways.map(r => r.runway)).toEqual(['8', '34L']);
+		});
+
+		it('should use departure ATIS for departure runways when primary is departure', () => {
+			const result = mergeSplitAtis(depAtisText, 'departure', arrAtisText, 'arrival');
+			expect(result.departureRunways.map(r => r.runway)).toEqual(['8', '34L']);
+		});
+
+		it('should use arrival ATIS for arrival runways when primary is departure', () => {
+			const result = mergeSplitAtis(depAtisText, 'departure', arrAtisText, 'arrival');
+			expect(result.arrivalRunways.map(r => r.runway)).toEqual(['34R', '35L', '35R']);
+		});
+
+		it('should not cross-contaminate arrival runways into departures', () => {
+			const result = mergeSplitAtis(arrAtisText, 'arrival', depAtisText, 'departure');
+			expect(result.departureRunways.map(r => r.runway)).not.toContain('35L');
+			expect(result.departureRunways.map(r => r.runway)).not.toContain('35R');
+		});
+
+		it('should not cross-contaminate departure runways into arrivals', () => {
+			const result = mergeSplitAtis(depAtisText, 'departure', arrAtisText, 'arrival');
+			expect(result.arrivalRunways.map(r => r.runway)).not.toContain('8');
+		});
+
+		it('should use wind and altimeter from primary ATIS', () => {
+			const result = mergeSplitAtis(arrAtisText, 'arrival', depAtisText, 'departure');
+			expect(result.wind?.direction).toBe(50);
+			expect(result.wind?.speed).toBe(15);
+			expect(result.altimeter).toBe('29.99');
+		});
+
+		it('should fall through to plain parseATIS when other is combined', () => {
+			const combinedText = 'PHX ATIS INFO R. 24010KT 10SM A2990. LANDING AND DEPARTING RWY 25L AND 25R.';
+			const result = mergeSplitAtis(arrAtisText, 'arrival', combinedText, 'combined');
+			// Falls back to plain parse — inference fills both buckets from arrival ATIS
+			expect(result.arrivalRunways.length).toBeGreaterThan(0);
+			expect(result.departureRunways.length).toBeGreaterThan(0);
+		});
+
+		it('should fall through to plain parseATIS when other is null', () => {
+			const result = mergeSplitAtis(arrAtisText, 'arrival', null, undefined);
+			// Falls back to plain parse — inference fills departures from arrivals
+			expect(result.arrivalRunways.map(r => r.runway)).toEqual(['34R', '35L', '35R']);
+			expect(result.departureRunways.length).toBe(3);
+		});
+
+		it('should fall through when both texts are identical', () => {
+			const result = mergeSplitAtis(arrAtisText, 'arrival', arrAtisText, 'departure');
+			expect(result.arrivalRunways.map(r => r.runway)).toEqual(['34R', '35L', '35R']);
+		});
+
+		it('should exclude NOTAM runways from both sides', () => {
+			const result = mergeSplitAtis(arrAtisText, 'arrival', depAtisText, 'departure');
+			const allRunways = [...result.arrivalRunways, ...result.departureRunways].map(r => r.runway);
+			expect(allRunways).not.toContain('7');
+			expect(allRunways).not.toContain('25');
 		});
 	});
 });
