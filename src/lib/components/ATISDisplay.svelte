@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { ATISInfo } from '$lib/types';
 	import ATISSummary from './ATISSummary.svelte';
-	import { parseATIS } from '$lib/utils/atis-parser';
+	import { parseATIS, mergeSplitAtis } from '$lib/utils/atis-parser';
 	import type { ParsedATIS } from '$lib/utils/atis-parser';
 
 	interface Props {
@@ -25,23 +25,12 @@
 	// Merge runway info from both sides for the summary
 	let mergedParsedAtis = $derived.by((): ParsedATIS | null => {
 		if (!currentAtis) return null;
-		const primary = parseATIS(currentAtis.text);
-
-		// If there's a different split ATIS from the other side, merge its runways
-		if (currentOtherAtis && currentOtherAtis.atisType !== 'combined' && currentOtherAtis.text !== currentAtis.text) {
-			const other = parseATIS(currentOtherAtis.text);
-			const seenArr = new Set(primary.arrivalRunways.map(r => r.runway));
-			const seenDep = new Set(primary.departureRunways.map(r => r.runway));
-
-			for (const rwy of other.arrivalRunways) {
-				if (!seenArr.has(rwy.runway)) primary.arrivalRunways.push(rwy);
-			}
-			for (const rwy of other.departureRunways) {
-				if (!seenDep.has(rwy.runway)) primary.departureRunways.push(rwy);
-			}
-		}
-
-		return primary;
+		return mergeSplitAtis(
+			currentAtis.text,
+			currentAtis.atisType,
+			currentOtherAtis?.text ?? null,
+			currentOtherAtis?.atisType
+		);
 	});
 
 	function atisTypeLabel(atis: ATISInfo): string | null {
