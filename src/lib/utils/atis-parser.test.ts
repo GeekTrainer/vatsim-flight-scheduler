@@ -236,6 +236,22 @@ describe('ATIS Parser', () => {
 			const { departures } = parseRunways(text);
 			expect(departures.map(r => r.runway)).toEqual(['34R', '34L']);
 		});
+
+		it('should parse approach runways with comma after RWYS keyword (KDFW-style)', () => {
+			const text = 'SIMUL VISUAL APCH TO RWYS, 18R, 17C.';
+			const { arrivals } = parseRunways(text);
+			expect(arrivals).toHaveLength(2);
+			expect(arrivals[0]).toEqual({ runway: '18R', approachType: 'Visual' });
+			expect(arrivals[1]).toEqual({ runway: '17C', approachType: 'Visual' });
+		});
+
+		it('should handle real KDFW arrival ATIS with comma after RWYS', () => {
+			const text = 'KDFW ARRIVAL INFO N 0153Z. 15008KT 10SM FEW060 FEW120 BKN250 23/12 A3007. SIMUL VISUAL APCH TO RWYS, 18R, 17C. NOTAMS... ASDE-X IN USE.';
+			const { arrivals } = parseRunways(text);
+			expect(arrivals.length).toBeGreaterThanOrEqual(2);
+			expect(arrivals[0].runway).toBe('18R');
+			expect(arrivals[1].runway).toBe('17C');
+		});
 	});
 
 	describe('parseATIS (integration)', () => {
@@ -397,6 +413,41 @@ describe('ATIS Parser', () => {
 			const allRunways = [...result.arrivalRunways, ...result.departureRunways].map(r => r.runway);
 			expect(allRunways).not.toContain('7');
 			expect(allRunways).not.toContain('25');
+		});
+
+		// KDFW-style: comma immediately after RWYS keyword (e.g., "RWYS, 18R, 17C")
+		describe('KDFW split ATIS (comma after RWYS)', () => {
+			const kdfwArrText = 'KDFW ARRIVAL INFO N 0153Z. 15008KT 10SM FEW060 FEW120 BKN250 23/12 A3007 (THREE ZERO ZERO SEVEN). SIMUL VISUAL APCH TO RWYS, 18R, 17C. NOTAMS... ASDE-X IN USE.';
+			const kdfwDepText = 'KDFW DEPARTURE INFO I 0153Z. 15008KT 10SM FEW060 FEW120 BKN250 23/12 A3007 (THREE ZERO ZERO SEVEN). SIMUL PARL TFC DEPG RWYS 17R, 18L. NOTAMS... ASDE-X IN USE.';
+
+			it('should parse arrival runways from KDFW arrival ATIS with comma after RWYS', () => {
+				const result = parseATIS(kdfwArrText);
+				expect(result.arrivalRunways.map(r => r.runway)).toEqual(['18R', '17C']);
+				expect(result.arrivalRunways[0].approachType).toBe('Visual');
+			});
+
+			it('should parse departure runways from KDFW departure ATIS', () => {
+				const result = parseATIS(kdfwDepText);
+				expect(result.departureRunways.map(r => r.runway)).toEqual(['17R', '18L']);
+			});
+
+			it('should merge KDFW split ATIS correctly when departure is primary', () => {
+				const result = mergeSplitAtis(kdfwDepText, 'departure', kdfwArrText, 'arrival');
+				expect(result.departureRunways.map(r => r.runway)).toEqual(['17R', '18L']);
+				expect(result.arrivalRunways.map(r => r.runway)).toEqual(['18R', '17C']);
+			});
+
+			it('should merge KDFW split ATIS correctly when arrival is primary', () => {
+				const result = mergeSplitAtis(kdfwArrText, 'arrival', kdfwDepText, 'departure');
+				expect(result.arrivalRunways.map(r => r.runway)).toEqual(['18R', '17C']);
+				expect(result.departureRunways.map(r => r.runway)).toEqual(['17R', '18L']);
+			});
+
+			it('should not cross-contaminate KDFW departure runways into arrival list', () => {
+				const result = mergeSplitAtis(kdfwDepText, 'departure', kdfwArrText, 'arrival');
+				expect(result.arrivalRunways.map(r => r.runway)).not.toContain('17R');
+				expect(result.arrivalRunways.map(r => r.runway)).not.toContain('18L');
+			});
 		});
 	});
 });

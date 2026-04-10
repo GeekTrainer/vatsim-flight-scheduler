@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { mockVatsimDataEmpty } from './fixtures/vatsim-data';
-import { mockFaaDatisPhx, mockFaaDatisDen } from './fixtures/faa-datis';
+import { mockFaaDatisPhx, mockFaaDatisDen, mockFaaDatisDfw } from './fixtures/faa-datis';
 import { VATSIM_API_URL } from './fixtures/test-constants';
 
 /**
@@ -199,5 +199,84 @@ test.describe('Split ATIS - KDEN as Departure', () => {
 		const arrRunways = depAtis.getByTestId('atis-summary-arrivals');
 		await expect(arrRunways).toBeVisible();
 		await expect(arrRunways).not.toContainText(/\b8\b/);
+	});
+});
+
+/**
+ * Tests split ATIS for KDFW — comma after RWYS keyword.
+ * KDFW arrival ATIS uses "VISUAL APCH TO RWYS, 18R, 17C" (comma directly after RWYS).
+ * This format previously caused the parser to miss arrival runways entirely.
+ */
+test.describe('Split ATIS - KDFW (comma after RWYS)', () => {
+	test.beforeEach(async ({ page }) => {
+		await Promise.all([
+			page.route(VATSIM_API_URL, async (route) => {
+				await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(mockVatsimDataEmpty) });
+			}),
+			page.route('https://atis.info/api/KDFW', async (route) => {
+				await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(mockFaaDatisDfw) });
+			}),
+			page.route('https://atis.info/api/KRSW', async (route) => {
+				await route.fulfill({ status: 404 });
+			}),
+			page.route('**/api/metar/**', async (route) => {
+				await route.fulfill({ status: 404 });
+			}),
+			page.route('https://www.simbrief.com/api/**', async (route) => {
+				await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({}) });
+			})
+		]);
+	});
+
+	test('should show arrival runways from KDFW arrival ATIS with comma after RWYS', async ({ page }) => {
+		await page.goto('/flight/KDFW-KRSW');
+		await expect(page.getByTestId('flight-page')).toBeVisible();
+
+		const depAtis = page.getByTestId('desktop-layout').getByTestId('atis-display-KDFW');
+		await depAtis.getByTestId('atis-tab-realworld').click();
+
+		const arrRunways = depAtis.getByTestId('atis-summary-arrivals');
+		await expect(arrRunways).toBeVisible();
+		await expect(arrRunways).toContainText('18R');
+		await expect(arrRunways).toContainText('17C');
+	});
+
+	test('should show departure runways from KDFW departure ATIS', async ({ page }) => {
+		await page.goto('/flight/KDFW-KRSW');
+		await expect(page.getByTestId('flight-page')).toBeVisible();
+
+		const depAtis = page.getByTestId('desktop-layout').getByTestId('atis-display-KDFW');
+		await depAtis.getByTestId('atis-tab-realworld').click();
+
+		const depRunways = depAtis.getByTestId('atis-summary-departures');
+		await expect(depRunways).toBeVisible();
+		await expect(depRunways).toContainText('17R');
+		await expect(depRunways).toContainText('18L');
+	});
+
+	test('should show Visual approach type for arrival runways', async ({ page }) => {
+		await page.goto('/flight/KDFW-KRSW');
+		await expect(page.getByTestId('flight-page')).toBeVisible();
+
+		const depAtis = page.getByTestId('desktop-layout').getByTestId('atis-display-KDFW');
+		await depAtis.getByTestId('atis-tab-realworld').click();
+
+		const arrRunways = depAtis.getByTestId('atis-summary-arrivals');
+		await expect(arrRunways).toBeVisible();
+		await expect(arrRunways).toContainText('Visual');
+	});
+
+	test('should not include NOTAM closed runways in runway lists', async ({ page }) => {
+		// KDFW has 13L, 13R, 17L closed in NOTAMs
+		await page.goto('/flight/KDFW-KRSW');
+		await expect(page.getByTestId('flight-page')).toBeVisible();
+
+		const depAtis = page.getByTestId('desktop-layout').getByTestId('atis-display-KDFW');
+		await depAtis.getByTestId('atis-tab-realworld').click();
+
+		const summary = depAtis.getByTestId('atis-summary');
+		await expect(summary).toBeVisible();
+		await expect(summary).not.toContainText('13L');
+		await expect(summary).not.toContainText('13R');
 	});
 });

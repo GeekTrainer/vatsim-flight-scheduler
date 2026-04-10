@@ -20,9 +20,23 @@ export const mockFaaDatisLas = [
 ];
 
 /**
- * Mock FAA D-ATIS for KDEN — split arrival/departure ATIS
- * Tests spaced runway designators ("RUNWAY 3 4 LEFT" → 34L) and NOTAM cutoff
+ * Mock FAA D-ATIS for KDFW — split arrival/departure ATIS
+ * Tests comma immediately after RWYS keyword (e.g., "RWYS, 18R, 17C")
  */
+export const mockFaaDatisDfw = [
+	{
+		airport: 'KDFW',
+		type: 'arr',
+		code: 'I',
+		datis: 'DFW ARR INFO I 0253Z. 15009KT 10SM FEW120 BKN250 23/12 A3008 (THREE ZERO ZERO EIGHT). SIMUL VISUAL APCH TO RWYS, 18R, 17C. LDG RWY 17C EXP LAHSO TWY B 10460 FT AVAIL. NOTICE TO AIRMEN. RWY 13L CLSD. RWY 13R CLSD. RWY 17L CLSD. ...ADVS YOU HAVE INFO I.'
+	},
+	{
+		airport: 'KDFW',
+		type: 'dep',
+		code: 'J',
+		datis: 'DFW DEP INFO J 0253Z. 15009KT 10SM FEW120 BKN250 23/12 A3008 (THREE ZERO ZERO EIGHT). SIMUL PARL TRAFFIC DEPG RWYS 17R, 18L. NOTICE TO AIRMEN. RWY 13L CLSD. RWY 13R CLSD. RWY 17L CLSD. ...ADVS YOU HAVE INFO J.'
+	}
+];
 export const mockFaaDatisDen = [
 	{
 		airport: 'KDEN',
