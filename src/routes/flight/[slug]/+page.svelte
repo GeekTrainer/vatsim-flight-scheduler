@@ -9,6 +9,7 @@
 	import RouteDisplay from '$lib/components/RouteDisplay.svelte';
 	import { fetchVatsimData, getLocationControllers, getVatsimATIS } from '$lib/vatsim';
 	import { fetchFAADatis } from '$lib/atis';
+	import { fetchMETAR, getCachedFlightCategory } from '$lib/metar';
 	import { formatFlightTime, formatFuel, formatAltitude, validatePlanMatchesRoute, buildVatsimPrefileUrl, getStoredVatsimCid, checkVatsimFlightStatus } from '$lib/simbrief';
 	import { detectEnrouteCenters, getBasicEnrouteCenters } from '$lib/enroute';
 	import type { LocationControllers, ATISInfo } from '$lib/types';
@@ -73,6 +74,20 @@
 		arrivalFaaAtis = arrAtis;
 		departureOtherFaaAtis = depOtherAtis;
 		arrivalOtherFaaAtis = arrOtherAtis;
+
+		// METAR fallback: fetch for airports where D-ATIS is unavailable
+		const metarPromises: Promise<void>[] = [];
+		if (!depAtis) {
+			metarPromises.push(
+				fetchMETAR(data.departure.icao).then(metar => { if (metar) departureFaaAtis = metar; })
+			);
+		}
+		if (!arrAtis) {
+			metarPromises.push(
+				fetchMETAR(data.arrival.icao).then(metar => { if (metar) arrivalFaaAtis = metar; })
+			);
+		}
+		if (metarPromises.length > 0) await Promise.all(metarPromises);
 	}
 
 	// Mobile: independent expand/collapse, both collapsed by default
@@ -373,7 +388,7 @@
 
 		<!-- Footer -->
 		<div class="text-center text-xs text-gray-600 pt-4">
-			<p>VATSIM data refreshes every 30 seconds. Real World ATIS sourced from FAA D-ATIS.</p>
+			<p>VATSIM data refreshes every 30 seconds. Real World data sourced from FAA D-ATIS with METAR fallback via NOAA.</p>
 			<p class="mt-1 text-gray-700">For VATSIM simulation use only. Not for real-world flight planning or navigation.</p>
 		</div>
 	</main>
