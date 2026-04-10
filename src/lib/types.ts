@@ -15,7 +15,7 @@ export interface Route {
 }
 
 export interface ATISInfo {
-	source: 'vatsim' | 'faa';
+	source: 'vatsim' | 'faa' | 'metar';
 	atisType?: 'combined' | 'arrival' | 'departure';
 	code?: string;
 	text: string;

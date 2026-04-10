@@ -114,17 +114,28 @@
 				{#if faaAtis}
 					<div class="space-y-3">
 						<div class="flex items-center gap-3 flex-wrap">
-							{#if faaAtis.code}
-								<span data-testid="atis-code-{airportCode}" class="badge bg-green-900/50 text-green-300 border-green-700">
-									Info {faaAtis.code}
+							{#if faaAtis.source === 'metar'}
+								<span data-testid="metar-badge-{airportCode}" class="badge bg-amber-900/50 text-amber-300 border-amber-700 text-xs">
+									METAR
 								</span>
+							{:else}
+								{#if faaAtis.code}
+									<span data-testid="atis-code-{airportCode}" class="badge bg-green-900/50 text-green-300 border-green-700">
+										Info {faaAtis.code}
+									</span>
+								{/if}
+								{#if atisTypeLabel(faaAtis)}
+									<span class="badge bg-gray-700/50 text-gray-300 border-gray-600 text-xs">
+										{atisTypeLabel(faaAtis)}
+									</span>
+								{/if}
 							{/if}
-							{#if atisTypeLabel(faaAtis)}
-								<span class="badge bg-gray-700/50 text-gray-300 border-gray-600 text-xs">
-									{atisTypeLabel(faaAtis)}
-								</span>
+							<span class="text-xs text-gray-400">
+								{faaAtis.source === 'metar' ? 'Source: NOAA Aviation Weather' : 'Source: FAA D-ATIS'}
+							</span>
+							{#if faaAtis.source === 'metar' && faaAtis.lastUpdated}
+								<span class="text-xs text-gray-500">Observed {new Date(faaAtis.lastUpdated).toLocaleTimeString()}</span>
 							{/if}
-							<span class="text-xs text-gray-400">Source: FAA D-ATIS</span>
 						</div>
 						{#if mergedParsedAtis}
 							<ATISSummary parsedAtis={mergedParsedAtis} />
@@ -135,8 +146,8 @@
 					</div>
 				{:else}
 					<div data-testid="atis-empty-{airportCode}" class="text-center py-6 text-gray-500">
-						<p class="text-sm">No FAA D-ATIS available</p>
-						<p class="text-xs mt-1">Real-world ATIS data is not currently available for this airport</p>
+						<p class="text-sm">No weather data available</p>
+						<p class="text-xs mt-1">Neither D-ATIS nor METAR data is currently available for this airport</p>
 					</div>
 				{/if}
 			</div>
