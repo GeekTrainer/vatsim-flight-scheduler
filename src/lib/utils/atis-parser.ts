@@ -224,17 +224,17 @@ function parseApproachSentence(sentence: string, arrivals: RunwayInfo[], seen: S
 	// or "EXPECT [APPROACH_TYPE] APCH RWY 8R"
 	const approachPatterns = [
 		// "ARRIVALS EXPECT ILS RWY 8R, RWY 9, RWY 12"
-		/(?:ARRIVALS?\s+)?(?:EXPECT|EXP)\s+((?:ILS|VISUAL|VIS|RNAV|GPS|RNP|LDA)(?:\s+(?:OR|AND)\s+(?:ILS|VISUAL|VIS|RNAV|GPS|RNP|LDA))*)\s+(?:APCH\s+)?(?:RWY|RY|RWYS|RUNWAY|RUNWAYS)\s+([\d\w\s,AND&RWY]+?)(?:\.|$)/,
-		// "ILS OR VIS APCH RWY 10" / "ILS RWY 22L APCH IN USE"
-		/((?:ILS|VISUAL|VIS|RNAV|GPS|RNP|LDA)(?:\s+(?:OR|AND|Z|Y)\s+(?:ILS|VISUAL|VIS|RNAV|GPS|RNP|LDA))*)\s+(?:APCHS?|APPROACH(?:ES)?)\s+(?:TO\s+)?(?:RWY|RY|RWYS|RUNWAY|RUNWAYS)\s+([\d\w\s,AND&RWY]+?)(?:\s+(?:APCHS?|IN USE|APCH)|\.|$)/,
+		/(?:ARRIVALS?\s+)?(?:EXPECT|EXP)\s+((?:ILS|VISUAL|VIS|RNAV|GPS|RNP|LDA)(?:\s+(?:OR|AND)\s+(?:ILS|VISUAL|VIS|RNAV|GPS|RNP|LDA))*)\s+(?:APCH\s+)?(?:RWY|RY|RWYS|RUNWAY|RUNWAYS)[,\s]+([\d\w\s,AND&RWY]+?)(?:\.|$)/,
+		// "ILS OR VIS APCH RWY 10" / "VISUAL APCH TO RWYS, 18R, 17C"
+		/((?:ILS|VISUAL|VIS|RNAV|GPS|RNP|LDA)(?:\s+(?:OR|AND|Z|Y)\s+(?:ILS|VISUAL|VIS|RNAV|GPS|RNP|LDA))*)\s+(?:APCHS?|APPROACH(?:ES)?)\s+(?:TO\s+)?(?:RWY|RY|RWYS|RUNWAY|RUNWAYS)[,\s]+([\d\w\s,AND&RWY]+?)(?:\s+(?:APCHS?|IN USE|APCH)|\.|$)/,
 		// "VISUAL APPROACH RWY 6 IN USE" / "VISUAL APPROACH RWY 8L, VISUAL APPROACH RWY 9R"
-		/(VISUAL|VIS)\s+(?:APPROACH(?:ES)?|APCHS?)\s+(?:TO\s+)?(?:RWY|RY|RWYS|RUNWAY|RUNWAYS)\s+([\d\w\s,AND&]+?)(?:\s+IN USE|\.|,\s*(?:VISUAL|VIS)|$)/,
+		/(VISUAL|VIS)\s+(?:APPROACH(?:ES)?|APCHS?)\s+(?:TO\s+)?(?:RWY|RY|RWYS|RUNWAY|RUNWAYS)[,\s]+([\d\w\s,AND&]+?)(?:\s+IN USE|\.|,\s*(?:VISUAL|VIS)|$)/,
 		// "APPROACH IN USE ILS RY 22L"
-		/APPROACH(?:ES)?\s+IN USE\s+((?:ILS|VISUAL|VIS|RNAV|GPS|RNP|LDA))\s+(?:RWY|RY|RWYS)\s+([\d\w\s,AND&]+?)(?:\.|$)/,
+		/APPROACH(?:ES)?\s+IN USE\s+((?:ILS|VISUAL|VIS|RNAV|GPS|RNP|LDA))\s+(?:RWY|RY|RWYS)[,\s]+([\d\w\s,AND&]+?)(?:\.|$)/,
 		// "ILS RY 19 APCH IN USE"
-		/(ILS|RNAV|RNP|GPS|LDA)\s+(?:RWY|RY|RWYS)\s+([\d\w\s,AND&]+?)\s+APCH/,
+		/(ILS|RNAV|RNP|GPS|LDA)\s+(?:RWY|RY|RWYS)[,\s]+([\d\w\s,AND&]+?)\s+APCH/,
 		// "RWYS 6 IN USE, EXPECT ILS APCH"
-		/(?:RWY|RY|RWYS|RUNWAY|RUNWAYS)\s+([\d\w\s,AND&]+?)\s+IN USE.*?(?:EXPECT|EXP)\s+(ILS|VISUAL|VIS|RNAV|GPS|RNP|LDA)\s+APCH/,
+		/(?:RWY|RY|RWYS|RUNWAY|RUNWAYS)[,\s]+([\d\w\s,AND&]+?)\s+IN USE.*?(?:EXPECT|EXP)\s+(ILS|VISUAL|VIS|RNAV|GPS|RNP|LDA)\s+APCH/,
 	];
 
 	for (const pattern of approachPatterns) {
@@ -296,7 +296,7 @@ function parseApproachSentence(sentence: string, arrivals: RunwayInfo[], seen: S
 			return;
 		}
 
-		const rwyMatch = sentence.match(/(?:RWY|RY|RWYS|RUNWAY|RUNWAYS)\s+([\d\w\s,AND&]+?)(?:\s+(?:APCHS?|IN USE|APCH)|\.|$)/);
+		const rwyMatch = sentence.match(/(?:RWY|RY|RWYS|RUNWAY|RUNWAYS)[,\s]+([\d\w\s,AND&]+?)(?:\s+(?:APCHS?|IN USE|APCH)|\.|$)/);
 		if (rwyMatch) {
 			const rwys = extractRunwayNumbers(rwyMatch[1]);
 			for (const rwy of rwys) {
