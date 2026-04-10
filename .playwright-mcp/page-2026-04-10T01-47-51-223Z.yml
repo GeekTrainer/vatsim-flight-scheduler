@@ -1,0 +1,87 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e6]:
+      - link "Back" [ref=e7] [cursor=pointer]:
+        - /url: /
+        - img [ref=e8]
+        - text: Back
+      - heading "KBUR → KEUG" [level=1] [ref=e10]
+      - link "Settings" [ref=e11] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e12]
+  - main [ref=e15]:
+    - generic [ref=e24]:
+      - generic [ref=e25]:
+        - generic [ref=e26]: KBUR
+        - generic [ref=e27]: Burbank
+      - generic [ref=e28]:
+        - img [ref=e29]
+        - generic [ref=e33]: ~2h 15m · 637 nm
+      - generic [ref=e34]:
+        - generic [ref=e35]: KEUG
+        - generic [ref=e36]: Eugene
+      - link "📋 Connect SimBrief" [ref=e40] [cursor=pointer]:
+        - /url: /settings
+    - generic [ref=e41]:
+      - generic [ref=e42]:
+        - heading "ATC Coverage — KBUR" [level=3] [ref=e43]
+        - generic [ref=e45]:
+          - generic [ref=e47]:
+            - generic [ref=e48]: CTR
+            - generic [ref=e50]: LAX_25_CTR
+            - generic [ref=e51]: "126.525"
+            - generic [ref=e52]: 1:41
+          - generic [ref=e54]: APP
+          - generic [ref=e56]: TWR
+          - generic [ref=e58]: GND
+          - generic [ref=e60]: DEL
+      - generic [ref=e61]:
+        - heading "ATC Coverage — KEUG" [level=3] [ref=e62]
+        - generic [ref=e64]:
+          - generic [ref=e66]: CTR
+          - generic [ref=e68]: APP
+          - generic [ref=e70]:
+            - generic [ref=e71]: CTAF
+            - generic [ref=e72]: "118.9"
+          - generic [ref=e74]: GND
+          - generic [ref=e76]: DEL
+      - generic [ref=e77]:
+        - heading "ATIS Information" [level=3] [ref=e78]
+        - generic [ref=e79]:
+          - tablist [ref=e80]:
+            - tab "🌐 VATSIM" [ref=e81]
+            - tab "✈️ Real World" [selected] [ref=e82]: ✈️ Real World
+          - generic [ref=e86]:
+            - generic [ref=e87]:
+              - generic [ref=e88]: Info M
+              - generic [ref=e89]: "Source: FAA D-ATIS"
+            - generic [ref=e90]:
+              - generic [ref=e91]:
+                - generic [ref=e92]: 🌬️
+                - text: Wind
+              - generic [ref=e93]: 200° at 5kt
+              - generic [ref=e94]:
+                - generic [ref=e95]: 📊
+                - text: Altimeter
+              - generic [ref=e96]: 29.93"
+              - generic [ref=e97]:
+                - generic [ref=e98]: 🛬
+                - text: Arriving
+              - generic [ref=e99]: Rwy 8(ILS)
+              - generic [ref=e100]:
+                - generic [ref=e101]: 🛫
+                - text: Departing
+              - generic [ref=e102]: Rwy 8, Rwy 15
+            - generic [ref=e103]: BUR ATIS INFO M 0053Z. 20005KT 10SM CLR 22/13 A2993 (TWO NINER NINER THREE). ILS RWY 8 APCH IN USE. ARVNG AND DEPG RWY 8 AND RWY 15. LAHSO IN EFFECT RWY 15. READBACK ALL RWY HOLD SHORT INSTRUCTIONS. NOTAMS... ILS RWY 8 OM OTS. ACFT IN GATES B1 THRU B4 ADVISE GC 10 MINS PRIOR TO PUSHBACK. ALL RWY 8 ARRIVALS USE CAUTION FOR VNY EAST TRAFFIC PATTERN. ...ADVS YOU HAVE INFO M.
+      - generic [ref=e104]:
+        - heading "ATIS Information" [level=3] [ref=e105]
+        - generic [ref=e106]:
+          - tablist [ref=e107]:
+            - tab "🌐 VATSIM" [ref=e108]
+            - tab "✈️ Real World" [selected] [ref=e109]
+          - generic [ref=e112]:
+            - paragraph [ref=e113]: No weather data available
+            - paragraph [ref=e114]: Neither D-ATIS nor METAR data is currently available for this airport
+    - generic [ref=e19]:
+      - paragraph [ref=e20]: VATSIM data refreshes every 30 seconds. Real World data sourced from FAA D-ATIS with METAR fallback via NOAA.
+      - paragraph [ref=e21]: For VATSIM simulation use only. Not for real-world flight planning or navigation.

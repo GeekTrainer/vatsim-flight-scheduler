@@ -1,0 +1,16 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e6]:
+      - link "Back" [ref=e7] [cursor=pointer]:
+        - /url: /
+        - img [ref=e8]
+        - text: Back
+      - heading "KBUR → KEUG" [level=1] [ref=e10]
+      - link "Settings" [ref=e11] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e12]
+  - main [ref=e15]:
+    - paragraph [ref=e18]: For VATSIM simulation use only. Not for real-world flight planning or navigation.
+    - generic [ref=e19]:
+      - paragraph [ref=e20]: VATSIM data refreshes every 30 seconds. Real World data sourced from FAA D-ATIS with METAR fallback via NOAA.
+      - paragraph [ref=e21]: For VATSIM simulation use only. Not for real-world flight planning or navigation.
